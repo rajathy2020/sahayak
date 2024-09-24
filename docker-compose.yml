@@ -1,0 +1,255 @@
+version: '3.0'
+
+services:
+  api:
+    build:
+      context: ./
+      dockerfile: ./build_new/api/Dockerfile
+    command: 'uvicorn api.api:app --host="0.0.0.0" --port=8090 --workers=${UVICORN_WORKERS:-8}'
+    restart: always
+    env_file: .env
+
+    ports:
+      - "8090:8090"
+
+    volumes:
+      - ./src/backend:/backend
+      - ./data:/data
+
+    environment:
+      - PYTHONPATH=/backend/code
+      - SET_CORS=no
+      - PYTHONUNBUFFERED=1
+      - OMP_THREAD_LIMIT=1
+
+    depends_on:
+      - mongodb
+      - chroma
+
+    labels:
+      - "autoheal=true"
+  
+    healthcheck:
+      test: curl --fail http://localhost:8090/api/health_check || exit 1
+      interval: 40s
+      timeout: 30s
+      retries: 3
+      start_period: 60s
+
+
+  jupyter:
+    build:
+      context: ./
+      dockerfile: ./build_new/api/Dockerfile
+    command: 'jupyter lab --allow-root --no-browser --port 8888 --ip=0.0.0.0 --ServerApp.password="$TK_JUPYTER_PASSWD_HASH"'
+    restart: on-failure
+    env_file: .env
+
+    volumes:
+      - ./src/backend:/backend
+      - ./data:/data
+
+    environment:
+      - PYTHONPATH=/backend/code
+      - SET_CORS=no
+      - PYTHONUNBUFFERED=1
+      - OMP_THREAD_LIMIT=1
+
+    ports:
+      - "8888:8888"
+
+
+  mongodb:
+    image: mongo:latest
+
+    env_file: .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
+    volumes:
+      - ./data/mongodb_new:/data/db
+    ports:
+      - 27017:27017
+
+
+  botjs:
+    build:
+      context: ./
+      dockerfile: ./build_new/botjs/Dockerfile
+    command: sh -c "npm install && npm start"
+    restart: always
+    env_file: .envjs
+    ports:
+      - "3979:3979"
+    volumes:
+      - ./src/botjs:/bot
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      api:
+        condition: service_healthy
+
+
+  fe:
+    build:
+      context: ./
+      dockerfile: ./build_new/frontend/Dockerfile
+    volumes:
+      - ./src/frontend/dist:/var/www/site
+      - /root/ssl-cert:/etc/lego
+      - /root/ssl-cert-temp:/root/ssl-cert-temp
+    ports:
+      - "${NGINX_PORT:-80}:80"
+      - 443:443
+    restart: always
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_started
+
+
+  api_tasks:
+    platform: linux/amd64
+    build:
+      context: ./
+      dockerfile: ./build_new/api/Dockerfile
+    env_file: .env
+    volumes:
+      - ./src/backend:/backend
+      - ~/.ssh/id_rsa:/root/id_rsa.pem
+      - ./build/api/files:/ssl
+      - ./data:/data
+
+    environment:
+      - PYTHONPATH=/backend/code
+      - SET_CORS=no
+      - PYTHONUNBUFFERED=1
+      - OMP_THREAD_LIMIT=1
+
+    command: python code/services/tools/crawler/cera_data_update.py
+
+
+
+  web:
+    build:
+      context: ./src/frontend
+      dockerfile: ./Dockerfile
+      target: runner
+    ports:
+      - "3000:3000"
+    restart: always
+    depends_on:
+      - mongodb
+      - chroma
+
+
+  chroma:
+    platform: linux/amd64
+    image: ghcr.io/chroma-core/chroma:0.4.24
+    volumes:
+      - ./data/chroma:/chroma/chroma
+    ports:
+      - 8000:8000
+
+
+  healthcheck:
+    build:
+      context: ./scripts
+      dockerfile: Dockerfile
+    env_file: .env
+    restart: always
+
+
+  rq-server:
+    build:
+      context: ./
+      dockerfile: ./build_new/redis/Dockerfile
+
+
+  rq-worker:
+    platform: linux/amd64
+    build:
+      context: ./
+      dockerfile: ./build_new/api/Dockerfile
+    env_file: .env
+
+    volumes:
+      - ./src/backend:/backend
+      - ~/.ssh/id_rsa:/root/id_rsa.pem
+      - ./build/api/files:/ssl
+      - ./data:/data
+
+    environment:
+      - PYTHONPATH=/backend/code
+      - SET_CORS=no
+      - PYTHONUNBUFFERED=1
+      - OMP_THREAD_LIMIT=1
+
+    command: python code/tasks/run_worker.py
+
+
+  slackbot:
+    build:
+      context: ./
+      dockerfile: ./build_new/slackbot/Dockerfile
+    env_file: .env  
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "3001:80"
+    volumes:
+      - ./src/slackbot:/slackbot
+    restart: always
+    command: python app.py  
+
+
+  autoheal:
+    image: willfarrell/autoheal:latest
+    tty: true
+    restart: always
+    environment:
+      - AUTOHEAL_INTERVAL=60
+      - AUTOHEAL_START_PERIOD=300
+      - AUTOHEAL_DEFAULT_STOP_TIMEOUT=10
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+
+  clamav:
+    image: clamav/clamav:stable
+    ports:
+      - "3310:3310"
+    restart: always
+
+
+  clamav-api:
+    image: benzino77/clamav-rest-api
+    ports:
+      - "8086:8086"
+    environment:
+      - NODE_ENV=production
+      - APP_PORT=8086
+      - APP_FORM_KEY=FILES
+      - CLAMD_IP=clamav
+      - APP_MAX_FILE_SIZE=52428800
+    restart: always
+    depends_on:
+      - clamav
+
+
+  crawler:
+    build:
+      context: ./src/crawler
+      dockerfile: ./Dockerfile
+    restart: always
+    platform: linux/amd64
+    env_file: .env
+
+    ports:
+      - "5000:3000"
+
+networks:
+    default:
+      external: true
+      name: docsense
