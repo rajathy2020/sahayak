@@ -1,20 +1,20 @@
 version: '3.0'
 name: sahayak
-
 services:
+
   api:
     build:
       context: ./
       dockerfile: ./build_new/api/Dockerfile
-    command: 'uvicorn api.api:app --host="0.0.0.0" --port=8090 --workers=${UVICORN_WORKERS:-8}'
+    command: 'uvicorn --fd 0 api.api:app --host="0.0.0.0" --ssl-keyfile="/ssl/localhost.key" --ssl-certfile="/ssl/localhost.crt"  --port=8090 --reload'
     restart: always
     env_file: .env
-
-    ports:
-      - "8090:8090"
+    platform: linux/amd64
 
     volumes:
       - ./src/backend:/backend
+      - ~/.ssh/id_rsa:/root/id_rsa.pem
+      - ./build/api/files:/ssl
       - ./data:/data
 
     environment:
@@ -23,48 +23,44 @@ services:
       - PYTHONUNBUFFERED=1
       - OMP_THREAD_LIMIT=1
 
-    depends_on:
-      - mongodb
-
-    labels:
-      - "autoheal=true"
-  
-  
+    ports:
+      - "${API_PORT:-8090}:8090"
 
 
   jupyter:
+    platform: linux/amd64
     build:
       context: ./
       dockerfile: ./build_new/api/Dockerfile
-    command: 'jupyter lab --allow-root --no-browser --port 8888 --ip=0.0.0.0'
+    command: 'jupyter lab --allow-root --no-browser --port 8888 --ip=0.0.0.0 --ServerApp.password="$TK_JUPYTER_PASSWD_HASH"'
     restart: on-failure
     env_file: .env
 
     volumes:
       - ./src/backend:/backend
+      - ~/.ssh/id_rsa:/root/id_rsa.pem
+      - ./build/api/files:/ssl
       - ./data:/data
 
     environment:
       - PYTHONPATH=/backend/code
       - SET_CORS=no
       - PYTHONUNBUFFERED=1
-      - OMP_THREAD_LIMIT=1
 
     ports:
-      - "8888:8888"
+      - "${JUPYTER_PORT:-8888}:8888"
+
 
 
   mongodb:
     image: mongo:latest
-
     env_file: .env
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
     volumes:
-      - ./data/mongodb_new:/data/db
+      - ./data/mongodb:/data/db
     ports:
-      - 27017:27017
-
+      - ${MONGO_PORT:-27017}:27017
 
   
