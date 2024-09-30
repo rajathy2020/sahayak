@@ -16,6 +16,9 @@ from shared.models import User
 
 router = APIRouter()
 
+class SubServiceListResponse(BaseModel):
+    parent_service_id: str
+    subservices: List[SubService]  
 
 
 class ServicePostRequest(BaseModel):
@@ -28,54 +31,54 @@ class ServiceUpdateRequest(BaseModel):
     
 
 @router.get(
-    "/services",
-    response_model=List[Service],
+    "/parent_services",
+    response_model=List[ParentService],
     include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
 )
 async def get_services(current_user: User = Depends(get_current_user)):
-    query = And(Service.deleted_at == None)
+    query = And(ParentService.deleted_at == None)
 
-    services = await Service.search_document(
-        query, sort_by=Service.created_at, order_by="Asc"
+    services = await ParentService.search_document(
+        query, sort_by=ParentService.created_at, order_by="Asc"
     )
 
     return services
 
 
 @router.post(
-    "/services",
-    response_model=Service,
+    "/parent_services",
+    response_model=ParentService,
     include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
 )
 async def post_service(
     request: ServicePostRequest,
     current_user: User = Depends(get_current_user),
 ):
-    service = Service(
+    service = ParentService(
         
         name=request.name,
         
     )
 
-    service = await Service.save_document(service)
+    service = await ParentService.save_document(service)
     return service
 
 
 @router.get(
-    "/services/{id}",
-    response_model=Service,
+    "/parent_services/{id}",
+    response_model=ParentService,
     include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
 )
 async def get_service_by_id(
     id: str, current_user: User = Depends(get_current_user)
 ):
     query = And(
-        Service.id == ObjectId(id),
-        Service.deleted_at == None,
+        ParentService.id == ObjectId(id),
+        ParentService.deleted_at == None,
     )
 
-    services = await Service.search_document(
-        query, sort_by=Service.created_at, order_by="Asc"
+    services = await ParentService.search_document(
+        query, sort_by=ParentService.created_at, order_by="Asc"
     )
 
     if not services:
@@ -85,8 +88,8 @@ async def get_service_by_id(
 
 
 @router.put(
-    "/services/{id}",
-    response_model=Service,
+    "/parent_services/{id}",
+    response_model=ParentService,
     include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
 )
 async def update_service_by_id(
@@ -95,12 +98,12 @@ async def update_service_by_id(
     current_user: User = Depends(get_current_user),
 ):
     query = And(
-        Service.id == ObjectId(id),
-        Service.deleted_at == None,
+        ParentService.id == ObjectId(id),
+        ParentService.deleted_at == None,
     )
 
-    services = await Service.search_document(
-        query, sort_by=Service.created_at, order_by="Asc"
+    services = await ParentService.search_document(
+        query, sort_by=ParentService.created_at, order_by="Asc"
     )
 
     if not services:
@@ -113,12 +116,12 @@ async def update_service_by_id(
    
 
     print(service)        
-    return await Service.save_document(service)
+    return await ParentService.save_document(service)
 
 
 @router.delete(
-    "/services/{id}",
-    response_model=Service,
+    "/parent_services/{id}",
+    response_model=ParentService,
     include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
 )
 async def delete_service(
@@ -128,10 +131,10 @@ async def delete_service(
 ):
     # TODO: Rajat Remove all documents from the service
 
-    query = And(Service.id == ObjectId(id))
+    query = And(ParentService.id == ObjectId(id))
 
-    services = await Service.search_document(
-        query, sort_by=Service.created_at, order_by="Asc"
+    services = await ParentService.search_document(
+        query, sort_by=ParentService.created_at, order_by="Asc"
     )
 
     if not services:
@@ -141,6 +144,31 @@ async def delete_service(
     service.deleted_at = datetime.now()
 
 
-    return await Service.save_document(doc=service)
+    return await ParentService.save_document(doc=service)
 
+
+
+@router.get(
+    "/parent_services/{id}/sub_services",
+    response_model=ParentService,
+    include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
+)
+async def get_sub_services(
+    id: str,
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_user),
+):
+    # TODO: Rajat Remove all documents from the service
+
+    query = And(SubService.parent_service_id == str(id))
+
+    sub_services = await SubService.search_document(
+        query, sort_by=SubService.created_at, order_by="Asc"
+    )
+
+    if not sub_services:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    return sub_services
+   
 

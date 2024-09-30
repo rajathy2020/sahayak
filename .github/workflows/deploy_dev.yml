@@ -1,232 +1,33 @@
+name: Deploy Deeksha VM
 on:
   push:
-    branches: [develop]
+    branches:
+      - main
 
 jobs:
-  autodeploy-docsense-demo:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-      - name: Set Server IP
-        id: set-server-ip
+      - name: Install SSH Key
         run: |
-          echo "SERVER_IP=${{ secrets.DEV_SERVER_IP }}" >> $GITHUB_ENV
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 --decode > ssh_key
+          chmod 600 ssh_key
+          eval "$(ssh-agent -s)"
+          ssh-add ssh_key
 
-      - name: Remove Unwanted Services & Code
+      - name: Restart API and Nginx
         run: |
-          # Installing yq tool
-          sudo apt-get update
-          sudo apt-get install wget jq -y
-          LATEST_YQ=$(wget -qO- https://api.github.com/repos/mikefarah/yq/releases/latest | jq -r '.assets[] | select(.name | contains("linux_amd64")) | .browser_download_url')
-          sudo wget $LATEST_YQ -O /usr/local/bin/yq
-          sudo chmod +x /usr/local/bin/yq
-
-      - name: Copy Backend
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "src/backend/*,src/crawler/*,build_new/*,docker-compose.yml,scripts"
-          target: "/root/docsense"
-
-      - name: Copy Frontend
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "src/frontend/*"
-          target: "/root/docsense"
-
-      - name: Copy botjs
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "src/botjs/*"
-          target: "/root/docsense"
-
-      - name: Use botjs nginx conf
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root/docsense
-            yq -y -i '.services.fe.build.dockerfile = "./build_new/frontend/Dockerfile.botjs"' docker-compose.yml
-
-      - name: Restart API
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root/docsense
-            docker compose restart api rq-worker crawler
-
-      - name: Check for change in frontend
-        uses: dorny/paths-filter@v3
-        id: changes
-        with:
-          filters: |
-            frontend:
-              - 'src/frontend/**'
-          base: ${{ github.event.before }}
-
-      - name: Restart Frontend
-        if: steps.changes.outputs.frontend == 'true'
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root/docsense
-            docker compose up -d --build --force-recreate --no-deps web
-
-      - name: Restart Nginx
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root/docsense
-            docker compose up -d --build --force-recreate --no-deps fe
-
-      - name: Restart botjs
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root/docsense
-            docker compose up -d --build --force-recreate --no-deps botjs
-
-      - name: Restart Slackbot
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root/docsense
-            docker compose up -d --build --force-recreate --no-deps slackbot
-
-      - name: Clear Docker Cache
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root
-            docker system prune -af
-
-  autodeploy-cera-dev:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set Server IP
-        id: set-server-ip
-        run: |
-          echo "SERVER_IP=${{ secrets.CERADEV_SERVER_IP }}" >> $GITHUB_ENV
-
-      - name: Remove Unwanted Services & Code
-        run: |
-          # Installing yq tool
-          sudo apt-get update
-          sudo apt-get install wget jq -y
-          LATEST_YQ=$(wget -qO- https://api.github.com/repos/mikefarah/yq/releases/latest | jq -r '.assets[] | select(.name | contains("linux_amd64")) | .browser_download_url')
-          sudo wget $LATEST_YQ -O /usr/local/bin/yq
-          sudo chmod +x /usr/local/bin/yq
-
-          # Removing botjs service
-          yq eval 'del(.services.botjs)' -i docker-compose.yml
-
-      - name: Copy Backend
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "src/backend/*,src/crawler/*,build_new/*,docker-compose.yml,scripts"
-          target: "/root/docsense"
-
-      - name: Copy Frontend
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "src/frontend/*"
-          target: "/root/docsense"
-
-      - name: Restart API
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root/docsense
-            docker compose restart api rq-worker crawler
-
-      - name: Check for change in frontend
-        uses: dorny/paths-filter@v3
-        id: changes
-        with:
-          filters: |
-            frontend:
-              - 'src/frontend/**'
-          base: ${{ github.event.before }}
-
-      - name: Restart Frontend
-        if: steps.changes.outputs.frontend == 'true'
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root/docsense
-            docker compose up -d --build --force-recreate --no-deps web
-
-      - name: Restart Nginx
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root/docsense
-            docker compose up -d --build --force-recreate --no-deps fe
-
-      - name: Restart Slackbot
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root/docsense
-            docker compose up -d --build --force-recreate --no-deps slackbot
-
-      - name: Clear Docker Cache
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.SERVER_IP }}
-          username: root
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /root
-            docker system prune -af
+          ssh -o StrictHostKeyChecking=no -i ssh_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "sudo bash -s" << 'ENDSSH'
+            cd ${{ secrets.APP_LOCATION }}
+            git config --global credential.helper 'store --file=/tmp/git-credentials'
+            echo "${{ secrets.VCS_TOKEN }}" > /tmp/git-credentials
+            git stash -u
+            git stash -k
+            git stash
+            git pull origin main
+            docker compose restart api
+            docker compose up -d --build --force-recreate --no-deps nginx

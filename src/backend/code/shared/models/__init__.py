@@ -4,13 +4,14 @@ from datetime import datetime
 from importlib.metadata import metadata
 from lib2to3.pgen2.token import OP
 
-from typing import  Optional
+from typing import  Optional, List
 
 import pandas as pd
 from beanie import Document
 from pydantic import Field
 from beanie.odm.fields import ExpressionField
 from .base import *
+
 
 
 
@@ -95,11 +96,91 @@ class MongoBase(Document):
         "items": docs
     }
 
-class Service(MongoBase):
-    name: str
-   
-
 
 class User(MongoBase):
     name: str
     email: str
+
+class Usertype(str, Enum):
+    SERVICE_PROVIDER = "SERVICE_PROVIDER"
+    CLIENT = "CLIENT"
+
+# Enum for predefined time slots
+class TimeSlot(str, Enum):
+    MORNING = "9am-12pm"
+    MIDDAY = "12pm-3pm"
+    AFTERNOON_EVENING = "3pm-8pm"
+    Night = "8pm-11pm"
+
+# Parent Service Model (e.g., Cleaning, Nanny, Cooking)
+class ParentService(MongoBase):
+    name: str  # e.g., Cleaning, Nanny, Cooking
+
+# Frequency Enum for service booking
+class ServiceFrequency(str, Enum):
+    ONE_TIME = "one_time"
+    THREE_TIMES_A_WEEK = "three_times_a_week"
+    FIVE_TIMES_A_WEEK = "five_times_a_week"
+    FULL_WEEK = "FULL_WEEK"
+
+
+# Enum for SubService names
+class SubServiceName(str, Enum):
+    # Cleaning Subservices
+    DEEP_CLEAN = "deep_clean"
+    REGULAR_CLEAN = "regular_clean"
+    WINDOW_CLEAN = "window_clean"
+    
+    # Nanny Subservices
+    TODDLER_CARE = "toddler_care"
+    INFANT_CARE = "infant_care"
+    SCHOOL_AGE_CARE = "school_age_care"
+    
+    # Cooking Subservices
+    VEGETARIAN_MEAL = "vegetarian_meal"
+    VEGAN_MEAL = "vegan_meal"
+    REGULAR_MEAL = "regular_meal"
+
+
+class SubServiceName(str, Enum):
+    BERLIN = "BERLIN"
+    MUNICH = "MUNICH"
+    FRANKFURT = "FRANKFURT"
+
+# SubService Model (using SubServiceName Enum)
+class SubService(MongoBase):
+    name: SubServiceName  # Uses the enum for predefined subservice names
+    parent_service_id: str  # Link back to the Parent Service
+    price: float  # Price of the subservice
+    duration: int # Duration of the service (e.g., 2 hours for deep clean)
+
+
+# Provider Model (Each provider can offer multiple services)
+class ServiceProvider(MongoBase):
+    name: str
+    city: SubServiceName
+    services_offered: List[str]  # List of SubService IDs that the provider offers
+    services_offered_details: List[SubService]
+    available_time_slots: List[TimeSlot]  
+
+# Client Model
+class Client(MongoBase):
+    name: str
+    address: str
+
+
+# Booking Model (A client books a subservice provided by a provider)
+class Booking(MongoBase):
+    client_id: str
+    provider_id: str
+    subservice_id: str  # Reference to the SubService
+    frequency: ServiceFrequency 
+     # Frequency chosen by the client at the time of booking
+    total_price: float  # Total price based on service and frequency
+
+
+# Response Models for APIs
+class ParentServiceListResponse(MongoBase):
+    parent_services: List[ParentService]  # List of top categories
+
+
