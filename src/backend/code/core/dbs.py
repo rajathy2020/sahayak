@@ -5,12 +5,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from shared.models import (
     User,
-    Service
+    ParentService
 )
-
-
-
-
 
 instance = os.getenv("INSTANCE", "local")
 db_password = os.getenv("MONGODB_ROOT_PASSWORD")
@@ -36,7 +32,7 @@ async def setup_db():
     # Initialize document models
     print("Connecting to DB Docsense...")
     await init_beanie(
-        database=client.CeraDatabase,
-        document_models=[User, Service],
+        database=client.sahayak,
+        document_models=[User, ParentService],
     )
     print("Db connected")
