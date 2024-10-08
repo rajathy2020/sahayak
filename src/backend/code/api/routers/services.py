@@ -23,11 +23,13 @@ class SubServiceListResponse(BaseModel):
 
 class ServicePostRequest(BaseModel):
     name: str 
+    image: str
     
 
 
 class ServiceUpdateRequest(BaseModel):
     name: Optional[str]
+    image: Optional[str]
     
 
 @router.get(
@@ -57,6 +59,7 @@ async def post_service(
     service = ParentService(
         
         name=request.name,
+        image=request.image
         
     )
 
@@ -150,18 +153,15 @@ async def delete_service(
 
 @router.get(
     "/parent_services/{id}/sub_services",
-    response_model=ParentService,
+    response_model=List[SubService],
     include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
 )
 async def get_sub_services(
     id: str,
-    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
 ):
-    # TODO: Rajat Remove all documents from the service
 
-    query = And(SubService.parent_service_id == str(id))
-
+    query = {"parent_service_id": str(id)}
     sub_services = await SubService.search_document(
         query, sort_by=SubService.created_at, order_by="Asc"
     )

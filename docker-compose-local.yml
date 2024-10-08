@@ -1,5 +1,4 @@
-version: '3.0'
-name: sahayak
+version: '3.3'
 services:
 
   api:
@@ -9,7 +8,6 @@ services:
     command: 'uvicorn --fd 0 api.api:app --host="0.0.0.0" --ssl-keyfile="/ssl/localhost.key" --ssl-certfile="/ssl/localhost.crt"  --port=8090 --reload'
     restart: always
     env_file: .env
-    platform: linux/amd64
 
     volumes:
       - ./src/backend:/backend
@@ -22,13 +20,15 @@ services:
       - SET_CORS=no
       - PYTHONUNBUFFERED=1
       - OMP_THREAD_LIMIT=1
+    
+    depends_on: 
+      - mongodb
 
     ports:
       - "${API_PORT:-8090}:8090"
 
 
   jupyter:
-    platform: linux/amd64
     build:
       context: ./
       dockerfile: ./build_new/api/Dockerfile
@@ -50,17 +50,15 @@ services:
     ports:
       - "${JUPYTER_PORT:-8888}:8888"
 
-
-
   mongodb:
     image: mongo:latest
     env_file: .env
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
+      - MONGO_INITDB_ROOT_PASSWORD=needstrongpassword
     volumes:
       - ./data/mongodb:/data/db
     ports:
       - ${MONGO_PORT:-27017}:27017
-
+    privileged: true
   

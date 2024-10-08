@@ -17,6 +17,7 @@ from .routers import (
     authorization,
     users,
     services,
+    providers
 
 
     )
@@ -35,14 +36,10 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def app_init():
-
-    if not os.path.exists(PROCESSED_DATA_DIR_PATH):
-        os.makedirs(PROCESSED_DATA_DIR_PATH)
-
     await setup_db()
 
-if os.getenv("USE_CORS"):
-    origins = [
+
+origins = [
         "http://localhost:8080",
         "http://localhost:3000",
         "https://localhost:3000",
@@ -51,19 +48,20 @@ if os.getenv("USE_CORS"):
         "https://localhost:8090",
         "https://cera-dev.hytechnologies.co",
         "https://cera.hytechnologies.co",
-    ]
+]
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 app.include_router(authorization.router, tags=["Authorization"])
 app.include_router(services.router, tags=["Services"])
+app.include_router(providers.router, tags=["Providers"])
 app.include_router(users.router, tags=["Users"])
 
 

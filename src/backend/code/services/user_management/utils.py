@@ -15,6 +15,7 @@ from services.user_management.config import *
 
 
 
+
 class OAuth2PasswordBearerCookie(OAuth2):
     """Model for Microsoft OAuth"""
 
@@ -69,7 +70,12 @@ oauth2_scheme = OAuth2PasswordBearerCookie(tokenUrl="/token")
 
 async def get_current_user(request: Request):
 
-    return User(name = "HELLO", email = "rajat.jain@hy.co")
+    return User(
+        name = "HELLO", 
+        email = "rajat.jain@hy.co", 
+        city =  City.BERLIN,
+        address = "hello"
+    )
 
    
     if AUTH_PROVIDER == "MICROSOFT":

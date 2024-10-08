@@ -96,10 +96,16 @@ class MongoBase(Document):
         "items": docs
     }
 
+class City(str, Enum):
+    BERLIN = "BERLIN"
+    MUNICH = "MUNICH"
+    FRANKFURT = "FRANKFURT"
 
 class User(MongoBase):
     name: str
     email: str
+    city: City
+    address: str
 
 class Usertype(str, Enum):
     SERVICE_PROVIDER = "SERVICE_PROVIDER"
@@ -115,6 +121,7 @@ class TimeSlot(str, Enum):
 # Parent Service Model (e.g., Cleaning, Nanny, Cooking)
 class ParentService(MongoBase):
     name: str  # e.g., Cleaning, Nanny, Cooking
+    image: str
 
 # Frequency Enum for service booking
 class ServiceFrequency(str, Enum):
@@ -139,32 +146,26 @@ class SubServiceName(str, Enum):
     # Cooking Subservices
     VEGETARIAN_MEAL = "vegetarian_meal"
     VEGAN_MEAL = "vegan_meal"
-    REGULAR_MEAL = "regular_meal"
-
-
-class SubServiceName(str, Enum):
-    BERLIN = "BERLIN"
-    MUNICH = "MUNICH"
-    FRANKFURT = "FRANKFURT"
+    NON_VEGETARIAN_MEAL = "non_vegetarian_meal"
 
 # SubService Model (using SubServiceName Enum)
 class SubService(MongoBase):
     name: SubServiceName  # Uses the enum for predefined subservice names
     parent_service_id: str  # Link back to the Parent Service
-    price: float  # Price of the subservice
-    duration: int # Duration of the service (e.g., 2 hours for deep clean)
+    base_price: float  # Price of the subservice
+    description: str  
+    duration: Optional[int] = None
 
 
 # Provider Model (Each provider can offer multiple services)
-class ServiceProvider(MongoBase):
-    name: str
-    city: SubServiceName
-    services_offered: List[str]  # List of SubService IDs that the provider offers
-    services_offered_details: List[SubService]
-    available_time_slots: List[TimeSlot]  
+class ServiceProvider(User, MongoBase):
+    services_offered: Optional[List[str]] = None  # List of SubService IDs that the provider offers
+    available_time_slots: Optional[List[TimeSlot] ] = None
+    services_offered_details:Optional[List[SubService] ] = None
+    
 
 # Client Model
-class Client(MongoBase):
+class Client(User, MongoBase):
     name: str
     address: str
 

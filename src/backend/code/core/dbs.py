@@ -9,7 +9,7 @@ from shared.models import (
 )
 
 instance = os.getenv("INSTANCE", "local")
-db_password = os.getenv("MONGODB_ROOT_PASSWORD")
+db_password = os.getenv("MONGODB_ROOT_aPASSWORD", "needstrongpassword")
 db_url = os.getenv("MONGODB_URL", f"mongodb://root:{db_password}@mongodb:27017")
 
 client = AsyncIOMotorClient(db_url)
