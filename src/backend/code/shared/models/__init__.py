@@ -106,6 +106,7 @@ class User(MongoBase):
     email: str
     city: City
     address: str
+    team_id: str
 
 class Usertype(str, Enum):
     SERVICE_PROVIDER = "SERVICE_PROVIDER"
@@ -154,7 +155,9 @@ class SubService(MongoBase):
     parent_service_id: str  # Link back to the Parent Service
     base_price: float  # Price of the subservice
     description: str  
-    duration: Optional[int] = None
+    price_per_extra_person: Optional[float] = None
+    price_per_extra_room: Optional[float] = None
+    duration: Optional[float] = None
 
 
 # Provider Model (Each provider can offer multiple services)
@@ -174,14 +177,18 @@ class Client(User, MongoBase):
 class Booking(MongoBase):
     client_id: str
     provider_id: str
-    subservice_id: str  # Reference to the SubService
-    frequency: ServiceFrequency 
-     # Frequency chosen by the client at the time of booking
+    booked_date: Optional[datetime] = None
+    subservice_ids: List[str]  # Reference to the SubService
+    frequency: ServiceFrequency
+    start_time:Optional[datetime] = None
+    end_time:Optional[datetime] = None
+    time_slot:Optional[str] = None
     total_price: float  # Total price based on service and frequency
 
 
 # Response Models for APIs
 class ParentServiceListResponse(MongoBase):
     parent_services: List[ParentService]  # List of top categories
+
 
 
