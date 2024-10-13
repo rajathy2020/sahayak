@@ -106,7 +106,6 @@ class User(MongoBase):
     email: str
     city: City
     address: str
-    team_id: str
 
 class Usertype(str, Enum):
     SERVICE_PROVIDER = "SERVICE_PROVIDER"
