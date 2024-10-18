@@ -168,3 +168,4 @@ src/frontend/out
 src/backend/*.ipynb
 .envjs
 *.pptx
+node_modules

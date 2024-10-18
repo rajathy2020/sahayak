@@ -1,0 +1,148 @@
+/* File: ServiceProviderPage.css */
+
+/* Container for the entire service provider page */
+.service-provider-page {
+    display: flex; /* Create a flex container to include the sidebar and main content */
+    height: 100vh; /* Full height of the viewport */
+  }
+  
+  /* Sidebar styling */
+  .sidebar {
+    width: 250px; /* Width of the sidebar */
+    padding: 20px;
+    background-color: #f4f4f4; /* Light background for the sidebar */
+    border-right: 1px solid #ddd; /* Border between sidebar and content */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    position: relative;
+  }
+  
+  .sidebar h2 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+  
+  /* Content area styling */
+  .content {
+    flex-grow: 1; /* Allow content to take up the remaining space */
+    padding: 20px;
+  }
+  
+  /* list container for service provider cards */
+  .service-providers-list {
+    display: flex;
+    flex-direction: column; /* Align items vertically */
+    gap: 20px; /* Space between each profile */
+  }
+  
+  /* Service Provider Card styling */
+  .service-provider-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width:100%;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 15px;
+    cursor: pointer;
+  }
+  
+  .service-provider-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Provider Image styling */
+  .provider-image {
+    width: 120px; /* Fixed width for the image */
+    height: 120px; /* Fixed height for the image */
+    border-radius: 50%; /* Circular image */
+    object-fit: cover;
+    margin-right: 20px;
+  }
+  
+  /* Provider Info styling */
+  .provider-info {
+    flex-grow:1;
+    text-align: left; /* Align text to the left */
+    margin-right: 30px;
+  }
+  
+  .provider-name {
+    font-size: 1.4rem;
+    margin: 0 0 10px 0;
+    color: #333;
+  }
+  
+  .provider-description {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 15px;
+  }
+
+  .provider-services {
+    font-size: 0.85rem;
+    color: #777;
+  }
+  
+  /* Book Button styling */
+  .book-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .book-button:hover {
+    background-color: #45a049;
+  }
+
+  /* Sidebar Styling */
+.sidebar {
+    width: 250px;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-right: 1px solid #ddd;
+  }
+  
+  .filter-section {
+    margin-bottom: 20px;
+  }
+  
+  .filter-section label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+  
+  #time-slot #date-picker {
+    width: 100%;
+    padding: 8px;
+    font-size: 1rem;
+  }
+
+  /* Notification Styles */
+.notification {
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 5px;
+    font-size: 1rem;
+    text-align: center;
+  }
+  
+  .notification.success {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .notification.error {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  
+  

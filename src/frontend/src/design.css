@@ -1,0 +1,403 @@
+/* Container for the entire banner */
+.city-banner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background-color: #f4f4f4;
+  }
+  
+  /* Welcome message styling */
+  .welcome-message {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .welcome-message h1 {
+    font-size: 2rem;
+    color: #333;
+  }
+  
+  /* City container to spread blocks evenly */
+  .cities-container {
+    display: flex;
+    justify-content: space-around; /* Spread blocks evenly */
+    width: 100%; /* Make the cities take full width */
+    max-width: 1200px; /* Optional: Max width to avoid too much stretching */
+    gap: 20px; /* Space between city blocks */
+  }
+  
+  /* City block styling */
+  .city-block {
+    flex: 1;
+    max-width: 350px; /* Limit the width of each city block */
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .city-block:hover {
+    transform: scale(1.05);
+  }
+  
+  .city-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  
+  /* Overlay for the city name */
+  .city-overlay {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.191); /* Semi-transparent black background */
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .city-overlay h2 {
+    color: white;
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  
+  /* Image styling (covers entire block) */
+  .city-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* If you have a description instead of an image */
+  .city-description {
+    padding: 20px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+
+  .services-grid {
+    display: flex;
+    justify-content: space-around; /* Space between the cards */
+    flex-wrap: wrap; /* Wrap if the screen is too small */
+    gap: 5px;
+    margin-top: 30px;
+    padding: 0 20px;
+  }
+  
+  /* Service card styling */
+  .service-card {
+    flex: 1;
+    max-width: 300px; /* Control the width of each card */
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+    background-color: #ffffff;
+  }
+  
+  .service-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .service-card img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+  
+  .service-card h3 {
+    margin: 10px 0;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
+    z-index: 1000; /* Ensure it is above other content */
+  }
+
+  /* Service form styling */
+.service-form {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    width: 500px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    position: relative;
+    text-align: justify; /* Apply justified text alignment */
+  }
+  
+  .service-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .service-form div {
+    margin-bottom: 15px;
+  }
+  
+  .service-form label {
+    display: block;
+    margin-bottom: 5px;
+    text-align: justify;
+  }
+  
+  .service-form input,
+  .service-form select,
+  .service-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 1em;
+  }
+  
+  .service-form button {
+    padding: 10px 15px;
+    margin-right: 10px;
+    border: none;
+    background: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .service-form button[type="button"] {
+    background: #dc3545; /* Different color for Close button */
+  }
+  
+  .service-form button:hover {
+    opacity: 0.9;
+  }
+  
+  /* Background dimming when form is active */
+  .dim-background {
+    filter: blur(3px); /* Blur the background when form is shown */
+  }
+
+  .circle-diagram-container {
+    position: relative;
+    width: 600px;  /* Set the width of the entire diagram */
+    height: 600px; /* Set the height of the entire diagram */
+    margin: 50px auto;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Central circle */
+  .central-circle {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 10;
+  }
+  
+  /* Outer circles */
+  .outer-circle {
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background-color: #B0E0E6;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Circle positions for the outer circles */
+  /* You can adjust these values to fit your needs */
+  .circle1 {
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .circle2 {
+    top: 25%;
+    left: 80%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .circle3 {
+    top: 50%;
+    left: 93%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .circle4 {
+    top: 75%;
+    left: 80%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .circle5 {
+    top: 85%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .circle6 {
+    top: 75%;
+    left: 20%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .circle7 {
+    top: 50%;
+    left: 10%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .circle8 {
+    top: 25%;
+    left: 20%;
+    transform: translate(-50%, -50%);
+  }
+
+
+/* Four Corner Notes */
+.corner-note {
+    position: absolute;
+    width: 150px;
+    background-color: #fff;
+    padding: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    border-radius: 8px;
+    z-index: 5;
+  }
+  
+  .corner-note h4 {
+    font-size: 1rem;
+    color: #3b82f6;
+  }
+  
+  .corner-note p {
+    font-size: 0.85rem;
+    color: #333;
+  }
+  
+  /* Positioning the corner notes */
+  .corner-note-top-left {
+    top: 0;
+    left: 0;
+    transform: translate(-150%, 30%);
+  }
+  
+  .corner-note-top-right {
+    top: 0;
+    right: 0;
+    transform: translate(150%, 30%);
+  }
+  
+  .corner-note-bottom-left {
+    bottom: 0;
+    left: 0;
+    transform: translate(-150%, -30%);
+  }
+  
+  .corner-note-bottom-right {
+    bottom: 0;
+    right: 0;
+    transform: translate(150%, -30%);
+  }
+
+  .page-container {
+    padding: 20px;
+  }
+
+  .service-providers-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 20px;
+  }
+
+  .service-provider-card {
+    width: 250px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+    background-color: #fff;
+  }
+  
+  .service-provider-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .provider-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  
+  .provider-name {
+    font-size: 1.2rem;
+    margin-top: 10px;
+  }
+  
+  .provider-services {
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  .provider-availability {
+    margin-top: 10px;
+  }
+  
+  .provider-availability ul {
+    padding: 0;
+    list-style: none;
+  }
+  
+  .provider-availability li {
+    font-size: 0.85rem;
+    color: #777;
+  }
+  
+  
+  
