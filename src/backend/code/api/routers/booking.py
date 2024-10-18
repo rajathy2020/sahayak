@@ -14,7 +14,7 @@ from shared.models import *
 from shared.models import User
 import time
 from datetime import time, timedelta, datetime  # Import time manipulation classes
-
+SERVICE_TYPES= ["vegan_meal", "vegetarian_meal","non_vegetarian_meal", "kitchen", "bathroom"]
 router = APIRouter()
 
 TIME_SLOT_MAPPING = {
@@ -23,14 +23,6 @@ TIME_SLOT_MAPPING = {
     TimeSlot.AFTERNOON_EVENING: (time(15, 0), time(20, 0)),
     TimeSlot.Night: (time(20, 0), time(23, 0))
 }
-       
-
-class BookingRequest(BaseModel):
-    sub_service_id: str
-    provider_id: str
-    client_id: str
-    time_slot: TimeSlot
-    frequency: ServiceFrequency
 
 
 class ProviderSearchRequest(BaseModel):
@@ -49,13 +41,23 @@ class CleaningCustomization(BaseModel):
 
 # BookingRequest model that accepts multiple sub-services and customizations
 class BookingRequest(BaseModel):
-    sub_service_ids: List[str]
+    sub_service_names: dict
     booked_date: datetime  # The date on which the booking is made
     provider_id: str
     client_id: str
     time_slot: TimeSlot
     customizations: Optional[List[Union[CookingCustomization, CleaningCustomization]]]
  
+
+async def map_service_type_with_id(filter_request):
+    services_ids = []
+    for key,value in filter_request.items():
+        if value in SERVICE_TYPES:
+            query = {"name": value}
+            services = await SubService.search_document(query)
+            if services:
+                services_ids.append(str(services[0].id))
+    return services_ids
 
 @router.post(
     "/bookings",
@@ -76,9 +78,9 @@ async def book_service(booking_request: BookingRequest):
     provider_booked_time_slots = [
         booking for booking in provider_bookings if booking.time_slot == booking_request.time_slot
     ]
-
+    subservices_ids = await map_service_type_with_id(booking_request.sub_service_names)
     # Fetch all sub-services to get their durations and base prices
-    sub_services = [await SubService.get_document(doc_id=sub_service_id) for sub_service_id in booking_request.sub_service_ids]
+    sub_services = [await SubService.get_document(doc_id=sub_service_id) for sub_service_id in subservices_ids]
     if not sub_services:
         raise HTTPException(status_code=404, detail="One or more sub-services not found")
 
@@ -91,6 +93,7 @@ async def book_service(booking_request: BookingRequest):
     
     for sub_service in sub_services:
         # Calculate base duration and price
+        print()
         sub_service_duration = timedelta(hours=sub_service.duration)
         sub_service_price = sub_service.base_price
 
@@ -157,10 +160,11 @@ async def book_service(booking_request: BookingRequest):
     booking_end_time = booking_start_time + total_duration
 
     # Create the single booking entry with combined sub-service details
+
     booking = Booking(
         provider_id=booking_request.provider_id,
         client_id=booking_request.client_id,
-        subservice_ids=booking_request.sub_service_ids,  # Storing sub-services with their details
+        subservice_ids=subservices_ids,  # Storing sub-services with their details
         time_slot=booking_request.time_slot,
         start_time=booking_start_time,
         end_time=booking_end_time,
