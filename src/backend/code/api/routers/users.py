@@ -13,8 +13,7 @@ router = APIRouter()
 alphabet = string.ascii_letters + string.digits
 
 class UserUpdateRequest(BaseModel):
-    name: Optional[str]
-    user_type: Optional[Usertype]
+    user_type: Optional[Usertype] = None
 
 
 @router.get(
@@ -41,11 +40,8 @@ async def update_users(
 ):
     """Get the system user"""
 
-    user = await User.get_document(doc_id = id)
-    if user_update_request.name:
-        user.name = user_update_request.name
 
     if user_update_request.user_type:
-        user.user_type = user_update_request.user_type
+        current_user.user_type = user_update_request.user_type
 
-    return await User.save_document(doc = user)
+    return await User.save_document(doc = current_user)

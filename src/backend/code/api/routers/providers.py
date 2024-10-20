@@ -13,7 +13,8 @@ from pydantic import BaseModel
 from shared.models import *
 from shared.models import User
 
-SERVICE_TYPES= ["vegan_meal", "vegetarian_meal","non_vegetarian_meal", "kitchen", "bathroom"]
+SERVICE_TYPES= ["vegan_meal", "vegetarian_meal","non_vegetarian_meal", "kitchen", "bathroom", "deep_clean"]
+
 router = APIRouter()
 
 class ProviderSearchRequest(BaseModel):
@@ -27,7 +28,7 @@ class ProviderSearchRequest(BaseModel):
 
 @router.post(
     "/providers/search",
-    response_model = List[ServiceProvider],
+    response_model = List[User],
     include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
 )
 async def search_providers_by_filter_params(
@@ -35,10 +36,11 @@ async def search_providers_by_filter_params(
     current_user: User = Depends(get_current_user),
 
 ):
+    
     filter = filter_request.filter
     subservices = await map_service_type_with_id(filter)
     query = {"services_offered": {"$in": subservices}}
-    service_providers =  await ServiceProvider.search_document(query)
+    service_providers =  await User.search_document(query)
 
     if not service_providers:
         return []

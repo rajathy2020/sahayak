@@ -18,7 +18,8 @@ from .routers import (
     users,
     services,
     providers,
-    booking
+    booking,
+    payment
 
 
     )
@@ -65,6 +66,7 @@ app.include_router(services.router, tags=["Services"])
 app.include_router(providers.router, tags=["Providers"])
 app.include_router(users.router, tags=["Users"])
 app.include_router(booking.router, tags=["Bookings"])
+app.include_router(payment.router, tags=["Payment"])
 
 
 

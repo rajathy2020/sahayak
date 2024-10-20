@@ -40,7 +40,8 @@ RUN pip install \
     aiohttp \
     beanie \
     motor \
-    openai==1.7.2
+    openai==1.7.2 \
+    stripe 
 
 # Set up Jupyter configuration
 ARG TK_JUPYTER_PASSWD_HASH

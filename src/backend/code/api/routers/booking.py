@@ -14,7 +14,7 @@ from shared.models import *
 from shared.models import User
 import time
 from datetime import time, timedelta, datetime  # Import time manipulation classes
-SERVICE_TYPES= ["vegan_meal", "vegetarian_meal","non_vegetarian_meal", "kitchen", "bathroom"]
+SERVICE_TYPES= ["vegan_meal", "vegetarian_meal","non_vegetarian_meal", "kitchen", "bathroom", "deep_clean"]
 router = APIRouter()
 
 TIME_SLOT_MAPPING = {
@@ -67,7 +67,7 @@ async def map_service_type_with_id(filter_request):
 
 async def book_service(booking_request: BookingRequest):
     # Fetch provider and their existing bookings
-    provider = await ServiceProvider.get_document(doc_id=booking_request.provider_id)
+    provider = await User.get_document(doc_id=booking_request.provider_id)
     if not provider:
         raise HTTPException(status_code=404, detail="Provider not found")
     

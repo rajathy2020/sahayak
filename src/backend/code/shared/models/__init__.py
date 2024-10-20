@@ -101,12 +101,18 @@ class City(str, Enum):
     MUNICH = "MUNICH"
     FRANKFURT = "FRANKFURT"
 
-class User(MongoBase):
-    name: str
-    email: str
-    city: City
-    address: str
+class Usertype(str, Enum):
+    SERVICE_PROVIDER = "SERVICE_PROVIDER"
+    CLIENT = "CLIENT"
 
+# Enum for predefined time slots
+class TimeSlot(str, Enum):
+    MORNING = "9am-12pm"
+    MIDDAY = "12pm-3pm"
+    AFTERNOON_EVENING = "3pm-8pm"
+    Night = "8pm-11pm"
+
+    
 class Usertype(str, Enum):
     SERVICE_PROVIDER = "SERVICE_PROVIDER"
     CLIENT = "CLIENT"
@@ -150,33 +156,36 @@ class SubServiceName(str, Enum):
 
 # SubService Model (using SubServiceName Enum)
 class SubService(MongoBase):
-    name: SubServiceName  # Uses the enum for predefined subservice names
-    parent_service_id: str  # Link back to the Parent Service
-    base_price: float  # Price of the subservice
-    description: str  
+    name: Optional[SubServiceName ] = None # Uses the enum for predefined subservice names
+    parent_service_id: Optional[str ] = None  # Link back to the Parent Service
+    base_price: Optional[float ] = None  # Price of the subservice
+    description: Optional[str ] = None  
     price_per_extra_person: Optional[float] = None
     price_per_extra_room: Optional[float] = None
     duration: Optional[float] = None
 
 
-# Provider Model (Each provider can offer multiple services)
-class ServiceProvider(User, MongoBase):
+
+
+class User(MongoBase):
+    name: str
+    email: str
+    city: Optional[City] = None
+    address: Optional[str] = None
+    user_type: Optional[Usertype] = None
+    stripe_customer_id:Optional[str] = None
+    stripe_payment_method_id: Optional[str] = None
+    stripe_account_id: Optional[str] = None
     services_offered: Optional[List[str]] = None  # List of SubService IDs that the provider offers
     available_time_slots: Optional[List[TimeSlot] ] = None
     services_offered_details:Optional[List[SubService] ] = None
-    
-
-# Client Model
-class Client(User, MongoBase):
-    name: str
-    address: str
 
 
 # Booking Model (A client books a subservice provided by a provider)
 class Booking(MongoBase):
     client_id: str
     provider_id: str
-    booked_date: Optional[datetime] = None
+    booked_date: datetime = None
     subservice_ids: List[str]  # Reference to the SubService
     frequency: ServiceFrequency
     start_time:Optional[datetime] = None
@@ -191,3 +200,8 @@ class ParentServiceListResponse(MongoBase):
 
 
 
+class ServiceProvider(User, MongoBase):
+    services_offered: Optional[List[str]] = None  # List of SubService IDs that the provider offers
+    available_time_slots: Optional[List[TimeSlot] ] = None
+    services_offered_details:Optional[List[SubService] ] = None
+    
