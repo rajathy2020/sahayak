@@ -1,0 +1,40 @@
+.checkout-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.checkout-container {
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+
+.cards-section,
+.booking-summary {
+  padding: 20px;
+}
+
+.cards-section {
+  border-right: 1px solid #ddd;
+}
+
+.card-item {
+  margin-bottom: 15px;
+}
+
+.make-payment-button,
+.add-card-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.make-payment-button:hover,
+.add-card-button:hover {
+  background-color: #45a049;
+}

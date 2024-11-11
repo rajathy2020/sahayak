@@ -9,6 +9,9 @@ from shared.models import *
 import core.dbs
 from services.user_management.utils import get_current_user
 from pydantic import BaseModel
+from services.payment import stripe_payment
+
+
 router = APIRouter()
 alphabet = string.ascii_letters + string.digits
 
@@ -23,10 +26,23 @@ async def read_users_me(
     request: Request, current_user: User = Depends(get_current_user)
 ):
     """Get the system user"""
+    
+    return current_user
 
-    current_user_dict = current_user.dict()
-
-    return {"user": current_user_dict}
+   
+@router.get(
+    "/users/detailed_info", include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS"))
+)
+async def read_user_details(
+    request: Request, current_user: User = Depends(get_current_user)
+):
+    """Get the system user"""
+    
+    payment_details = stripe_payment.get_client_payment_info(current_user.stripe_customer_id)
+    
+    current_user.stripe_paymemt_methods = payment_details
+    
+    return current_user
 
 
 

@@ -14,8 +14,10 @@ from shared.models import *
 from shared.models import User
 import time
 from datetime import time, timedelta, datetime  # Import time manipulation classes
-SERVICE_TYPES= ["vegan_meal", "vegetarian_meal","non_vegetarian_meal", "kitchen", "bathroom", "deep_clean"]
+SERVICE_TYPES= ["vegan_meal", "vegetarian_meal","non_vegetarian_meal", "kitchen", "bathroom", "deep_clean", "jain_meal", "cooking_cleaning", "cooking_cleaning_washing"]
 router = APIRouter()
+
+
 
 TIME_SLOT_MAPPING = {
     TimeSlot.MORNING: (time(9, 0), time(12, 0)),
@@ -65,7 +67,7 @@ async def map_service_type_with_id(filter_request):
     include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
 )
 
-async def book_service(booking_request: BookingRequest):
+async def book_service(booking_request: BookingRequest, current_user: User = Depends(get_current_user)):
     # Fetch provider and their existing bookings
     provider = await User.get_document(doc_id=booking_request.provider_id)
     if not provider:
@@ -78,6 +80,7 @@ async def book_service(booking_request: BookingRequest):
     provider_booked_time_slots = [
         booking for booking in provider_bookings if booking.time_slot == booking_request.time_slot
     ]
+    
     subservices_ids = await map_service_type_with_id(booking_request.sub_service_names)
     # Fetch all sub-services to get their durations and base prices
     sub_services = [await SubService.get_document(doc_id=sub_service_id) for sub_service_id in subservices_ids]
@@ -175,5 +178,16 @@ async def book_service(booking_request: BookingRequest):
 
     # Save the booking to the database
     await Booking.save_document(doc=booking)
-
+    #payment_intent = charge_client_for_booking(request.amount, current_user, request.description)
     return booking
+
+
+@router.get(
+    "/bookings",
+    response_model=List[Booking],
+    include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
+)
+
+async def get_user_bookings(current_user: User = Depends(get_current_user)):
+    client_bookings = await Booking.search_document({"client_id": str(current_user.id),  "deleted_at": None})
+    return client_bookings

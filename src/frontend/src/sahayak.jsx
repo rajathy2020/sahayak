@@ -1,7 +1,6 @@
 import React from 'react';
 import './design.css'; // External CSS for styling
 import { useNavigate } from 'react-router-dom';
-import ServicesBanner from './services';
 
 const CityBanner = () => {
   const navigate = useNavigate();
@@ -54,7 +53,6 @@ const CityBanner = () => {
         </div>
       </div>
     </div>
-    <ServicesBanner/>
   </div>
   );
 

@@ -1,0 +1,57 @@
+.my-bookings-page {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .bookings-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .booking-list-item {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .booking-details p {
+    margin: 5px 0;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .chat-button,
+  .details-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .chat-button:hover,
+  .details-button:hover {
+    background-color: #45a049;
+  }
+  
+  .error-message {
+    color: red;
+    text-align: center;
+  }
+  

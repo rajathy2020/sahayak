@@ -5,7 +5,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from shared.models import (
     User,
-    ParentService
+    ParentService,
+    SubService,
+    Booking
 )
 
 instance = os.getenv("INSTANCE", "local")
@@ -33,6 +35,6 @@ async def setup_db():
     print("Connecting to DB Docsense...")
     await init_beanie(
         database=client.sahayak,
-        document_models=[User, ParentService],
+        document_models=[User, ParentService, SubService, Booking],
     )
     print("Db connected")

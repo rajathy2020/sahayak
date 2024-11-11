@@ -1,10 +1,10 @@
 import stripe 
 stripe.api_key = "sk_test_51QA9MVIV6MeGCGLBosEPq1QsMYkeeq8PfWsPcz4c6a1WEpRpwU0XylGwRZGAumSpAPbLMwP2GWgahv8Ns9yE0UhE00JwHlmPlR"
 
-SUCCESS_URL = "https://www.sahayak.com"
-FAILURE_URL = "https://www.sahayak.com"
+SUCCESS_URL = "https://0.0.0.0:8090/parent_services"
+FAILURE_URL = "https://0.0.0.0:8090/parent_services"
 
-def create_service_provider_account(user):
+def create_service_provider_stripe_account(user):
     try:
         account = stripe.Account.create(
             type="express",  # Using Express for easier onboarding
@@ -93,7 +93,7 @@ def create_stripe_client_card_setup_url(user):
 
 
 
-def charge_client_for_booking(amount, user, description="Service Booking"):
+def charge_client_for_booking(amount, payment_method_id, user, description="Service Booking"):
     """
     Charges the client and adds the money to the company's Stripe account.
     The money will stay in the company's Stripe account until it is transferred to the provider.
@@ -110,23 +110,6 @@ def charge_client_for_booking(amount, user, description="Service Booking"):
     try:
         # Retrieve the Stripe customer ID from the user object
         customer_id = user.stripe_customer_id
-
-        # Fetch the Stripe customer details (this is optional, just to ensure the customer exists)
-        customer = stripe.Customer.retrieve(customer_id)
-
-        # Get the first saved payment method associated with the customer
-        payment_methods = stripe.PaymentMethod.list(
-            customer=customer_id,
-            type="card"  # We're assuming the payment method is a card
-        )
-        
-        # Ensure at least one payment method is available
-        if not payment_methods.data:
-            print(f"No payment method found for customer {customer_id}")
-            return None
-        
-        # Retrieve the first payment method
-        payment_method_id = payment_methods.data[0].id
 
         # Step 1: Create a Payment Intent to charge the client
         payment_intent = stripe.PaymentIntent.create(
@@ -189,3 +172,20 @@ def payout_to_provider(user, amount, currency="eur"):
         print(f"Failed: {e.error.message}")
         return None
 
+
+
+def get_client_payment_info(client_stripe_id):
+    payment_details = stripe.PaymentMethod.list(
+        customer = client_stripe_id,
+        type = "card",
+    )
+    
+    if payment_details :
+        cards = []
+        for payment_methods in payment_details["data"]:
+            payment_method_id = {"payment_method_id": payment_methods["id"]}
+
+            cards.append({**payment_methods["card"],**  payment_method_id})
+        return cards
+        
+    return []

@@ -1,9 +1,11 @@
 import axios from 'axios';
-import {createUser, createParentService, ProviderSearchRequest, createServiceProvider} from './models.ts';
+import {createUser, createParentService, ProviderSearchRequest, createServiceProvider, createBooking} from './models.ts';
 
 const api = axios.create({
-    baseURL: 'https://localhost:8090',
+    baseURL: 'http://0.0.0.0:8090',
 })
+
+
 
 export const fetchusers = async () => {
     try {
@@ -13,6 +15,17 @@ export const fetchusers = async () => {
         console.error('Error fetching users:', error);
         throw error;
     }
+};
+
+export const fetchUserInfo = async () => {
+    try {
+        const response = await api.get('/users/detailed_info');
+        return createUser(response.data);
+    } catch (error) {
+        console.error('error fetching user info:', error);
+        throw error;
+    }
+
 };
 
 export const fetchParentServices = async () => {
@@ -48,7 +61,7 @@ export const fetchServiceProviders = async (params = {}) => {
     }
   };
 
-export const createBooking = async (params = {}) => {
+export const postBooking = async (params = {}) => {
     try {
     const requestPayload = {
         sub_service_names: params.sub_service_names,
@@ -62,6 +75,60 @@ export const createBooking = async (params = {}) => {
     return response.data;
     } catch (error) {
         console.error('Error while creating a booking', error);
+        throw error;
+    }
+}
+
+export const generateClientCardSetUpUrl = async () => {
+    try {
+        const response = await api.get('/payment/client_setup_card');
+        return response.data.setup_url;
+    } catch (error) {
+        console.error('Error while generating client card setup_url:', error);
+        throw error;
+    }
+}
+
+export const receiveClientPayment = async (params = {}) => {
+    try {
+    const requestPayload = {
+        amount: params.amount,
+        payment_method_id: params.payment_method_id,
+        description: params.description,
+
+    }
+    const response = await api.post('/payment/charge_client', requestPayload); 
+    return response.data;
+    } catch (error) {
+        console.error('Error while creating a booking', error);
+        throw error;
+    }
+}
+
+export const fetchUserBookings = async () => {
+    try {
+        const response = await api.get('/bookings');
+        return response.data.map(createBooking);
+    } catch (error) {
+        console.error('Error fetching bookings:', error);
+        throw error;
+    }
+}; 
+
+export const initiateChatWithProvider = async () => {
+
+}
+
+export const transferProviderPayment = async (params = {}) => {
+    try {
+        const requestPayload = {
+            amount: params.amount,
+            provider_id: params.provider_id
+        }
+        const response = await api.post('/payment/payout_provider', requestPayload);
+        return response.data;
+    } catch (error) {
+        console.error('Error while transferring payment to Provider', error);
         throw error;
     }
 }

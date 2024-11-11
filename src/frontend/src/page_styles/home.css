@@ -15,6 +15,11 @@ body, html {
     display: flex;
     flex-direction: column;
     position: relative;
+    background-image: url("https://www.toptal.com/designers/subtlepatterns/uploads/leaves.png");
+    background-repeat: repeat;
+    background-position: center;
+    background-size: auto;
+    color: #fff;
   }
   
   /* Navigation Bar */
@@ -23,7 +28,7 @@ body, html {
     justify-content: space-between;
     align-items: center;
     padding: 20px 50px;
-    background-color: white; /* Background color for navbar */
+    background-color:#4CAF50 ;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for navbar */
     z-index: 2; /* Ensure navbar stays above other elements */
   }
@@ -31,23 +36,23 @@ body, html {
   .navbar-logo {
     font-size: 1.8rem;
     font-weight: bold;
-    color: #333;
+    color: #fff;
   }
   
   .navbar-links a {
     margin: 0 15px;
-    color: #333;
+    color: #fff;
     text-decoration: none;
     font-size: 1rem;
   }
   
   .navbar-links a:hover {
-    color: #4CAF50; /* Change color on hover */
+    color: #333; /* Change color on hover */
   }
   
   /* Contact Button Styling */
   .navbar-contact {
-    border: 1px solid #333;
+    border: 1px solid #fff;
     border-radius: 20px;
     padding: 5px 15px;
     transition: background-color 0.3s ease, color 0.3s ease;
@@ -113,6 +118,11 @@ body, html {
     padding: 20px 0;
     text-align: center;
     background-color: #f9f9f9; /* Light background for services section */
+    background-image: url("https://www.toptal.com/designers/subtlepatterns/uploads/leaves.png");
+    background-repeat: repeat;
+    background-position:center;
+    background-size: auto;
+    
   }
   
   /* Separate the services section from the hero section */
@@ -120,6 +130,7 @@ body, html {
     content: '';
     display: block;
     height: 20px; /* Space between hero section and services section */
+    
   }
   
   /* Title Styling */
@@ -139,9 +150,10 @@ body, html {
     flex-wrap: wrap; /* Allow the cards to wrap on smaller screens */
     margin: 0 auto; /* Center the container */
     padding: 0 20px; 
+    
   }
   
-  /* Individual Service Card */
+  /* Service Card */
   .service-card {
     flex:1;
     max-width: 300px;
@@ -227,3 +239,64 @@ body, html {
     }
   }
   
+
+  /* Dropdown Menu Styling */
+.navbar-user {
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  color: #fff;
+  margin-left: 15px;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%; /* Position below the "Me" link */
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  min-width: 250px;
+  z-index: 10;
+  color: #333;
+}
+
+.dropdown-item {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item p {
+  margin: 5px 0;
+}
+
+.navbar-user:hover .dropdown-menu {
+  display: block;
+}
+
+/* About Section */
+.about-section {
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+.about-section h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.about-section p {
+  font-size: 1rem;
+  color: #666;
+  max-width: 800px;
+  margin: 0 auto 15px;
+  line-height: 1.6;
+}
+

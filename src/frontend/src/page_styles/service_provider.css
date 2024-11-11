@@ -10,15 +10,17 @@
   .sidebar {
     width: 250px; /* Width of the sidebar */
     padding: 20px;
-    background-color: #f4f4f4; /* Light background for the sidebar */
+    background-color:#b2eeb4; /* Light background for the sidebar */
     border-right: 1px solid #ddd; /* Border between sidebar and content */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow */
-    position: relative;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    
   }
   
   .sidebar h2 {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
+    color: #333;
     margin-bottom: 20px;
+    text-align: center;
   }
   
   /* Content area styling */
@@ -85,6 +87,14 @@
     font-size: 0.85rem;
     color: #777;
   }
+
+  .date-time-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+  }
   
   /* Book Button styling */
   .book-button {
@@ -101,23 +111,43 @@
     background-color: #45a049;
   }
 
-  /* Sidebar Styling */
-.sidebar {
-    width: 250px;
-    padding: 20px;
-    background-color: #f4f4f4;
-    border-right: 1px solid #ddd;
-  }
-  
   .filter-section {
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0px;
   }
   
   .filter-section label {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
+    font-size: 1rem;
+    color: #333;
+    text-align: left;
   }
+
+  .filter-section input,
+.filter-section select {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+/* Input and select styling */
+.filter-section input[type="date"],
+.filter-section select {
+  width: 100%;
+}
+
+.filter-section input:focus,
+.filter-section select:focus {
+  border-color: #4CAF50;
+}
+
   
   #time-slot #date-picker {
     width: 100%;
@@ -125,24 +155,37 @@
     font-size: 1rem;
   }
 
-  /* Notification Styles */
+  /* Snackbar Notification Styles */
+/* Snackbar Notification Styles */
 .notification {
-    padding: 15px;
-    margin: 20px 0;
-    border-radius: 5px;
-    font-size: 1rem;
-    text-align: center;
-  }
-  
-  .notification.success {
-    background-color: #4CAF50;
-    color: white;
-  }
-  
-  .notification.error {
-    background-color: #f44336;
-    color: white;
-  }
-  
-  
-  
+  position: fixed; /* Make the notification fixed at the top */
+  top: 60px;
+  left: 0;
+  right: 0;
+  width: 100%;
+  padding: 15px;
+  font-size: 1rem;
+  text-align: center;
+  z-index: 9999; /* Ensure it's on top of other elements */
+  transform: translateY(-100%); /* Start off-screen */
+  transition: transform 0.5s ease-in-out; /* Slide animation */
+}
+
+/* Show the notification with this class */
+.notification.show {
+  transform: translateY(0); /* Slide in */
+  opacity: 1;
+}
+
+/* Success style */
+.notification.success {
+  background-color: #4CAF50;
+  color: white;
+}
+
+/* Error style */
+.notification.error {
+  background-color: #f44336;
+  color: white;
+}
+

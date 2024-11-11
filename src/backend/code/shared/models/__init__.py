@@ -153,6 +153,8 @@ class SubServiceName(str, Enum):
     VEGETARIAN_MEAL = "vegetarian_meal"
     VEGAN_MEAL = "vegan_meal"
     NON_VEGETARIAN_MEAL = "non_vegetarian_meal"
+    
+    WEEKEND_COMBO_COOKING_CLEANING = "weekend_combo_cooking_cleaning"
 
 # SubService Model (using SubServiceName Enum)
 class SubService(MongoBase):
@@ -169,16 +171,18 @@ class SubService(MongoBase):
 
 class User(MongoBase):
     name: str
+    gender: str
     email: str
     city: Optional[City] = None
     address: Optional[str] = None
     user_type: Optional[Usertype] = None
     stripe_customer_id:Optional[str] = None
-    stripe_payment_method_id: Optional[str] = None
+    stripe_paymemt_methods: Optional[List] = []
     stripe_account_id: Optional[str] = None
     services_offered: Optional[List[str]] = None  # List of SubService IDs that the provider offers
     available_time_slots: Optional[List[TimeSlot] ] = None
     services_offered_details:Optional[List[SubService] ] = None
+    description:Optional[str] = None
 
 
 # Booking Model (A client books a subservice provided by a provider)
