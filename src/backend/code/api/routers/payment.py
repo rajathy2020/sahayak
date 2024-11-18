@@ -11,6 +11,7 @@ from services.payment.stripe_payment import (
 )
 from shared.models import User
 import stripe
+from backend.code.services.notification.whatsappnotification import WhatsappNotification
 router = APIRouter()
 
 # Create Service Provider Account
@@ -77,6 +78,7 @@ async def charge_client(request: BookingChargeRequest, current_user: User = Depe
     payment_intent = charge_client_for_booking(request.amount, request.payment_method_id,current_user, request.description)
     if not payment_intent:
         raise HTTPException(status_code=500, detail="Failed to charge the client.")
+    WhatsappNotification.charge_client(current_user)
     return {"payment_intent_id": payment_intent.id}
 
 # Payout to Service Provider

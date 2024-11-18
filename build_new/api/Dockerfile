@@ -41,7 +41,8 @@ RUN pip install \
     beanie \
     motor \
     openai==1.7.2 \
-    stripe 
+    stripe \
+    twillo
 
 # Set up Jupyter configuration
 ARG TK_JUPYTER_PASSWD_HASH

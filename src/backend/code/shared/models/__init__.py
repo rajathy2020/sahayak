@@ -183,6 +183,7 @@ class User(MongoBase):
     available_time_slots: Optional[List[TimeSlot] ] = None
     services_offered_details:Optional[List[SubService] ] = None
     description:Optional[str] = None
+    whatsapp_number: Optional[str] = None
 
 
 # Booking Model (A client books a subservice provided by a provider)
