@@ -27,6 +27,10 @@ async def read_users_me(
 ):
     """Get the system user"""
     
+    user_bookings  = await Booking.search_document({"client_id": str(current_user.id),  "deleted_at": None})
+    current_user.number_of_bookings = len(user_bookings)
+    
+    
     return current_user
 
    
@@ -41,6 +45,8 @@ async def read_user_details(
     payment_details = stripe_payment.get_client_payment_info(current_user.stripe_customer_id)
     
     current_user.stripe_paymemt_methods = payment_details
+    user_bookings  = await Booking.search_document({"client_id": str(current_user.id),  "deleted_at": None})
+    current_user.number_of_bookings = len(user_bookings)
     
     return current_user
 

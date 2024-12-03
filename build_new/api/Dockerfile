@@ -42,7 +42,7 @@ RUN pip install \
     motor \
     openai==1.7.2 \
     stripe \
-    twillo
+    twilio
 
 # Set up Jupyter configuration
 ARG TK_JUPYTER_PASSWD_HASH

@@ -3,6 +3,7 @@ import {createUser, createParentService, ProviderSearchRequest, createServicePro
 
 const api = axios.create({
     baseURL: 'http://0.0.0.0:8090',
+    withCredentials: true, // Include cookies in requests
 })
 
 
@@ -28,7 +29,35 @@ export const fetchUserInfo = async () => {
 
 };
 
+export const updateUserInfo = async(params = {}) => {
+    try {
+        const requestPayload = {
+            city: params.city,
+            whatsapp_number: params.whatsapp_number,
+            address: params.address,
+            name: params.name,
+        }
+
+        const response = await api.put(`/users/${params.id}`, requestPayload);
+
+        return createUser(response.data);
+    } catch (error) {
+        console.error('Error updating user info:', error);
+        throw error;
+    }
+};
+
 export const fetchParentServices = async () => {
+    try {
+        const response = await api.get('/parent_services');
+        return response.data.map(createParentService);
+    } catch (error) {
+        console.error('Error fetching services:', error);
+        throw error;
+    }
+};
+
+export const fetchParentService = async (params) => {
     try {
         const response = await api.get('/parent_services');
         return response.data.map(createParentService);
@@ -72,7 +101,7 @@ export const postBooking = async (params = {}) => {
 
     }
     const response = await api.post('/bookings', requestPayload); 
-    return response.data;
+    return createBooking(response.data);
     } catch (error) {
         console.error('Error while creating a booking', error);
         throw error;
@@ -92,6 +121,7 @@ export const generateClientCardSetUpUrl = async () => {
 export const receiveClientPayment = async (params = {}) => {
     try {
     const requestPayload = {
+        booking_id: params.booking_id,
         amount: params.amount,
         payment_method_id: params.payment_method_id,
         description: params.description,
@@ -129,6 +159,22 @@ export const transferProviderPayment = async (params = {}) => {
         return response.data;
     } catch (error) {
         console.error('Error while transferring payment to Provider', error);
+        throw error;
+    }
+}
+
+
+export const fetchCalculatedPrice = async (params = {}) => {
+    try {
+        const requestPayload = {
+            sub_service_names: params.sub_service_names,
+            number_of_persons: params.number_of_persons,
+            number_of_rooms: params.number_of_rooms
+        }
+        const response = await api.post(`/parent_services/uuu/calculate_price`, requestPayload);
+        return response.data;
+    } catch (error) {
+        console.error('Error while calculating the price for service', error);
         throw error;
     }
 }

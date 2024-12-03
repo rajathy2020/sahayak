@@ -73,6 +73,18 @@ async def get_current_user(request: Request):
     user = await User.search_document(query=query)
     
 
+
+
+    if user:
+        return user[0]
+    
+    return await Auth0UserManagement().get_current_user(request ,token)
+    query = {"email": "rajat.jain@hy.co", "deleted_at": None}
+    user = await User.search_document(query=query)
+    
+
+
+
     if user:
         return user[0]
 

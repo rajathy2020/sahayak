@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './page_styles/task_form.css';
+import { fetchCalculatedPrice } from './api';
 
 const TaskForm = () => {
   const [formData, setFormData] = useState({
-    city:'',
+    city: '',
+    cleaning_type: '',
     taskDetails: '',
     rooms: '',
     kitchen: '',
@@ -12,15 +14,19 @@ const TaskForm = () => {
     number_of_kids: '',
     age_of_kids: '',
     meal_type: '',
-    number_of_persons: '',
+    number_of_persons: '2', // Default to 2
     description: '',
+    number_of_rooms: '2',
+    price:0
   });
 
   const location = useLocation();
   const { selectedService } = location.state || {};
   const navigate = useNavigate();
-  const [selectedCity, setSelectedCity] = useState(null);
   const [completedSteps, setCompletedSteps] = useState(0);
+  const [price, setPrice] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const updateProgress = (updatedFormData) => {
     let steps = completedSteps;
@@ -35,33 +41,80 @@ const TaskForm = () => {
     
     if (updatedFormData.description) steps = 3;
     setCompletedSteps(steps);
-    console.log(completedSteps, "&&&&&&&&&",steps, updatedFormData.city)
   };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    const queryParams = new URLSearchParams(formData).toString();
+    const updatedFormData = { ...formData, price: price };
+    console.log(updatedFormData, "%%%%%%%%%%%%%")
+    const queryParams = new URLSearchParams(updatedFormData).toString();
     navigate(`/service_providers?${queryParams}`);
   };
 
-  const handleChange = (e) => {
+  const calculatePrice = async (names, persons=2, rooms = 2) => {
+    const filteredNames = names.filter(name => name);
+    const params = {
+      name: selectedService,
+      sub_service_names: filteredNames,
+      number_of_persons: persons,
+      number_of_rooms: rooms
+    }
+    try {
+      const response = await fetchCalculatedPrice(params);
+      console.log("ssss", response)
+      return response.price;
+    }
+    catch (error) {
+      setError('Failed to calculate price', error);
+      alert('An error occurred while calculating price', error);
+    } finally {
+      setLoading(false);
+    }
+    
+  };
+
+  const handleChange = async (e) => {
     e.preventDefault();
     const { name, value } = e.target;
-    console.log(e.target, "//////////////////", name, value)
-    
-    const updatedFormData = { ...formData, [name]: value };
+    let updatedValue = value;
+
+    // Ensure number_of_persons cannot go below 2
+    if (name === 'number_of_persons' && value < 2) {
+      updatedValue = 2;
+    }
+
+    const updatedFormData = { ...formData, [name]: updatedValue };
     setFormData(updatedFormData);
-    console.log(updatedFormData, "§§§§§§§§§§§§§§§§§§")
     updateProgress(updatedFormData);
+
+    if (selectedService === 'Cooking Service' && updatedFormData.meal_type) {
+      const newPrice =  await calculatePrice([updatedFormData.meal_type], parseInt(updatedFormData.number_of_persons) || 2);
+      setPrice(newPrice);
+      
+    }
+    if (selectedService === 'Cleaning Service' && updatedFormData.cleaning_type) {
+      const newPrice = await calculatePrice([updatedFormData.cleaning_type, updatedFormData.kitchen, updatedFormData.bathroom], 2,  parseInt(updatedFormData.rooms) || 2);
+      setPrice(newPrice);
+    }
   };
 
   const renderFormFields = () => {
-
     switch (selectedService) {
       case 'Cleaning Service':
         return (
           <>
             <div className="form-section">
+              <label>What kind of cleaning are you looking for?</label>
+              <select
+                name="cleaning_type"
+                value={formData.cleaning_type || ''}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select</option>
+                <option value="deep_clean">Deep clean</option>
+                <option value="regular_clean">Regular Clean</option>
+              </select>
               <label>Number of rooms to clean:</label>
               <input
                 type="number"
@@ -80,8 +133,8 @@ const TaskForm = () => {
                 required
               >
                 <option value="">Select</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
+                <option value="kitchen">Yes</option>
+                <option value="">No</option>
               </select>
             </div>
             <div className="form-section">
@@ -93,8 +146,8 @@ const TaskForm = () => {
                 required
               >
                 <option value="">Select</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
+                <option value="bathroom">Yes</option>
+                <option value="">No</option>
               </select>
             </div>
           </>
@@ -146,9 +199,12 @@ const TaskForm = () => {
               <input
                 type="number"
                 name="number_of_persons"
-                value={formData.number_of_persons || ''}
+                value={formData.number_of_persons || '2'}
                 onChange={handleChange}
+                min="2"
                 required
+                disabled={!formData.meal_type} // Disable until meal_type is selected
+                onWheel={(e) => e.preventDefault()} // Prevent scroll input
               />
             </div>
           </>
@@ -184,6 +240,13 @@ const TaskForm = () => {
         </div>
       </div>
 
+      {/* Display Price if Available */}
+      {price && (
+        <div className="price-display">
+          <h3>Estimated Price: ${price}</h3>
+        </div>
+      )}
+
       {/* Form Content */}
       <div className="form-content">
         <h2>{selectedService}</h2>
@@ -196,9 +259,9 @@ const TaskForm = () => {
             onChange={handleChange}
           >
             <option value="">--Select a City--</option>
-            <option name="city" value="frankfurt">Frankfurt</option>
-            <option name="city" value="munich">Munich</option>
-            <option name="city" value="berlin">Berlin</option>
+            <option name="city" value="FRANKFURT">Frankfurt</option>
+            <option name="city" value="MUNICH">Munich</option>
+            <option name="city" value="BERLIN">Berlin</option>
           </select>
         </div>
         <div className="form-section">{renderFormFields()}</div>

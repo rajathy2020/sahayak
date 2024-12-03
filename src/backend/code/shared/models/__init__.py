@@ -4,7 +4,7 @@ from datetime import datetime
 from importlib.metadata import metadata
 from lib2to3.pgen2.token import OP
 
-from typing import  Optional, List
+from typing import  Optional, List, Dict
 
 import pandas as pd
 from beanie import Document
@@ -110,23 +110,11 @@ class TimeSlot(str, Enum):
     MORNING = "9am-12pm"
     MIDDAY = "12pm-3pm"
     AFTERNOON_EVENING = "3pm-8pm"
-    Night = "8pm-11pm"
+    NIGHT = "8pm-11pm"
 
-    
-class Usertype(str, Enum):
-    SERVICE_PROVIDER = "SERVICE_PROVIDER"
-    CLIENT = "CLIENT"
-
-# Enum for predefined time slots
-class TimeSlot(str, Enum):
-    MORNING = "9am-12pm"
-    MIDDAY = "12pm-3pm"
-    AFTERNOON_EVENING = "3pm-8pm"
-    Night = "8pm-11pm"
-
-# Parent Service Model (e.g., Cleaning, Nanny, Cooking)
+# Parent Service Model (e.g., Cleaning, Nanny, Cooking, Combo)
 class ParentService(MongoBase):
-    name: str  # e.g., Cleaning, Nanny, Cooking
+    name: str  # e.g., Cleaning, Nanny, Cooking, combo
     image: str
 
 # Frequency Enum for service booking
@@ -143,6 +131,8 @@ class SubServiceName(str, Enum):
     DEEP_CLEAN = "deep_clean"
     REGULAR_CLEAN = "regular_clean"
     WINDOW_CLEAN = "window_clean"
+    KITCHEN = "kitchen"
+    BATHROOM = "bathroom"
     
     # Nanny Subservices
     TODDLER_CARE = "toddler_care"
@@ -153,8 +143,14 @@ class SubServiceName(str, Enum):
     VEGETARIAN_MEAL = "vegetarian_meal"
     VEGAN_MEAL = "vegan_meal"
     NON_VEGETARIAN_MEAL = "non_vegetarian_meal"
+    JAIN_MEAL = "jain_meal"
     
-    WEEKEND_COMBO_COOKING_CLEANING = "weekend_combo_cooking_cleaning"
+    # Combo Subservices
+    COOKING_CLEANING = "cooking_cleaning"
+    COOKING_NANNY = "cooking_nanny"
+    CLEANING_NANNY = "cleaning_nanny"
+    COOKING_CLEANING_NANNY = "cooking_cleaning_nanny"
+
 
 # SubService Model (using SubServiceName Enum)
 class SubService(MongoBase):
@@ -167,22 +163,29 @@ class SubService(MongoBase):
     duration: Optional[float] = None
 
 
-
-
 class User(MongoBase):
     name: str
-    gender: str
+    gender: Optional[str] = None
     email: str
     city: Optional[City] = None
     address: Optional[str] = None
     user_type: Optional[Usertype] = None
-    stripe_customer_id:Optional[str] = None
+    stripe_customer_id: Optional[str] = None
     stripe_paymemt_methods: Optional[List] = []
     stripe_account_id: Optional[str] = None
-    services_offered: Optional[List[str]] = None  # List of SubService IDs that the provider offers
-    available_time_slots: Optional[List[TimeSlot] ] = None
-    services_offered_details:Optional[List[SubService] ] = None
-    description:Optional[str] = None
+    services_offered: Optional[List[str]] = None
+    available_time_slots: Optional[List[TimeSlot]] = None
+    available_dates: Optional[Dict[str, List[TimeSlot]]] = Field(
+        default={},
+        description="Dictionary mapping dates (YYYY-MM-DD) to available time slots"
+    )
+    blocked_dates: Optional[List[datetime]] = Field(
+        default=[],
+        description="List of dates when provider is not available"
+    )
+    services_offered_details: Optional[List[SubService]] = None
+    description: Optional[str] = None
+    number_of_bookings: Optional[int] = None
     whatsapp_number: Optional[str] = None
 
 
@@ -197,7 +200,8 @@ class Booking(MongoBase):
     end_time:Optional[datetime] = None
     time_slot:Optional[str] = None
     total_price: float  # Total price based on service and frequency
-
+    metadata: Optional[dict] = None
+    
 
 # Response Models for APIs
 class ParentServiceListResponse(MongoBase):

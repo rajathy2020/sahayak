@@ -1,288 +1,218 @@
-/* File: src/HeroSection.css */
-
 /* General resets */
 body, html {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    color: #333;
-  }
-  
-  /* Hero Section Container */
-  .hero-section {
-    width: 100%;
-    height: 100vh; /* Full height of the viewport */
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background-image: url("https://www.toptal.com/designers/subtlepatterns/uploads/leaves.png");
-    background-repeat: repeat;
-    background-position: center;
-    background-size: auto;
-    color: #fff;
-  }
-  
-  /* Navigation Bar */
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 50px;
-    background-color:#4CAF50 ;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Soft shadow for navbar */
-    z-index: 2; /* Ensure navbar stays above other elements */
-  }
-  
-  .navbar-logo {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #fff;
-  }
-  
-  .navbar-links a {
-    margin: 0 15px;
-    color: #fff;
-    text-decoration: none;
-    font-size: 1rem;
-  }
-  
-  .navbar-links a:hover {
-    color: #333; /* Change color on hover */
-  }
-  
-  /* Contact Button Styling */
-  .navbar-contact {
-    border: 1px solid #fff;
-    border-radius: 20px;
-    padding: 5px 15px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-  
-  .navbar-contact:hover {
-    background-color: #4CAF50;
-    color: white;
-  }
-  
-  /* Hero Content Container */
-  .hero-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: calc(100vh - 80px); /* Full height minus navbar height */
-  }
-  
-  /* Hero Image Container */
-  .hero-image {
-    width: 50%;
-    height: 100%;
-    overflow: hidden;
-  }
-  
-  .hero-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Cover the entire height and width */
-  }
-  
-  /* Hero Text Container */
-  .hero-text {
-    width: 50%;
-    padding: 40px;
-    text-align: left;
-  }
-  
-  .hero-text h1 {
-    font-size: 2.5rem;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  .hero-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 30px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .hero-button:hover {
-    background-color: #45a049;
-  }
-  
-  /* Services Section */
-  .services-section {
-    margin: 0;
-    padding: 20px 0;
-    text-align: center;
-    background-color: #f9f9f9; /* Light background for services section */
-    background-image: url("https://www.toptal.com/designers/subtlepatterns/uploads/leaves.png");
-    background-repeat: repeat;
-    background-position:center;
-    background-size: auto;
-    
-  }
-  
-  /* Separate the services section from the hero section */
-  .services-section::before {
-    content: '';
-    display: block;
-    height: 20px; /* Space between hero section and services section */
-    
-  }
-  
-  /* Title Styling */
-  .services-title {
-    font-size: 1.8rem;
-    color: #555;
-    margin-bottom: 20px;
-    font-family: 'Georgia', serif;
-  }
-  
-  /* Services Container */
-  .services-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 30px; /* Space between service cards */
-    flex-wrap: wrap; /* Allow the cards to wrap on smaller screens */
-    margin: 0 auto; /* Center the container */
-    padding: 0 20px; 
-    
-  }
-  
-  /* Service Card */
-  .service-card {
-    flex:1;
-    max-width: 300px;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    margin:10px;
-  }
-  
-  .service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  }
-  
-  .service-image {
-    width: 100%;
-    height: 180px; /* Fixed height for uniformity */
-    object-fit: cover;
-  }
-  
-  /* Content inside the service card */
-  .service-card-content {
-    padding: 20px;
-    text-align: left;
-  }
-  
-  .service-card-content h3 {
-    font-size: 1.4rem;
-    color: #333;
-    margin: 0 0 10px 0;
-  }
-  
-  .service-card-content p {
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 20px;
-  }
-  
-  .service-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 30px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .service-button:hover {
-    background-color: #45a049;
-  }
-  
-  /* Responsive Styles */
-  @media (max-width: 768px) {
-    .hero-container {
-      flex-direction: column;
-    }
-  
-    .hero-image, .hero-text {
-      width: 100%;
-      height: auto;
-    }
-  
-    .hero-text {
-      text-align: center;
-      padding: 20px;
-    }
-  
-    .hero-text h1 {
-      font-size: 2rem;
-    }
-  
-    .services-container {
-      flex-direction: column;
-    }
-  
-    .service-card {
-      width: 100%;
-      margin: 10px 0;
-    }
-  }
-  
-
-  /* Dropdown Menu Styling */
-.navbar-user {
-  position: relative;
-  cursor: pointer;
-  display: inline-block;
-  color: #fff;
-  margin-left: 15px;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  color: #333;
+  scroll-behavior: smooth;
 }
 
-.dropdown-menu {
-  position: absolute;
-  top: 100%; /* Position below the "Me" link */
-  right: 0;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 10px;
-  min-width: 250px;
-  z-index: 10;
+/* Add a common background pattern mixin using a CSS variable for color */
+:root {
+  --pattern-color: rgba(76, 175, 80, 0.05);
+  --pattern-url: url("https://www.toptal.com/designers/subtlepatterns/uploads/leaves.png");
+}
+
+body {
+  background-image: var(--pattern-url);
+  background-repeat: repeat;
+  background-position: center;
+}
+
+/* Hero Section Container */
+.hero-section {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.9);
+  background-image: var(--pattern-url);
+  background-repeat: repeat;
+  background-position: center;
+  color: #fff;
+}
+
+/* Hero Content Container */
+.hero-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: calc(100vh - 80px);
+  padding: 0 50px;
   color: #333;
 }
 
-.dropdown-item {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+.hero-image {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
 }
 
-.dropdown-item:last-child {
-  border-bottom: none;
+.hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.dropdown-item p {
-  margin: 5px 0;
+.hero-text {
+  width: 50%;
+  padding: 30px;
 }
 
-.navbar-user:hover .dropdown-menu {
-  display: block;
+.hero-text h1 {
+  font-size: 2.4rem;
+  color: #333;
+  margin-bottom: 20px;
 }
 
-/* About Section */
+.hero-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 30px;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.hero-button:hover {
+  background-color: #45a049;
+}
+
+/* Section Separator */
+.section-separator {
+  padding: 40px 0;
+  position: relative;
+  text-align: center;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.97), rgba(248, 250, 252, 0.97), rgba(255, 255, 255, 0.97));
+  background-image: var(--pattern-url);
+  background-repeat: repeat;
+  background-position: center;
+  overflow: hidden;
+}
+
+.section-separator::before,
+.section-separator::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 35%;
+  height: 1px;
+  background: linear-gradient(to var(--direction, right), transparent, #4CAF50 50%, transparent);
+}
+
+.section-separator::before {
+  left: 0;
+  --direction: right;
+}
+
+.section-separator::after {
+  right: 0;
+  --direction: left;
+}
+
+.separator-title {
+  position: relative;
+  display: inline-block;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin: 0;
+  padding: 0 40px;
+}
+
+.separator-title::before,
+.separator-title::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4CAF50;
+}
+
+.separator-title::before {
+  left: 15px;
+}
+
+.separator-title::after {
+  right: 15px;
+}
+
+/* Responsive design for separators */
+@media (max-width: 768px) {
+  .section-separator::before,
+  .section-separator::after {
+    width: 25%;
+  }
+
+  .separator-title {
+    font-size: 1.8rem;
+    padding: 0 30px;
+  }
+}
+
+/* Services Section */
+.services-section {
+  padding: 40px 0;
+  background-color: rgba(249, 249, 249, 0.95);
+  background-image: var(--pattern-url);
+  background-repeat: repeat;
+  background-position: center;
+}
+
+.services-grid {
+  display: flex;
+  gap: 10px;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  padding: 0 10px;
+  margin: 0 auto;
+}
+
+.service-card {
+  flex: 1 1 250px;
+  max-width: 300px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.service-card img {
+  width: 100%;
+  object-fit: cover;
+}
+
+.service-card h3 {
+  font-size: 1.4rem;
+  color: #333;
+  margin: 15px 0;
+}
+
+.service-card p {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* About Us Section */
 .about-section {
-  padding: 40px 20px;
-  background-color: #f9f9f9;
+  padding: 60px 20px;
+  background-color: rgba(249, 249, 249, 0.93);
+  background-image: var(--pattern-url);
+  background-repeat: repeat;
+  background-position: center;
   text-align: center;
 }
 
@@ -298,5 +228,57 @@ body, html {
   max-width: 800px;
   margin: 0 auto 15px;
   line-height: 1.6;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .hero-image, .hero-text {
+    width: 100%;
+  }
+
+
+  .hero-text h1 {
+    font-size: 2rem;
+  }
+
+  .services-grid {
+    flex-direction: column;
+  }
+
+  .service-card {
+    width: 100%;
+    max-width: none;
+    margin: 10px 0;
+  }
+}
+
+/* Add overlays to improve content readability */
+.hero-section::before,
+.services-section::before,
+.section-separator::before,
+.about-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+
+/* Ensure content stays above the overlay */
+.hero-container,
+.services-grid,
+.separator-title,
+.about-section p {
+  position: relative;
+  z-index: 1;
 }
 

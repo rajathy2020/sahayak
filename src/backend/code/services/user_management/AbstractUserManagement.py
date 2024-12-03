@@ -20,7 +20,7 @@ class AbstractUserManagement():
 
         if not user:
             print("Adding new user", user)
-            user = User(email=email, name=name)
+            user = User(email=email, name=name, gender = "male")
             user = await User.save_document(doc=user)
             user = [user]
 
@@ -40,15 +40,21 @@ class AbstractUserManagement():
         res.set_cookie(
             key=COOKIE_AUTHORIZATION_NAME,
             value=f"Bearer {token}",
-            httponly=True,
+            httponly=False,
             domain=COOKIE_DOMAIN,
+            path="/",  # Ensure it is available to all routes
             max_age=18000,
             expires=18000,
-            samesite="none",
+            samesite="None",
             secure=True,
+            
         )
 
+
+
         # redirect to the frontend but also use cookie
+        
+        print("res", res.headers,  COOKIE_DOMAIN)
 
         return res
        

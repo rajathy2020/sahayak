@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { fetchServiceProviders, postBooking, fetchUserInfo } from './api';
+import { fetchServiceProviders, fetchUserBookings, postBooking, fetchUserInfo } from './api';
 import './page_styles/service_provider.css';
 import './page_styles/booking_summary.css';
 
@@ -65,6 +65,31 @@ const ServiceProviderPage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
+  const handleFilters = async (filterType, value) => {
+    console.log("filterType", filterType, value)
+    if (filterType === 'timeSlot') {
+      setSelectedTimeSlot(value);
+    } else if (filterType === 'date') {
+      setSelectedDate(value);
+    }
+
+    const requestParams = location.state || getQueryParams();
+
+    requestParams.available_time_slots = selectedDate;
+    
+    // Update the filter parameters
+    if (filterType === 'timeSlot') {
+      requestParams.available_time_slots = value;
+    }
+    if (filterType === 'date') {
+      requestParams.requested_date = value; // Always include the selected date
+    }
+
+
+    console.log("requestParams", requestParams);
+    getServiceProviders(requestParams);
+  };
+
   const getCurrentDate = () => {
     const today = new Date();
     return today.toISOString().split('T')[0]; // YYYY-MM-DD format
@@ -107,21 +132,20 @@ const ServiceProviderPage = () => {
   };
 
   // Function to handle "Book Now" button click
-  const handleBookingClick = (provider) => {
+  const handleBookingClick = async (provider) => {
     if (!selectedDate || !selectedTimeSlot) {
       setError('Please select a date and time slot before booking.');
       return;
     }
+   
+    const bookings = await fetchUserBookings();
+    if (bookings.length >= 10) {
+        alert('You have reached your free booking limit of 10. Please subscribe to book more services.');
+        return;
+      }
+
     const requestParams = location.state || getQueryParams();
-
-    const providerData = {
-      "provider_id": provider.id,
-      "provider_name": provider.name,
-      "booking_date": selectedDate,
-      "booking_slot": selectedTimeSlot
-    }
-
-
+    console.log("requestParams", requestParams)
 
     const bookingData = {
       "sub_service_names": requestParams,
@@ -133,7 +157,16 @@ const ServiceProviderPage = () => {
 
 
     setSelectedProvider(provider);
-    postBooking(bookingData)
+    const booking = await postBooking(bookingData)
+    console.log("booking", booking)
+    const providerData = {
+      "provider_id": provider.id,
+      "provider_name": provider.name,
+      "booking_date": selectedDate,
+      "booking_slot": selectedTimeSlot,
+      "price": requestParams.price,
+      "booking_id": booking.id
+    }
     // Convert provider data into query parameters
     const queryParams = new URLSearchParams(providerData).toString();
 
@@ -205,7 +238,8 @@ const ServiceProviderPage = () => {
             type="date"
             id="date-picker"
             value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
+            onChange={(e) => handleFilters('date', e.target.value)}
+            min={getCurrentDate()}
           />
         </div>
 
@@ -215,13 +249,13 @@ const ServiceProviderPage = () => {
           <select
             id="time-slot"
             value={selectedTimeSlot}
-            onChange={(e) => setSelectedTimeSlot(e.target.value)}
+            onChange={(e) => handleFilters('timeSlot', e.target.value)}
           >
             <option value="">--Select a Time Slot--</option>
             <option value="9am-12pm">9am - 12pm</option>
             <option value="12pm-3pm">12pm - 3pm</option>
-            <option value="3pm-6pm">3pm - 6pm</option>
-            <option value="6pm-9pm">6pm - 9pm</option>
+            <option value="3pm-8pm">3pm - 8pm</option>
+            <option value="8pm-11pm">8pm - 11pm</option>
           </select>
         </div>
         <h2>More filters</h2>

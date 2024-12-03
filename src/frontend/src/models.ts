@@ -31,7 +31,9 @@ export interface User {
   available_time_slots?: Array<string>;
   services_offered_details?: Array<string>;
   description?:String;
+  number_of_bookings?: number;
 }
+
 
 export const createUser = (data: any = {}): User => ({
   id: data._id || 'default-id',
@@ -48,6 +50,7 @@ export const createUser = (data: any = {}): User => ({
   available_time_slots: data.available_time_slots,
   services_offered_details: data.services_offered_details,
   description: data.description,
+  number_of_bookings: data.number_of_bookings
 }); 
 
 export interface ParentService {
@@ -98,6 +101,7 @@ export interface Booking {
     end_time: string;
     time_slot: string;
     total_price: Float32Array;
+    metadata: Record<string, unknown>;
   }
 
 export const createBooking = (data: Partial<Booking> = {}): Booking => ({
@@ -110,4 +114,5 @@ export const createBooking = (data: Partial<Booking> = {}): Booking => ({
     end_time: data.end_time,
     time_slot: data.time_slot,
     total_price: data.total_price,
+    metadata: data.metadata,
   });

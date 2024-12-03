@@ -52,6 +52,8 @@ origins = [
         "https://cera.hytechnologies.co",
 ]
 
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

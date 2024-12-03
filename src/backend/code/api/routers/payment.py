@@ -9,9 +9,9 @@ from services.payment.stripe_payment import (
     charge_client_for_booking,
     payout_to_provider,
 )
-from shared.models import User
+from shared.models import User, Booking
 import stripe
-from backend.code.services.notification.whatsappnotification import WhatsappNotification
+from services.notification.whatsappnotification import WhatsappNotification
 router = APIRouter()
 
 # Create Service Provider Account
@@ -69,6 +69,7 @@ async def client_setup_card(current_user: User = Depends(get_current_user)):
 
 # Charge Client for Booking
 class BookingChargeRequest(BaseModel):
+    booking_id: str
     amount: int  # amount in cents
     payment_method_id: str
     description: str = "Service Booking"
@@ -78,7 +79,10 @@ async def charge_client(request: BookingChargeRequest, current_user: User = Depe
     payment_intent = charge_client_for_booking(request.amount, request.payment_method_id,current_user, request.description)
     if not payment_intent:
         raise HTTPException(status_code=500, detail="Failed to charge the client.")
-    WhatsappNotification.charge_client(current_user)
+    #WhatsappNotification.charge_client(current_user)
+    booking = await Booking.get_document(doc_id = request.booking_id)
+    booking.total_price = request.amount
+    await Booking.save_document(doc=booking)
     return {"payment_intent_id": payment_intent.id}
 
 # Payout to Service Provider

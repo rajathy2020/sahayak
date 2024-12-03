@@ -79,7 +79,8 @@ const CheckoutPage = () => {
     }
 
     const params = {
-      amount: 100, // Replace with dynamic amount if needed
+      booking_id: bookingSummary.booking_id,
+      amount: bookingSummary.price*100, // Replace with dynamic amount if needed
       payment_method_id: cards[selectedCardIndex].payment_method_id,
     };
 
@@ -87,7 +88,7 @@ const CheckoutPage = () => {
       const response = await receiveClientPayment(params);
       if (response && response.payment_intent_id) {
         alert('Payment was successful!');
-        navigate(`/my_bookings`);
+        navigate(`/me`);
       } else {
         alert('Payment failed. Please try again.');
       }
@@ -154,6 +155,8 @@ const CheckoutPage = () => {
               <p><strong>Provider:</strong> {bookingSummary.provider_name}</p>
               <p><strong>Date:</strong> {bookingSummary.booking_date}</p>
               <p><strong>Time Slot:</strong> {bookingSummary.booking_slot}</p>
+              <p><strong>Price:</strong> {bookingSummary.price}</p>
+
             </div>
           </>
         )}

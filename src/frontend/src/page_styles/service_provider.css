@@ -10,7 +10,7 @@
   .sidebar {
     width: 250px; /* Width of the sidebar */
     padding: 20px;
-    background-color:#b2eeb4; /* Light background for the sidebar */
+    background-color:#e6f9e6; /* Light background for the sidebar */
     border-right: 1px solid #ddd; /* Border between sidebar and content */
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
     

@@ -32,6 +32,14 @@ class ServiceUpdateRequest(BaseModel):
     image: Optional[str]
     
 
+class PriceCalculationRequest(BaseModel):
+    sub_service_names: List[str]
+    number_of_persons: Optional[int]
+    number_of_rooms: Optional[int]
+    
+
+INCREMENT_PRICE_PER_UNIT = 5
+
 @router.get(
     "/parent_services",
     response_model=List[ParentService],
@@ -172,3 +180,49 @@ async def get_sub_services(
     return sub_services
    
 
+@router.get(
+    "/parent_services/{id}/sub_services",
+    response_model=List[SubService],
+    include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
+)
+async def get_sub_services(
+    id: str,
+    current_user: User = Depends(get_current_user),
+):
+
+    query = {"parent_service_id": str(id)}
+    sub_services = await SubService.search_document(
+        query, sort_by=SubService.created_at, order_by="Asc"
+    )
+
+    if not sub_services:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    return sub_services
+
+
+@router.post(
+    "/parent_services/{name}/calculate_price",
+    response_model=dict,
+    include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
+)
+async def get_sub_services(
+    name: str,
+    request: PriceCalculationRequest,
+    current_user: User = Depends(get_current_user),
+):
+    price = 0
+    for sub_service in request.sub_service_names:
+        query = {"name": sub_service}
+        sub_services = await SubService.search_document(
+            query, sort_by=SubService.created_at, order_by="Asc"
+        )
+        price += sub_services[0].base_price
+        
+    if request.number_of_persons:
+        price += (request.number_of_persons-2)*INCREMENT_PRICE_PER_UNIT
+        
+    if request.number_of_rooms:
+        price += (request.number_of_rooms -2)*INCREMENT_PRICE_PER_UNIT
+    
+    return {"price":price}

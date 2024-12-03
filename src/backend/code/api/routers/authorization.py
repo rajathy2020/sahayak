@@ -39,9 +39,10 @@ async def auth0_login_redirect(
     return auth0_user_management.prepare_response(access_token)
 
 
+
 @router.get("/auth0/logout")
 async def route_logout_and_remove_cookie(
-    request: Request, token=Depends(get_current_token)
+    request: Request
 ):
     
     microsoft_user_management =  Auth0UserManagement()

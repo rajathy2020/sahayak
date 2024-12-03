@@ -23,7 +23,7 @@ TIME_SLOT_MAPPING = {
     TimeSlot.MORNING: (time(9, 0), time(12, 0)),
     TimeSlot.MIDDAY: (time(12, 0), time(15, 0)),
     TimeSlot.AFTERNOON_EVENING: (time(15, 0), time(20, 0)),
-    TimeSlot.Night: (time(20, 0), time(23, 0))
+    TimeSlot.NIGHT: (time(20, 0), time(23, 0))
 }
 
 
@@ -116,6 +116,7 @@ async def book_service(booking_request: BookingRequest, current_user: User = Dep
         # Store the sub-service's total duration and price
         sub_service_details[sub_service.id] = {
             "duration": sub_service_duration,
+            
             "price": sub_service_price
         }
 
@@ -190,4 +191,14 @@ async def book_service(booking_request: BookingRequest, current_user: User = Dep
 
 async def get_user_bookings(current_user: User = Depends(get_current_user)):
     client_bookings = await Booking.search_document({"client_id": str(current_user.id),  "deleted_at": None})
+    for booking in client_bookings:
+        booking_metadata = {}       
+        provider_id = booking.provider_id
+        provider = await User.get_document(doc_id=provider_id)
+        booking_metadata[provider_id] = provider
+        subservice_ids = booking.subservice_ids
+        for subservice_id in subservice_ids:
+            service = await SubService.get_document(doc_id=subservice_id)
+            booking_metadata[subservice_id] = service
+        booking.metadata = booking_metadata
     return client_bookings
