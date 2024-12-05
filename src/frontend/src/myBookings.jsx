@@ -59,6 +59,8 @@ const MyBookingsPage = () => {
                 <p><strong>Provider:</strong> {booking.provider_name}</p>
                 <p><strong>Date:</strong> {booking.booking_date}</p>
                 <p><strong>Time Slot:</strong> {booking.booking_slot}</p>
+                <p><strong>Start Time:</strong> {booking.start_time}</p>
+                <p><strong>End Time:</strong> {booking.end_time}</p>
               </div>
               <div className="button-group">
                 <button

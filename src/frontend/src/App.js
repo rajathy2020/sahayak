@@ -90,6 +90,9 @@ function App() {
     try {
       const response = await fetchUserInfo();
       setUser(response);
+      if (!response.city && !response.whatsapp_number) {
+        setShowModal(true);
+      }
       return response;
     } catch (error) {
       setError('Failed to get user');
@@ -97,21 +100,20 @@ function App() {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    const response1 = getUser();
-    console.log(response1, "vgetrgr")
+  
 
-    if (!response1.city) {
-      setShowModal(true);
-    }
+  useEffect(() => {
+    getUser();
   }, []);
+
 
   const handleSavePreferences = async (preferences) => {
     console.log('User Preferences:', preferences);
     const params = {
       "id": user.id,
       "city": preferences.city,
-      "whatsapp_number": preferences.mobileNumber
+      "mobile_number": preferences.mobileNumber,
+      "user_type": preferences.userType
     }
     const userInfo = await updateUserInfo(params);
     setUser(userInfo);

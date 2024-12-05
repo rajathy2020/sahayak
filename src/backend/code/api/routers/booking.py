@@ -80,6 +80,8 @@ async def book_service(booking_request: BookingRequest, current_user: User = Dep
     provider_booked_time_slots = [
         booking for booking in provider_bookings if booking.time_slot == booking_request.time_slot
     ]
+
+    print("provider_booked_time_slots", provider_booked_time_slots)
     
     subservices_ids = await map_service_type_with_id(booking_request.sub_service_names)
     # Fetch all sub-services to get their durations and base prices
@@ -178,7 +180,7 @@ async def book_service(booking_request: BookingRequest, current_user: User = Dep
     )
 
     # Save the booking to the database
-    await Booking.save_document(doc=booking)
+    booking = await Booking.save_document(doc=booking)
     #payment_intent = charge_client_for_booking(request.amount, current_user, request.description)
     return booking
 

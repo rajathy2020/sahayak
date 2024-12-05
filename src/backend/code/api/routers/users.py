@@ -17,6 +17,9 @@ alphabet = string.ascii_letters + string.digits
 
 class UserUpdateRequest(BaseModel):
     user_type: Optional[Usertype] = None
+    city: Optional[City] = None
+    whatsapp_number: Optional[str] = None
+    address: Optional[str] = None
 
 
 @router.get(
@@ -65,5 +68,14 @@ async def update_users(
 
     if user_update_request.user_type:
         current_user.user_type = user_update_request.user_type
+
+    if user_update_request.city:
+        current_user.city = user_update_request.city
+    
+    if user_update_request.whatsapp_number:
+        current_user.whatsapp_number = user_update_request.whatsapp_number
+
+    if user_update_request.address:
+        current_user.address = user_update_request.address
 
     return await User.save_document(doc = current_user)

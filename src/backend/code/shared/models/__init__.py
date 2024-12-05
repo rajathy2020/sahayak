@@ -187,6 +187,8 @@ class User(MongoBase):
     description: Optional[str] = None
     number_of_bookings: Optional[int] = None
     whatsapp_number: Optional[str] = None
+    image_url: Optional[str] = None
+    auth0_id: Optional[str] = None
 
 
 # Booking Model (A client books a subservice provided by a provider)

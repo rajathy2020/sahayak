@@ -170,6 +170,8 @@ const ServiceProviderPage = () => {
     // Convert provider data into query parameters
     const queryParams = new URLSearchParams(providerData).toString();
 
+    console.log("queryParams", queryParams)
+
     // Navigate to /service_providers with the form data as query parameters
     navigate(`/checkout?${queryParams}`);
   };

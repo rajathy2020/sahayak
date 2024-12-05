@@ -4,6 +4,7 @@ stripe.api_key = "sk_test_51QA9MVIV6MeGCGLBosEPq1QsMYkeeq8PfWsPcz4c6a1WEpRpwU0Xy
 SUCCESS_URL = "https://0.0.0.0:8090/parent_services"
 FAILURE_URL = "https://0.0.0.0:8090/parent_services"
 
+
 def create_service_provider_stripe_account(user):
     try:
         account = stripe.Account.create(

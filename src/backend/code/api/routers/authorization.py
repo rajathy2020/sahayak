@@ -1,7 +1,7 @@
 import os
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from services.user_management.utils import get_current_token
+from services.user_management.utils import get_current_user
 
 from services.user_management.Auth0UserManagement import Auth0UserManagement
 from shared.models import *

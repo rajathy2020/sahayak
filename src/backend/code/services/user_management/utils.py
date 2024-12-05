@@ -35,6 +35,8 @@ class OAuth2PasswordBearerCookie(OAuth2):
         header_authorization: str = request.headers.get("Authorization")
         cookie_authorization: str = request.cookies.get("Authorization")
 
+       
+
         header_scheme, header_param = get_authorization_scheme_param(
             header_authorization
         )
@@ -42,12 +44,14 @@ class OAuth2PasswordBearerCookie(OAuth2):
             cookie_authorization
         )
 
-        if header_scheme.lower() == "bearer":
+        
+
+        if "bearer" in header_scheme.lower():
             authorization = True
             scheme = header_scheme
-            param = header_param
+            param = header_param.split('""')[0]
 
-        elif cookie_scheme.lower() == "bearer":
+        elif "bearer" in cookie_scheme.lower():
             authorization = True
             scheme = cookie_scheme
             param = cookie_param
@@ -55,64 +59,21 @@ class OAuth2PasswordBearerCookie(OAuth2):
         else:
             authorization = False
 
-        if not authorization or scheme.lower() != "bearer":
+        
+
+        if not authorization or not "bearer" in scheme.lower() :
             if self.auto_error:
                 raise HTTPException(
                     status_code=HTTP_403_FORBIDDEN, detail="Not authenticated"
                 )
             else:
                 return None
-
+        if param.endswith('"'):
+            param = param[:-1]
         return param
 
 oauth2_scheme = OAuth2PasswordBearerCookie(tokenUrl="/token")
 
-
-async def get_current_user(request: Request):
-    query = {"email": "rajat.jain@hy.co", "deleted_at": None}
-    user = await User.search_document(query=query)
-    
-
-
-
-    if user:
-        return user[0]
-    
+async def get_current_user(request: Request, token: str = Depends(oauth2_scheme)):
     return await Auth0UserManagement().get_current_user(request ,token)
-    query = {"email": "rajat.jain@hy.co", "deleted_at": None}
-    user = await User.search_document(query=query)
-    
-
-
-
-    if user:
-        return user[0]
-
-    return User(
-        name = "HELLO", 
-        email = "rajat.jain@hy.co", 
-        city =  City.BERLIN,
-        address = "hello"
-    )
-
    
-    if AUTH_PROVIDER == "MICROSOFT":
-        user = await  MicrosoftUserManagement().get_current_user(request ,token)
-
-    if AUTH_PROVIDER == "AUTH0":
-        user = await Auth0UserManagement().get_current_user(request ,token)
-
-    if user is None or not user.email:
-        raise HTTPException(status_code=401, detail="Not a user")
-    
-    if user.email.lower() in [it.lower() for it in os.getenv("ADMIN_USERS").split(",")] or "editor" in user.roles:
-        pass
-    else:
-        raise HTTPException(
-            status_code=403, detail="The user does not have enough privileges"
-        )
-    
-    return user
-    
-async def get_current_token(request: Request, token: str = Depends(oauth2_scheme)):
-    return token

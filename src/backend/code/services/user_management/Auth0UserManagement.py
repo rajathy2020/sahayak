@@ -27,11 +27,12 @@ class Auth0UserManagement(AbstractUserManagement):
                 audience=auth0_audience,
                 issuer=auth0_issuer_url,
             )
-            email = payload[list(payload.keys())[0]]
+            auth0_id = payload.get("sub")
 
-            if email is None:
+
+            if auth0_id is None:
                 raise HTTPException(status_code=401, detail="Not a user")
-            return email
+            return auth0_id
         except jwt.ExpiredSignatureError:
             raise HTTPException(status_code=401, detail="token_expired")
         except Exception as e:
@@ -45,7 +46,7 @@ class Auth0UserManagement(AbstractUserManagement):
             "response_type": "code",
             "redirect_uri": AUTH0_CALLBACK_URL,
             "audience": AUTH0_API_AUDIENCE,
-            "scope": "openid profile email,read:blabla",
+            "scope": "openid profile email",
         }
         url = requests.Request("GET", auth0_url, params=params).prepare().url
         return RedirectResponse(url)
@@ -61,18 +62,20 @@ class Auth0UserManagement(AbstractUserManagement):
                 "code": code,
                 "redirect_uri": AUTH0_CALLBACK_URL,
                 "audience": AUTH0_API_AUDIENCE,
+                "scope": "openid profile email"
             }
             token_response = requests.post(
                 f"https://{AUTH0_DOMAIN}/oauth/token", data=data
             ).json()
 
+            print("token_response", token_response)
+
 
             access_token = token_response["access_token"]            
-            email = self._validate_token(access_token)
             user_url = f"https://{AUTH0_DOMAIN}/userinfo"
             headers = {"Authorization": f"Bearer {access_token}"}
             user_info = requests.get(user_url, headers=headers).json()
-            user = await self._check_or_add_user(email = email, name = user_info.get("name"))
+            user = await self._check_or_add_user(email = user_info.get("email"), name = user_info.get("name"), image_url =  user_info.get("picture"), auth0_id = user_info.get("sub"))
             return access_token
            
     def logout(self) -> str:
@@ -81,8 +84,8 @@ class Auth0UserManagement(AbstractUserManagement):
         return response
         
     async def  get_current_user(self, request: Request, token):
-        email = self._validate_token(token)
-        user = await self._get_user(email=email)
+        auth0_id = self._validate_token(token)
+        user = await self._get_user(auth0_id=auth0_id)
         
         if user is None or not user.email:
             raise HTTPException(status_code=401, detail="Not a user3")

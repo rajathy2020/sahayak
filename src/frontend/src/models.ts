@@ -17,29 +17,36 @@ export interface CardDetails {
 }
 
 export interface User {
-  id: String;
-  name: String;
-  gender: String;
-  email: String;
-  city?: String;
-  address?: String;
-  user_type?: String;
-  stripe_customer_id?: String;
+  id: string;
+  name: string;
+  gender?: string;
+  email: string;
+  city?: string;
+  address?: string;
+  user_type?: string;
+  stripe_customer_id?: string;
   stripe_paymemt_methods?: Array<any>;
-  stripe_account_id?: String;
-  services_offered?: Array<string>;  
+  stripe_account_id?: string;
+  services_offered?: Array<string>;
   available_time_slots?: Array<string>;
-  services_offered_details?: Array<string>;
-  description?:String;
+  available_dates?: { [key: string]: Array<string> };
+  blocked_dates?: Array<string>;
+  services_offered_details?: Array<any>;
+  description?: string;
   number_of_bookings?: number;
+  whatsapp_number?: string;
+  image_url?: string;
+  auth0_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string;
 }
-
 
 export const createUser = (data: any = {}): User => ({
   id: data._id || 'default-id',
   name: data.name || 'Anonymous',
-  gender: data.gender, 
-  email: data.email|| 'no-email@domain.com', 
+  gender: data.gender,
+  email: data.email || 'no-email@domain.com',
   city: data.city,
   address: data.address,
   user_type: data.user_type,
@@ -48,10 +55,18 @@ export const createUser = (data: any = {}): User => ({
   stripe_account_id: data.stripe_account_id,
   services_offered: data.services_offered,
   available_time_slots: data.available_time_slots,
+  available_dates: data.available_dates,
+  blocked_dates: data.blocked_dates,
   services_offered_details: data.services_offered_details,
   description: data.description,
-  number_of_bookings: data.number_of_bookings
-}); 
+  number_of_bookings: data.number_of_bookings,
+  whatsapp_number: data.whatsapp_number,
+  image_url: data.image_url,
+  auth0_id: data.auth0_id,
+  created_at: data.created_at,
+  updated_at: data.updated_at,
+  deleted_at: data.deleted_at
+});
 
 export interface ParentService {
     id: String;
@@ -92,6 +107,7 @@ export const createServiceProvider = (data: any = {}): ServiceProvider => ({
   });
 
 export interface Booking {
+    id: string;
     client_id: string;
     provider_id: string;
     booked_date: string;
@@ -105,6 +121,7 @@ export interface Booking {
   }
 
 export const createBooking = (data: Partial<Booking> = {}): Booking => ({
+    id: data._id,
     client_id: data.client_id,
     provider_id: data.provider_id,
     booked_date: data.booked_date,

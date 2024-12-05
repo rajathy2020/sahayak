@@ -6,6 +6,7 @@ sent_from = "whatsapp:+4915904898034"
 CLIENT_CONTENT_SID = ""
 
 class WhatsappNotification:
+    
     @classmethod
     def charge_client(cls, provider, client):
         account_sid = account_sid

@@ -14,20 +14,20 @@ from fastapi.responses import RedirectResponse
 class AbstractUserManagement():
 
 
-    async def _check_or_add_user(self, email, name):
+    async def _check_or_add_user(self, email, name, image_url = None, auth0_id  = None):
         query = And(User.email == email)
         user = await User.search_document(query=query)
 
         if not user:
             print("Adding new user", user)
-            user = User(email=email, name=name, gender = "male")
+            user = User(email=email, name=name, gender = "male", image_url = image_url, auth0_id = auth0_id )
             user = await User.save_document(doc=user)
             user = [user]
 
         return user[0]
     
-    async def _get_user(self, email: str):
-        query = And(User.email == email)
+    async def _get_user(self, auth0_id: str):
+        query = And(User.auth0_id == auth0_id)
         user = await User.search_document(query=query)
 
         if not user:

@@ -68,6 +68,7 @@ const ProfilePage = () => {
         };
       });
       setBookings(formattedBookings);
+      console.log("formattedBookings", formattedBookings)
     } catch (error) {
       setError('Failed to load bookings. Please try again.');
     } finally {
@@ -222,6 +223,9 @@ const ProfilePage = () => {
                       <p><strong>Provider:</strong> {booking.provider_name}</p>
                       <p><strong>Date:</strong> {booking.booked_date}</p>
                       <p><strong>Time Slot:</strong> {booking.time_slot}</p>
+                      <p><strong>Start Time:</strong> {booking.start_time}</p>
+                      <p><strong>End Time:</strong> {booking.end_time}</p>
+                      <p><strong>Price:</strong> {booking.total_price}</p>
                     </div>
                     <div className="button-group">
                       <button

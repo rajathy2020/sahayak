@@ -1,12 +1,30 @@
 import axios from 'axios';
 import {createUser, createParentService, ProviderSearchRequest, createServiceProvider, createBooking} from './models.ts';
 
+// Function to get cookie by name
+const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+};
+
 const api = axios.create({
     baseURL: 'http://0.0.0.0:8090',
     withCredentials: true, // Include cookies in requests
-})
+});
 
-
+// Add request interceptor to include Authorization header
+api.interceptors.request.use((config) => {
+    console.log('config', config);
+    console.log('getCookie', getCookie('Authorization'));
+    console.log('config.headers', config.headers);
+    
+    const authToken = getCookie('Authorization');
+    if (authToken) {
+        config.headers.Authorization = authToken;
+    }
+    return config;
+});
 
 export const fetchusers = async () => {
     try {
@@ -33,10 +51,13 @@ export const updateUserInfo = async(params = {}) => {
     try {
         const requestPayload = {
             city: params.city,
-            whatsapp_number: params.whatsapp_number,
+            whatsapp_number: params.mobile_number,
             address: params.address,
             name: params.name,
+            user_type: params.user_type
         }
+
+        console.log('requestPayload', requestPayload);
 
         const response = await api.put(`/users/${params.id}`, requestPayload);
 
