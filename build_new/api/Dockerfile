@@ -28,7 +28,7 @@ RUN pip install \
     numpy \
     pandas \
     Werkzeug==2.0.0 \
-    fastapi==0.60.1 \
+    fastapi\
     uvicorn \
     pyjwt \
     passlib[bcrypt] \
@@ -42,7 +42,11 @@ RUN pip install \
     motor \
     openai==1.7.2 \
     stripe \
-    twilio
+    twilio \
+    PyMuPDF \
+    python-multipart \
+    cryptography  \
+    httpx==0.27.2
 
 # Set up Jupyter configuration
 ARG TK_JUPYTER_PASSWD_HASH

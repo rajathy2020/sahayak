@@ -199,3 +199,42 @@ export const fetchCalculatedPrice = async (params = {}) => {
         throw error;
     }
 }
+
+export const extractDocumentInfo1 = async (file, documentType) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('document_type', documentType);
+
+    const response = await api.post('/ai/extraction', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error processing document:', error);
+    throw error.response?.data?.detail || error.message || 'Error processing document';
+  }
+};
+
+export const askDocumentQuestion = async (file, question) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('question', question);
+
+    const response = await api.post('/ai/ask_question', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error asking document question:', error);
+    throw error.response?.data?.detail || error.message || 'Error processing document question';
+  }
+};
+

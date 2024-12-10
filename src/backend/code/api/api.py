@@ -19,7 +19,8 @@ from .routers import (
     services,
     providers,
     booking,
-    payment
+    payment,
+    ai
 
 
     )
@@ -69,6 +70,7 @@ app.include_router(providers.router, tags=["Providers"])
 app.include_router(users.router, tags=["Users"])
 app.include_router(booking.router, tags=["Bookings"])
 app.include_router(payment.router, tags=["Payment"])
+app.include_router(ai.router, tags=["AI"])
 
 
 
