@@ -14,16 +14,14 @@ jobs:
 
       - name: Install SSH Key
         run: |
-          mkdir -p ~/.ssh/
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 --decode > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 --decode > ssh_key
+          chmod 600 ssh_key
           eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/deploy_key
-          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+          ssh-add ssh_key
 
       - name: Restart API and Nginx
         run: |
-          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
+          ssh -o StrictHostKeyChecking=no -i ssh_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "sudo bash -s" << 'ENDSSH'
             cd ${{ secrets.APP_LOCATION }}
             git config --global credential.helper 'store --file=/tmp/git-credentials'
             echo "${{ secrets.VCS_TOKEN }}" > /tmp/git-credentials
@@ -32,5 +30,4 @@ jobs:
             git stash
             git pull origin main
             docker compose restart api
-            docker compose up -d --build --force-recreate --no-deps web
-          ENDSSH
+            docker compose up -d --build --force-recreate --no-deps nginx
