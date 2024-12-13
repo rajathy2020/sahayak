@@ -35,9 +35,9 @@ services:
       - SET_CORS=no
       - PYTHONUNBUFFERED=1
       - OMP_THREAD_LIMIT=1
-      - COOKIE_DOMAIN11=sahayak.local
-      - AUTH_FE_REDIRECT1=https://sahayak.local
-      - AUTH0_CALLBACK_URL=https://sahayak.local/api/auth0_authorization/callback
+      - COOKIE_DOMAIN11=sahayak.co
+      - AUTH_FE_REDIRECT1=https://sahayak.co
+      - AUTH0_CALLBACK_URL=https://sahayak.co/api/auth0_authorization/callback
     depends_on:
       - mongodb
     restart: always
