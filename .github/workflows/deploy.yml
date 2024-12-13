@@ -1,4 +1,4 @@
-name: Deploy to Hetzner
+name: Deploy Deeksha VM
 on:
   push:
     branches:
@@ -19,7 +19,7 @@ jobs:
           eval "$(ssh-agent -s)"
           ssh-add ssh_key
 
-      - name: Deploy to Server
+      - name: Restart API and Nginx
         run: |
           ssh -o StrictHostKeyChecking=no -i ssh_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "sudo bash -s" << 'ENDSSH'
             cd ${{ secrets.APP_LOCATION }}
@@ -29,6 +29,5 @@ jobs:
             git stash -k
             git stash
             git pull origin main
-            docker compose down
-            docker compose up -d --build
-ENDSSH 
+            docker compose restart api
+            docker compose up -d --build --force-recreate --no-deps web
