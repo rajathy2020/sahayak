@@ -48,7 +48,7 @@ class BookingRequest(BaseModel):
     provider_id: str
     client_id: str
     time_slot: TimeSlot
-    customizations: Optional[List[Union[CookingCustomization, CleaningCustomization]]]
+    customizations: Optional[List[Union[CookingCustomization, CleaningCustomization]]] = None
  
 
 async def map_service_type_with_id(filter_request):

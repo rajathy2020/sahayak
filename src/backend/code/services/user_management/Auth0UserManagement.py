@@ -68,7 +68,6 @@ class Auth0UserManagement(AbstractUserManagement):
                 f"https://{AUTH0_DOMAIN}/oauth/token", data=data
             ).json()
 
-            print("token_response", token_response)
 
 
             access_token = token_response["access_token"]            
@@ -86,6 +85,7 @@ class Auth0UserManagement(AbstractUserManagement):
     async def  get_current_user(self, request: Request, token):
         auth0_id = self._validate_token(token)
         user = await self._get_user(auth0_id=auth0_id)
+
         
         if user is None or not user.email:
             raise HTTPException(status_code=401, detail="Not a user3")

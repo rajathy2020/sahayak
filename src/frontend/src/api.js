@@ -8,12 +8,19 @@ const getCookie = (name) => {
     if (parts.length === 2) return parts.pop().split(';').shift();
 };
 
+
+
+console.log('process.env.REACT_APP_API_URL', process.env.REACT_APP_API_URL);
 const api = axios.create({
-    baseURL: 'http://0.0.0.0:8090',
-    withCredentials: true, // Include cookies in requests
+    baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8090',
+    withCredentials: true,
 });
 
 // Add request interceptor to include Authorization header
+
+
+
+
 api.interceptors.request.use((config) => {
     console.log('config', config);
     console.log('getCookie', getCookie('Authorization'));

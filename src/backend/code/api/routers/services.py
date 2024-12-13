@@ -51,6 +51,7 @@ async def get_services(current_user: User = Depends(get_current_user)):
     services = await ParentService.search_document(
         query, sort_by=ParentService.created_at, order_by="Asc"
     )
+    print(services)
 
     return services
 

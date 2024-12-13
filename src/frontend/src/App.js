@@ -34,8 +34,10 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     const authenticate = async () => {
       const valid = await checkAuthorizationCookie();
+      console.log("REACT_APP_API_URL", process.env.REACT_APP_API_URL);
       if (!valid) {
-        window.location.href = 'http://0.0.0.0:8090/auth0/login'; // Redirect to login if unauthorized
+        const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8090';
+        window.location.href = `${baseURL}/auth0/login`;
       } else {
         setIsAuthenticated(true);
       }

@@ -16,6 +16,8 @@ db_url = os.getenv("MONGODB_URL", f"mongodb://root:{db_password}@mongodb:27017")
 
 client = AsyncIOMotorClient(db_url)
 
+print(client)
+
 
 async def setup_db():
     """

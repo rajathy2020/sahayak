@@ -2,35 +2,47 @@ version: '3.0'
 name: sahayak
 
 services:
+  web:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+      target: runner
+    environment:
+      - REACT_APP_API_URL=https://sahayak.local/api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./build_new/nginx/certs:/etc/nginx/ssl
+    networks:
+      - sahayak_network
+    depends_on:
+      - api
+
   api:
     build:
       context: ./
       dockerfile: ./build_new/api/Dockerfile
-    command: 'uvicorn api.api:app --host="0.0.0.0" --port=8090 --workers=${UVICORN_WORKERS:-8}'
-    restart: always
+    command: 'uvicorn api.api:app --host="0.0.0.0" --port=8090 --workers=${UVICORN_WORKERS:-8}  --reload'
+    expose:
+      - "8090"
     env_file: .env
-
-    ports:
-      - "8090:8090"
-
     volumes:
       - ./src/backend:/backend
       - ./data:/data
-
     environment:
       - PYTHONPATH=/backend/code
       - SET_CORS=no
       - PYTHONUNBUFFERED=1
       - OMP_THREAD_LIMIT=1
-
+      - COOKIE_DOMAIN11=sahayak.local
+      - AUTH_FE_REDIRECT1=https://sahayak.local
+      - AUTH0_CALLBACK_URL=https://sahayak.local/api/auth0_authorization/callback
     depends_on:
       - mongodb
-
-    labels:
-      - "autoheal=true"
-  
-  
-
+    restart: always
+    networks:
+      - sahayak_network
 
   jupyter:
     build:
@@ -39,32 +51,35 @@ services:
     command: 'jupyter lab --allow-root --no-browser --port 8888 --ip=0.0.0.0'
     restart: on-failure
     env_file: .env
-
     volumes:
       - ./src/backend:/backend
       - ./data:/data
-
     environment:
       - PYTHONPATH=/backend/code
       - SET_CORS=no
       - PYTHONUNBUFFERED=1
       - OMP_THREAD_LIMIT=1
-
     ports:
       - "8888:8888"
-
+    networks:
+      - sahayak_network
+    depends_on:
+      - mongodb
 
   mongodb:
     image: mongo:latest
-
     env_file: .env
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_ROOT_PASSWORD}
     volumes:
       - ./data/mongodb_new:/data/db
-    ports:
-      - 27017:27017
+    expose:
+      - "27017"
+    restart: always
+    networks:
+      - sahayak_network
 
-
-  
+networks:
+  sahayak_network:
+    driver: bridge

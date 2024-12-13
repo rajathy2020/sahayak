@@ -37,6 +37,7 @@ class AbstractUserManagement():
     
     def prepare_response(self, token):
         res = RedirectResponse(AUTH_FE_REDIRECT, status_code=302)
+        print("AUTH_FE_REDIRECT", AUTH_FE_REDIRECT)
         res.set_cookie(
             key=COOKIE_AUTHORIZATION_NAME,
             value=f"Bearer {token}",
