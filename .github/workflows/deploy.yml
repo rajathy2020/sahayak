@@ -15,6 +15,8 @@ jobs:
       - name: Install SSH Key
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 --decode > ssh_key
+          echo "Base64 key starts with: $(echo ${{ secrets.SSH_PRIVATE_KEY }} | cut -c1-10)..."
+          echo "Base64 key ends with: ...$(echo ${{ secrets.SSH_PRIVATE_KEY }} | rev | cut -c1-10 | rev)"
           chmod 600 ssh_key
           eval "$(ssh-agent -s)"
           ssh-add ssh_key
