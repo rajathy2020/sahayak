@@ -32,4 +32,4 @@ jobs:
             git stash
             git pull origin main
             docker compose restart api
-            docker compose up -d --build --force-recreate --no-deps nginx
+            docker compose up -d --build --force-recreate --no-deps web
