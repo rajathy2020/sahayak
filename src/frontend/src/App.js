@@ -4,12 +4,15 @@ import HeroSection from './home_page';
 import ServiceProviderPage from './serviceProvider';
 import TaskForm from './taskForm';
 import CheckoutPage from './checkout';
+import Sahayak from './all_services';
 import ProfilePage from './profile';
 import Header from './header';
 import { useState, useEffect } from 'react';
 import { UserProvider } from './userContext'; // Adjust the import path
 import { fetchUserInfo, updateUserInfo } from './api';
 import UserPreferencesModal from './userPreferenceModal';
+import HomeServices from './home_services';
+import DocumentAnalyzer from './DocumentAnalyzer';
 
 
 // utils/auth.js
@@ -34,10 +37,8 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     const authenticate = async () => {
       const valid = await checkAuthorizationCookie();
-      console.log("REACT_APP_API_URL", process.env.REACT_APP_API_URL);
       if (!valid) {
-        const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8090';
-        window.location.href = `${baseURL}/auth0/login`;
+        window.location.href = 'http://0.0.0.0:8090/auth0/login'; // Redirect to login if unauthorized
       } else {
         setIsAuthenticated(true);
       }
@@ -132,7 +133,8 @@ function App() {
                 <ProtectedRoute>
                   <>
                   <Header title={headers.home.title} links={headers.home.buttons} />
-                    <HeroSection />
+                    <HeroSection/>
+                    
                   </>
                 </ProtectedRoute>
               }
@@ -175,6 +177,22 @@ function App() {
                     <Header title={headers.home.title} links={headers.home.buttons} />
                     <ProfilePage />
                   </>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/services"
+              element={
+                <ProtectedRoute>
+                  <HomeServices />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/document-analysis"
+              element={
+                <ProtectedRoute>
+                  <DocumentAnalyzer />
                 </ProtectedRoute>
               }
             />
