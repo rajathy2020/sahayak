@@ -66,22 +66,62 @@ async def map_service_type_with_id(filter_request):
     response_model=Booking,
     include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
 )
+async def book_service(
+    booking_request: BookingRequest, 
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Create a new booking with a 30-minute reservation window.
 
-async def book_service(booking_request: BookingRequest, current_user: User = Depends(get_current_user)):
+    This endpoint handles the booking process with the following steps:
+    1. Validates provider availability
+    2. Checks for time slot conflicts with existing bookings (CONFIRMED or RESERVED only)
+    3. Calculates total duration and price based on selected services
+    4. Creates a reservation with a 30-minute payment window
+    5. Schedules automatic expiration if payment is not received
+
+    Flow:
+    - User submits booking request
+    - System checks provider availability
+    - If available, creates RESERVED booking
+    - User has 30 minutes to complete payment
+    - If payment not received, booking expires automatically
+    - If payment received, booking status changes to CONFIRMED
+
+    Args:
+        booking_request (BookingRequest): Contains:
+            - provider_id: ID of selected service provider
+            - sub_service_names: Dict of requested services
+            - time_slot: Preferred time slot
+            - booked_date: Date for the service
+            - customizations: Optional service customizations
+        background_tasks (BackgroundTasks): FastAPI background tasks handler
+        current_user (User): Authenticated user making the booking
+
+    Returns:
+        Booking: Created booking object with:
+            - status: RESERVED
+            - payment_deadline: 30 minutes from creation
+            - total_price: Calculated based on services and customizations
+            - start_time/end_time: Allocated time slot
+
+    Raises:
+        HTTPException(404): If provider or services not found
+        HTTPException(400): If no available time slots or invalid request
+    """
     # Fetch provider and their existing bookings
     provider = await User.get_document(doc_id=booking_request.provider_id)
     if not provider:
         raise HTTPException(status_code=404, detail="Provider not found")
     
     # Fetch all bookings for the provider within the requested time slot
-    provider_bookings = await Booking.search_document({"provider_id": booking_request.provider_id, "deleted_at": None})
+    provider_bookings = await Booking.search_document({"provider_id": booking_request.provider_id, "deleted_at": None, "status": { "$in": [BookingStatus.CONFIRMED, BookingStatus.RESERVED]}})
 
     # Get booked time slots within the selected time slot
     provider_booked_time_slots = [
         booking for booking in provider_bookings if booking.time_slot == booking_request.time_slot
     ]
-
-    print("provider_booked_time_slots", provider_booked_time_slots)
     
     subservices_ids = await map_service_type_with_id(booking_request.sub_service_names)
     # Fetch all sub-services to get their durations and base prices
@@ -98,7 +138,6 @@ async def book_service(booking_request: BookingRequest, current_user: User = Dep
     
     for sub_service in sub_services:
         # Calculate base duration and price
-        print()
         sub_service_duration = timedelta(hours=sub_service.duration)
         sub_service_price = sub_service.base_price
 
@@ -165,6 +204,10 @@ async def book_service(booking_request: BookingRequest, current_user: User = Dep
     # Calculate end time based on combined duration
     booking_end_time = booking_start_time + total_duration
 
+    # Set reservation timestamp and payment deadline
+    now = datetime.utcnow()
+    payment_deadline = now + timedelta(minutes=30)
+
     # Create the single booking entry with combined sub-service details
 
     booking = Booking(
@@ -177,13 +220,47 @@ async def book_service(booking_request: BookingRequest, current_user: User = Dep
         frequency=ServiceFrequency.ONE_TIME,
         total_price=total_price,
         booked_date=booking_request.booked_date,
+        status=BookingStatus.RESERVED,
+        reserved_at=now,
+        payment_deadline=payment_deadline
     )
 
     # Save the booking to the database
     booking = await Booking.save_document(doc=booking)
+    # Schedule task to expire booking if payment not received
+    background_tasks.add_task(expire_unpaid_booking, booking.id, payment_deadline)
     #payment_intent = charge_client_for_booking(request.amount, current_user, request.description)
     return booking
 
+async def expire_unpaid_booking(booking_id: str, deadline: datetime):
+    """
+    Automatically expire unpaid bookings after the reservation window.
+
+    This function runs as a background task and:
+    1. Waits until the payment deadline
+    2. Checks if booking is still in RESERVED status
+    3. Changes status to EXPIRED if payment wasn't received
+
+    The expiration process ensures that:
+    - Time slots are freed up if payment isn't completed
+    - Other users can book the slot after expiration
+    - Provider's availability is accurately maintained
+
+    Args:
+        booking_id (str): ID of the booking to check
+        deadline (datetime): When the reservation window expires
+
+    Note:
+        - Only affects bookings in RESERVED status
+        - Does not modify CONFIRMED or already EXPIRED bookings
+        - Runs asynchronously to not block the main application
+    """
+    await asyncio.sleep((deadline - datetime.utcnow()).total_seconds())
+    booking = await Booking.get_document(doc_id=booking_id)
+    
+    if booking and booking.status == BookingStatus.RESERVED:
+        booking.status = BookingStatus.EXPIRED
+        await Booking.save_document(doc=booking)
 
 @router.get(
     "/bookings",
@@ -192,7 +269,7 @@ async def book_service(booking_request: BookingRequest, current_user: User = Dep
 )
 
 async def get_user_bookings(current_user: User = Depends(get_current_user)):
-    client_bookings = await Booking.search_document({"client_id": str(current_user.id),  "deleted_at": None})
+    client_bookings = await Booking.search_document({"client_id": str(current_user.id),  "deleted_at": None, "status": { "$in": [BookingStatus.CONFIRMED, BookingStatus.RESERVED]}})
     for booking in client_bookings:
         booking_metadata = {}       
         provider_id = booking.provider_id
@@ -204,3 +281,6 @@ async def get_user_bookings(current_user: User = Depends(get_current_user)):
             booking_metadata[subservice_id] = service
         booking.metadata = booking_metadata
     return client_bookings
+
+
+

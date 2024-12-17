@@ -212,18 +212,27 @@ class User(MongoBase):
 
 
 # Booking Model (A client books a subservice provided by a provider)
+class BookingStatus(str, Enum):
+    RESERVED = "RESERVED"
+    CONFIRMED = "CONFIRMED"
+    EXPIRED = "EXPIRED"
+    CANCELLED = "CANCELLED"
+
 class Booking(MongoBase):
     client_id: str
     provider_id: str
     booked_date: datetime = None
-    subservice_ids: List[str]  # Reference to the SubService
+    subservice_ids: List[str]
     frequency: ServiceFrequency
-    start_time:Optional[datetime] = None
-    end_time:Optional[datetime] = None
-    time_slot:Optional[str] = None
-    total_price: float  # Total price based on service and frequency
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
+    time_slot: Optional[str] = None
+    total_price: float
     metadata: Optional[dict] = None
-    
+    status: BookingStatus = BookingStatus.RESERVED
+    reserved_at: Optional[datetime] = None
+    payment_deadline: Optional[datetime] = None
+    payment_intent_id: Optional[str] = None
 
 # Response Models for APIs
 class ParentServiceListResponse(MongoBase):

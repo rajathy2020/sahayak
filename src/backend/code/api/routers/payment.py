@@ -9,8 +9,7 @@ from services.payment.stripe_payment import (
     charge_client_for_booking,
     payout_to_provider,
 )
-from shared.models import User, Booking
-import stripe
+from shared.models import User, Booking, BookingStatus
 from services.notification.whatsappnotification import WhatsappNotification
 router = APIRouter()
 
@@ -18,9 +17,7 @@ router = APIRouter()
 @router.post("/payment/create_service_provider_account")
 async def create_service_provider_account(current_user: User = Depends(get_current_user)):
     user = await User.get_document(doc_id = "672a02557c1a294cd5aafa0f")
-    print(user)
     account = create_service_provider_stripe_account(user)
-    print(account)
     if not account:
         raise HTTPException(status_code=500, detail="Failed to create service provider account.")
     user.stripe_account_id = account.id
@@ -82,6 +79,8 @@ async def charge_client(request: BookingChargeRequest, current_user: User = Depe
     #WhatsappNotification.charge_client(current_user)
     booking = await Booking.get_document(doc_id = request.booking_id)
     booking.total_price = request.amount
+    booking.status = BookingStatus.CONFIRMED
+    booking.payment_intent_id = payment_intent.id
     await Booking.save_document(doc=booking)
     return {"payment_intent_id": payment_intent.id}
 

@@ -34,6 +34,9 @@ async def search_providers_by_filter_params(
     filter_request: ProviderSearchRequest,
     current_user: User = Depends(get_current_user),
 ):
+    """
+    Search for available providers based on filter criteria and booking status.
+    """
     booking_service = BookingService()
     return await booking_service.get_available_providers(
         filter_request=filter_request.filter,

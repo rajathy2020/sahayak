@@ -61,7 +61,7 @@ const ServiceProviderPage = () => {
   const location = useLocation();
   const [selectedProvider, setSelectedProvider] = useState(null); // Track selected provider for modal
   const [isModalOpen, setIsModalOpen] = useState(false); // Track modal visibility
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState('');
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState('9am-12pm');
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
@@ -75,13 +75,14 @@ const ServiceProviderPage = () => {
 
     const requestParams = location.state || getQueryParams();
 
-    requestParams.available_time_slots = selectedDate;
     
     // Update the filter parameters
     if (filterType === 'timeSlot') {
       requestParams.available_time_slots = value;
+      requestParams.requested_date = selectedDate;
     }
     if (filterType === 'date') {
+      requestParams.available_time_slots = selectedTimeSlot; // 
       requestParams.requested_date = value; // Always include the selected date
     }
 
@@ -204,6 +205,10 @@ const ServiceProviderPage = () => {
   // Fetch services when the page loads
   useEffect(() => {
     const requestParams = location.state || getQueryParams();
+    // Add default time slot to request params if not present
+    if (!requestParams.available_time_slots) {
+      requestParams.available_time_slots = '9am-12pm';
+    }
     getUser();
     getServiceProviders(requestParams);
 
@@ -253,7 +258,6 @@ const ServiceProviderPage = () => {
             value={selectedTimeSlot}
             onChange={(e) => handleFilters('timeSlot', e.target.value)}
           >
-            <option value="">--Select a Time Slot--</option>
             <option value="9am-12pm">9am - 12pm</option>
             <option value="12pm-3pm">12pm - 3pm</option>
             <option value="3pm-8pm">3pm - 8pm</option>
