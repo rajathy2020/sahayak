@@ -36,15 +36,15 @@ jobs:
             cd ${{ secrets.APP_LOCATION }}
             
             # Configure git to use token
-            git config --global credential.helper store
-            echo "https://${{ secrets.VCS_TOKEN }}@github.com" > ~/.git-credentials
-            
-            # Pull latest changes
-            git fetch origin main
-            git reset --hard origin/main
-            
-            # Restart services
+
+            git config --global credential.helper 'store --file=/tmp/git-credentials'
+            echo "${{ secrets.VCS_TOKEN }}" > /tmp/git-credentials
+            git stash -u
+            git stash -k
+            git stash
+            git pull origin main
             docker compose restart api
             docker compose up -d --build --force-recreate --no-deps web
 
-
+            
+            
