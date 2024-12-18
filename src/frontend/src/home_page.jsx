@@ -56,7 +56,9 @@ const HeroSection = () => {
         <h2 className="separator-title">Our Services</h2>
       </div>
 
-      <Sahayak/>
+      <div className="services-section" id="services">
+        <Sahayak/>
+      </div>
 
       {/* About Us Section */}
       <div className="section-separator">
@@ -67,6 +69,7 @@ const HeroSection = () => {
       <div className="about-section" id="about">
         <div className="about-content">
           <div className="about-text">
+            <h2>About Us</h2>
             <p>
               At SAHAYAK, we understand the challenges of managing household tasks while balancing a busy life. 
               Our mission is to bring comfort, convenience, and trust into every household. We connect you with 

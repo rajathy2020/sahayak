@@ -143,6 +143,41 @@ const HomeServices = () => {
           </div>
         </>
       )}
+
+      <div className="about-section" id="about">
+        <div className="about-content">
+          <div className="about-text">
+            <h2>About Us</h2>
+            <p>
+              At SAHAYAK, we understand the challenges of managing household tasks while balancing a busy life. 
+              Our mission is to bring comfort, convenience, and trust into every household. We connect you with 
+              skilled professionals who are committed to providing exceptional service.
+            </p>
+            <p>
+              Whether you need regular cleaning, cooking assistance, or specialized services, we're here to make 
+              your life easier and more comfortable. Our platform ensures a seamless experience from booking to 
+              service delivery.
+            </p>
+          </div>
+          <div className="about-features">
+            <div className="feature">
+              <i className="fas fa-shield-alt"></i>
+              <h3>Trusted Professionals</h3>
+              <p>All our service providers are thoroughly vetted and trained</p>
+            </div>
+            <div className="feature">
+              <i className="fas fa-clock"></i>
+              <h3>Flexible Scheduling</h3>
+              <p>Book services at your convenience, any day of the week</p>
+            </div>
+            <div className="feature">
+              <i className="fas fa-star"></i>
+              <h3>Quality Service</h3>
+              <p>Guaranteed satisfaction with every service we provide</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
 import HeroSection from './home_page';
 import ServiceProviderPage from './serviceProvider';
 import TaskForm from './taskForm';
@@ -85,11 +85,12 @@ const headers = {
 
 
 
-function App() {
+function AppContent() {
   const [showModal, setShowModal] = useState(false);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(null);
+  const navigate = useNavigate();
 
   const getUser = async () => {
     try {
@@ -124,92 +125,172 @@ function App() {
     setUser(userInfo);
   };
 
+  const handleAboutClick = (e) => {
+    e.preventDefault();
+    if (window.location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const aboutSection = document.getElementById('about');
+        if (aboutSection) {
+          aboutSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }, 100);
+    } else {
+      const aboutSection = document.getElementById('about');
+      if (aboutSection) {
+        aboutSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }
+  };
+
+  const handleServicesClick = (e) => {
+    e.preventDefault();
+    if (window.location.pathname !== '/') {
+      window.location.href = '/#services';
+    } else {
+      const servicesSection = document.getElementById('services');
+      if (servicesSection) {
+        servicesSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }
+  };
+
+  return (
+    <div className="App">
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <>
+                <Header 
+                  title={headers.home.title} 
+                  links={headers.home.buttons} 
+                  onAboutClick={handleAboutClick}
+                  onServicesClick={handleServicesClick}
+                />
+                <HeroSection />
+              </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/service/:id"
+          element={
+            <ProtectedRoute>
+              <>
+                <Header 
+                  title={headers.home.title} 
+                  links={headers.home.buttons} 
+                  onAboutClick={handleAboutClick}
+                  onServicesClick={handleServicesClick}
+                />
+                <TaskForm />
+              </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/service_providers"
+          element={
+            <ProtectedRoute>
+              <>
+                <Header 
+                  title={headers.home.title} 
+                  links={headers.home.buttons}
+                  onAboutClick={handleAboutClick}
+                  onServicesClick={handleServicesClick}
+                />
+                <ServiceProviderPage />
+              </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <Header 
+                title={headers.home.title} 
+                links={headers.home.buttons}
+                onAboutClick={handleAboutClick}
+                onServicesClick={handleServicesClick}
+              />
+              <CheckoutPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/me"
+          element={
+            <ProtectedRoute>
+              <>
+                <Header 
+                  title={headers.home.title} 
+                  links={headers.home.buttons}
+                  onAboutClick={handleAboutClick}
+                  onServicesClick={handleServicesClick}
+                />
+                <ProfilePage />
+              </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/services"
+          element={
+            <ProtectedRoute>
+              <Header 
+                title={headers.home.title} 
+                links={headers.home.buttons} 
+                onAboutClick={handleAboutClick}
+                onServicesClick={handleServicesClick}
+              />
+              <HomeServices />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/document-analysis"
+          element={
+            <ProtectedRoute>
+              <Header 
+                title={headers.home.title} 
+                links={headers.home.buttons}
+                onAboutClick={handleAboutClick}
+                onServicesClick={handleServicesClick}
+              />
+              <DocumentAnalyzer />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+      <UserPreferencesModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        onSave={handleSavePreferences}
+      />
+    </div>
+  );
+}
+
+function App() {
   return (
     <Router>
       <UserProvider>
-        <div className="App">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <>
-                  <Header title={headers.home.title} links={headers.home.buttons} />
-                    <HeroSection />
-                  </>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/service/:id"
-              element={
-                <ProtectedRoute>
-                  <>
-                    <Header title={headers.home.title} links={headers.home.buttons} />
-                    <TaskForm />
-                  </>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/service_providers"
-              element={
-                <ProtectedRoute>
-                  <>
-                    <Header title={headers.home.title} links={headers.home.buttons} />
-                    <ServiceProviderPage />
-                  </>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/checkout"
-              element={
-                <ProtectedRoute>
-                  <Header title={headers.home.title} links={headers.home.buttons} />
-                  <CheckoutPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/me"
-              element={
-                <ProtectedRoute>
-                  <>
-
-                    <Header title={headers.home.title} links={headers.home.buttons} />
-                    <ProfilePage />
-                  </>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/services"
-              element={
-                <ProtectedRoute>
-                  <Header title={headers.home.title} links={headers.home.buttons} />
-                  <HomeServices />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/document-analysis"
-              element={
-                <ProtectedRoute>
-                  <Header title={headers.home.title} links={headers.home.buttons} />
-                  <DocumentAnalyzer />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </div>
-        <UserPreferencesModal
-          show={showModal}
-          onClose={() => setShowModal(false)}
-          onSave={handleSavePreferences}
-        />
+        <AppContent />
       </UserProvider>
     </Router>
   );
 }
+
 export default App;
