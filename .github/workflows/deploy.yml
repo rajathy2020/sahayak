@@ -23,28 +23,19 @@ jobs:
           ssh-add ~/.ssh/deploy_key
           echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null\n" > ~/.ssh/config
 
-      - name: Setup Git
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-
       - name: Deploy to Server
         env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          VCS_TOKEN: ${{ secrets.VCS_TOKEN }}
         run: |
-          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "bash -s" << EOF
             cd ${{ secrets.APP_LOCATION }}
-            
-            # Configure git to use token
-
             git config --global credential.helper 'store --file=/tmp/git-credentials'
-            echo "${{ secrets.VCS_TOKEN }}" > /tmp/git-credentials
+            echo "https://${VCS_TOKEN}@github.com" > /tmp/git-credentials
             git stash -u
             git stash -k
             git stash
             git pull origin main
             docker compose restart api
             docker compose up -d --build --force-recreate --no-deps web
-
             
             
