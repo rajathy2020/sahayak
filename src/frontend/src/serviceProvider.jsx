@@ -3,8 +3,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchServiceProviders, fetchUserBookings, postBooking, fetchUserInfo } from './api';
 import './page_styles/service_provider.css';
 import './page_styles/booking_summary.css';
+import ChatBox from './components/ChatBox';
 
-const ServiceProviderCard = ({ provider, handleBookingClick }) => {
+const ServiceProviderCard = ({ provider, handleBookingClick, onChatClick }) => {
   return (
     <div className="service-provider-card">
       {/* Provider Image */}
@@ -22,10 +23,14 @@ const ServiceProviderCard = ({ provider, handleBookingClick }) => {
         </p>
       </div>
 
-      {/* Book Now Button */}
-      <button className="book-button" onClick={() => handleBookingClick(provider)}>
-        Book Now
-      </button>
+      <div className="card-actions">
+        <button className="book-button" onClick={() => handleBookingClick(provider)}>
+          Book Now
+        </button>
+        <button className="chat-button" onClick={() => onChatClick(provider)}>
+          Chat with Provider
+        </button>
+      </div>
     </div>
   );
 };
@@ -64,6 +69,7 @@ const ServiceProviderPage = () => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('9am-12pm');
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [chatProvider, setChatProvider] = useState(null);
 
   const handleFilters = async (filterType, value) => {
     console.log("filterType", filterType, value)
@@ -225,6 +231,10 @@ const ServiceProviderPage = () => {
     return null;
   };
 
+  const handleChatClick = (provider) => {
+    setChatProvider(provider);
+  };
+
   // Render loading state if the data is still being fetched
   if (loading) {
     return <div>Loading...</div>;
@@ -277,6 +287,7 @@ const ServiceProviderPage = () => {
               key={provider.id}
               provider={provider}
               handleBookingClick={handleBookingClick}
+              onChatClick={handleChatClick}
             />
           ))}
         </div>
@@ -290,6 +301,13 @@ const ServiceProviderPage = () => {
           selectedTimeSlot={selectedTimeSlot}
           onClose={() => setIsModalOpen(false)} 
           onProceed={handleProceedToPayment}
+        />
+      )}
+
+      {chatProvider && (
+        <ChatBox 
+          provider={chatProvider} 
+          onClose={() => setChatProvider(null)}
         />
       )}
     </div>

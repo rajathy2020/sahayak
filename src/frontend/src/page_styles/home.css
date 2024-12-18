@@ -306,3 +306,286 @@ body, html {
   }
 }
 
+/* Skeleton Loading Animation */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+.skeleton-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(53, 136, 109, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 300px;
+}
+
+.image-skeleton {
+  width: 100%;
+  height: 160px;
+  border-radius: 10px;
+}
+
+.text-skeleton {
+  height: 20px;
+  border-radius: 4px;
+}
+
+.text-skeleton.title {
+  width: 70%;
+  height: 24px;
+  margin-bottom: 5px;
+}
+
+.title-skeleton {
+  width: 200px;
+  height: 32px;
+  border-radius: 6px;
+  margin: 0 auto;
+}
+
+/* Fade in animation for content */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.services-grid {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.service-card {
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* Enhanced Services Section */
+.services-section {
+  padding: 40px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 20px;
+}
+
+.service-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(53, 136, 109, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.service-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 30px rgba(53, 136, 109, 0.2);
+}
+
+.service-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 4px solid #35886d;
+}
+
+.service-card-content {
+  padding: 25px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.service-card h3 {
+  color: #2d3748;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.service-card h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 3px;
+  background: #35886d;
+  border-radius: 2px;
+}
+
+.service-card p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.service-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid rgba(53, 136, 109, 0.1);
+}
+
+.service-price {
+  color: #35886d;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.service-action {
+  padding: 8px 20px;
+  background: #35886d;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.service-action:hover {
+  background: #2a6d57;
+  transform: translateY(-2px);
+}
+
+/* Service Category Tags */
+.service-tag {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 8px 15px;
+  background: rgba(53, 136, 109, 0.9);
+  color: white;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  backdrop-filter: blur(5px);
+}
+
+/* Section Headers */
+.section-separator {
+  text-align: center;
+  padding: 60px 20px 30px;
+  position: relative;
+}
+
+.separator-title {
+  font-size: 2.5rem;
+  color: #2d3748;
+  margin-bottom: 20px;
+  position: relative;
+  display: inline-block;
+}
+
+.separator-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: #35886d;
+  border-radius: 2px;
+}
+
+/* Combo Services Section */
+.combo-services {
+  background: #f8faf9;
+  padding: 60px 0;
+  margin-top: 60px;
+}
+
+.combo-card {
+  background: linear-gradient(45deg, #35886d, #2a6d57);
+  color: white;
+}
+
+.combo-card h3::after {
+  background: white;
+}
+
+.combo-card p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.combo-card .service-price {
+  color: white;
+}
+
+.combo-card .service-action {
+  background: white;
+  color: #35886d;
+}
+
+.combo-card .service-action:hover {
+  background: #f0f0f0;
+}
+
+/* Service Features */
+.service-features {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.feature-item::before {
+  content: '✓';
+  color: #35886d;
+  font-weight: bold;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+
+  .separator-title {
+    font-size: 2rem;
+  }
+
+  .service-card {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+

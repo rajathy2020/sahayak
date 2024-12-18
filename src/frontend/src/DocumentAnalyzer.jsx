@@ -164,14 +164,23 @@ const DocumentAnalyzer = () => {
                     </div>
 
                     <div className="form-group">
-                        <label htmlFor="file">Upload PDF:</label>
-                        <input
-                            type="file"
-                            id="file"
-                            accept=".pdf"
-                            onChange={handleFileChange}
-                            required
-                        />
+                        <label htmlFor="file">Upload Document</label>
+                        <div className="file-upload-container">
+                            <input
+                                type="file"
+                                id="file"
+                                accept=".pdf"
+                                onChange={handleFileChange}
+                                required
+                            />
+                            <div className="file-upload-icon">📄</div>
+                            <div className="file-upload-text">
+                                {selectedFile ? selectedFile.name : 'Drag and drop your PDF here or click to browse'}
+                            </div>
+                            <div className="file-upload-hint">
+                                Only PDF files are supported
+                            </div>
+                        </div>
                     </div>
 
                     <button type="submit" disabled={loading || !selectedFile || !documentType}>

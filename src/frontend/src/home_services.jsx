@@ -29,8 +29,21 @@ const HomeServices = () => {
   const ServiceCard = ({ service, onClick }) => (
     <div className="service-card" onClick={onClick}>
       <img src={service.image || 'default-image-url.jpg'} alt={service.name} />
-      <h3>{service.name}</h3>
-      <p>{service.description}</p>
+      <div className="service-tag">
+        {service.name.toLowerCase().includes('combo') ? 'Combo' : 'Service'}
+      </div>
+      <div className="service-card-content">
+        <h3>{service.name}</h3>
+        <p>{service.description}</p>
+        <div className="service-features">
+          <span className="feature-item">Professional Staff</span>
+          <span className="feature-item">Quality Service</span>
+        </div>
+        <div className="service-card-footer">
+          <span className="service-price">Starting from €{service.base_price}</span>
+          <button className="service-action">Book Now</button>
+        </div>
+      </div>
     </div>
   );
 
@@ -47,7 +60,43 @@ const HomeServices = () => {
   );
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <div className="section-separator">
+          <div className="skeleton title-skeleton"></div>
+        </div>
+        
+        <div className="services-section">
+          <div className="services-grid">
+            {[1, 2, 3, 4].map((n) => (
+              <div key={n} className="service-card skeleton-card">
+                <div className="skeleton image-skeleton"></div>
+                <div className="skeleton text-skeleton title"></div>
+                <div className="skeleton text-skeleton"></div>
+                <div className="skeleton text-skeleton"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="section-separator">
+          <div className="skeleton title-skeleton"></div>
+        </div>
+        
+        <div className="services-section">
+          <div className="services-grid">
+            {[1, 2].map((n) => (
+              <div key={n} className="service-card skeleton-card">
+                <div className="skeleton image-skeleton"></div>
+                <div className="skeleton text-skeleton title"></div>
+                <div className="skeleton text-skeleton"></div>
+                <div className="skeleton text-skeleton"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {

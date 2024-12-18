@@ -269,7 +269,11 @@ async def expire_unpaid_booking(booking_id: str, deadline: datetime):
 )
 
 async def get_user_bookings(current_user: User = Depends(get_current_user)):
-    client_bookings = await Booking.search_document({"client_id": str(current_user.id),  "deleted_at": None, "status": { "$in": [BookingStatus.CONFIRMED, BookingStatus.RESERVED]}})
+    client_bookings = await Booking.search_document({
+        "client_id": str(current_user.id),
+        "deleted_at": None
+    })
+    
     for booking in client_bookings:
         booking_metadata = {}       
         provider_id = booking.provider_id

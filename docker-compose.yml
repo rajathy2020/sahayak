@@ -23,7 +23,7 @@ services:
     build:
       context: ./
       dockerfile: ./build_new/api/Dockerfile
-    command: 'uvicorn api.api:app --host="0.0.0.0" --port=8090 --workers=${UVICORN_WORKERS:-8}  --reload'
+    command: 'uvicorn api.api:app --host="0.0.0.0" --port=8090 --workers=8  --reload'
     expose:
       - "8090"
     env_file: .env

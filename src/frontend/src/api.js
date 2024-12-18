@@ -166,7 +166,7 @@ export const receiveClientPayment = async (params = {}) => {
 export const fetchUserBookings = async () => {
     try {
         const response = await api.get('/bookings');
-        return response.data.map(createBooking);
+        return response.data;
     } catch (error) {
         console.error('Error fetching bookings:', error);
         throw error;

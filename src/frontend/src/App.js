@@ -166,6 +166,7 @@ function App() {
               path="/checkout"
               element={
                 <ProtectedRoute>
+                  <Header title={headers.home.title} links={headers.home.buttons} />
                   <CheckoutPage />
                 </ProtectedRoute>
               }
@@ -175,6 +176,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   <>
+
                     <Header title={headers.home.title} links={headers.home.buttons} />
                     <ProfilePage />
                   </>
@@ -185,6 +187,7 @@ function App() {
               path="/services"
               element={
                 <ProtectedRoute>
+                  <Header title={headers.home.title} links={headers.home.buttons} />
                   <HomeServices />
                 </ProtectedRoute>
               }
@@ -193,6 +196,7 @@ function App() {
               path="/document-analysis"
               element={
                 <ProtectedRoute>
+                  <Header title={headers.home.title} links={headers.home.buttons} />
                   <DocumentAnalyzer />
                 </ProtectedRoute>
               }
