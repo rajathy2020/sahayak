@@ -29,13 +29,21 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "bash -s" << EOF
             cd ${{ secrets.APP_LOCATION }}
+            
+            # Configure git to use HTTPS instead of SSH
+            git config --global url."https://github.com/".insteadOf git@github.com:
             git config --global credential.helper 'store --file=/tmp/git-credentials'
             echo "https://${VCS_TOKEN}@github.com" > /tmp/git-credentials
+            
+            # Ensure we're using HTTPS URL
+            git remote set-url origin https://github.com/rajathy2020/sahayak.git
+            
             git stash -u
             git stash -k
             git stash
             git pull origin main
             docker compose restart api
             docker compose up -d --build --force-recreate --no-deps web
+EOF
             
             
