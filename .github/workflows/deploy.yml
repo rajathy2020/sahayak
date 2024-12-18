@@ -1,4 +1,4 @@
-name: Deploy Deeksha VM
+name: Deploy to Hetzner
 on:
   push:
     branches:
@@ -11,25 +11,33 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Fetch all history for all branches and tags
 
       - name: Install SSH Key
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 --decode > ssh_key
-          echo "Base64 key starts with: $(echo ${{ secrets.SSH_PRIVATE_KEY }} | cut -c1-10)..."
-          echo "Base64 key ends with: ...$(echo ${{ secrets.SSH_PRIVATE_KEY }} | rev | cut -c1-10 | rev)"
-          chmod 600 ssh_key
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 --decode > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
           eval "$(ssh-agent -s)"
-          ssh-add ssh_key
+          ssh-add ~/.ssh/deploy_key
+          # Disable strict host key checking
+          echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null\n" > ~/.ssh/config
 
-      - name: Restart API and Nginx
+      - name: Setup Git
         run: |
-          ssh -o StrictHostKeyChecking=no -i ssh_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} "sudo bash -s" << 'ENDSSH'
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Deploy to Server
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
             cd ${{ secrets.APP_LOCATION }}
-            git config --global credential.helper 'store --file=/tmp/git-credentials'
-            echo "${{ secrets.VCS_TOKEN }}" > /tmp/git-credentials
-            git stash -u
-            git stash -k
-            git stash
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             docker compose restart api
             docker compose up -d --build --force-recreate --no-deps web
+
+
