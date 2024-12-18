@@ -12,7 +12,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Fetch all history for all branches and tags
+          fetch-depth: 0
 
       - name: Install SSH Key
         run: |
@@ -21,7 +21,6 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/deploy_key
-          # Disable strict host key checking
           echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null\n" > ~/.ssh/config
 
       - name: Setup Git
@@ -35,8 +34,16 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
             cd ${{ secrets.APP_LOCATION }}
+            
+            # Configure git to use token
+            git config --global credential.helper store
+            echo "https://${{ secrets.VCS_TOKEN }}@github.com" > ~/.git-credentials
+            
+            # Pull latest changes
             git fetch origin main
             git reset --hard origin/main
+            
+            # Restart services
             docker compose restart api
             docker compose up -d --build --force-recreate --no-deps web
 
