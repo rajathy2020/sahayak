@@ -35,7 +35,8 @@ jobs:
             git stash -k
             git stash
             git pull origin main
-            docker compose restart api
+            docker compose down
+            docker compose up -d api mongodb
             docker compose up -d --build --force-recreate --no-deps web
             
             
