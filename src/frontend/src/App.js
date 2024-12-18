@@ -4,7 +4,6 @@ import HeroSection from './home_page';
 import ServiceProviderPage from './serviceProvider';
 import TaskForm from './taskForm';
 import CheckoutPage from './checkout';
-import Sahayak from './all_services';
 import ProfilePage from './profile';
 import Header from './header';
 import { useState, useEffect } from 'react';
@@ -13,6 +12,7 @@ import { fetchUserInfo, updateUserInfo } from './api';
 import UserPreferencesModal from './userPreferenceModal';
 import HomeServices from './home_services';
 import DocumentAnalyzer from './DocumentAnalyzer';
+import Sahayak from './all_services';
 
 
 // utils/auth.js
@@ -37,8 +37,10 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     const authenticate = async () => {
       const valid = await checkAuthorizationCookie();
+      console.log("REACT_APP_API_URL", process.env.REACT_APP_API_URL);
       if (!valid) {
-        window.location.href = 'http://0.0.0.0:8090/auth0/login'; // Redirect to login if unauthorized
+        const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8090';
+        window.location.href = `${baseURL}/auth0/login`;
       } else {
         setIsAuthenticated(true);
       }
@@ -103,7 +105,7 @@ function App() {
       setLoading(false);
     }
   };
-  
+
 
   useEffect(() => {
     getUser();
@@ -133,8 +135,7 @@ function App() {
                 <ProtectedRoute>
                   <>
                   <Header title={headers.home.title} links={headers.home.buttons} />
-                    <HeroSection/>
-                    
+                    <HeroSection />
                   </>
                 </ProtectedRoute>
               }
@@ -207,5 +208,4 @@ function App() {
     </Router>
   );
 }
-
 export default App;
