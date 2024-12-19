@@ -54,25 +54,25 @@ export const fetchUserInfo = async () => {
 
 };
 
-export const updateUserInfo = async(params = {}) => {
-    try {
-        const requestPayload = {
-            city: params.city,
-            whatsapp_number: params.mobile_number,
-            address: params.address,
-            name: params.name,
-            user_type: params.user_type
-        }
+export const updateUserInfo = async (userData) => {
+  try {
+    const response = await fetch('/api/users/update', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
 
-        console.log('requestPayload', requestPayload);
-
-        const response = await api.put(`/users/${params.id}`, requestPayload);
-
-        return createUser(response.data);
-    } catch (error) {
-        console.error('Error updating user info:', error);
-        throw error;
+    if (!response.ok) {
+      throw new Error('Failed to update user information');
     }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error in updateUserInfo:', error);
+    throw error;
+  }
 };
 
 export const fetchParentServices = async () => {
@@ -242,6 +242,16 @@ export const askDocumentQuestion = async (file, question) => {
   } catch (error) {
     console.error('Error asking document question:', error);
     throw error.response?.data?.detail || error.message || 'Error processing document question';
+  }
+};
+
+export const removePaymentMethod = async (paymentMethodId) => {
+  try {
+    const response = await api.delete(`/payment/remove_payment_method/${paymentMethodId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error removing payment method:', error);
+    throw error.response?.data?.detail || error.message || 'Failed to remove payment method';
   }
 };
 

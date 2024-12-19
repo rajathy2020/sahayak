@@ -1,8 +1,8 @@
 import stripe 
 stripe.api_key = "sk_test_51QA9MVIV6MeGCGLBosEPq1QsMYkeeq8PfWsPcz4c6a1WEpRpwU0XylGwRZGAumSpAPbLMwP2GWgahv8Ns9yE0UhE00JwHlmPlR"
 
-SUCCESS_URL = "https://0.0.0.0:8090/parent_services"
-FAILURE_URL = "https://0.0.0.0:8090/parent_services"
+SUCCESS_URL = "http://localhost:3000/me#payment"
+FAILURE_URL = "http://localhost:3000/me"
 
 
 def create_service_provider_stripe_account(user):
@@ -180,6 +180,7 @@ def get_client_payment_info(client_stripe_id):
         customer = client_stripe_id,
         type = "card",
     )
+
     
     if payment_details :
         cards = []
@@ -187,6 +188,22 @@ def get_client_payment_info(client_stripe_id):
             payment_method_id = {"payment_method_id": payment_methods["id"]}
 
             cards.append({**payment_methods["card"],**  payment_method_id})
+
+
+        print(cards, "cards")
         return cards
         
     return []
+
+def remove_payment_method(payment_method_id):
+    """
+    Removes a payment method from Stripe
+    """
+    try:
+        # Detach the payment method from the customer
+        payment_method = stripe.PaymentMethod.detach(payment_method_id)
+
+        return payment_method
+    except stripe.error.StripeError as e:
+        print(f"Failed to remove payment method: {e.error.message}")
+        return None

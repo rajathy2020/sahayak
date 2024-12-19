@@ -94,7 +94,7 @@ const ServiceProviderPage = () => {
 
 
     console.log("requestParams", requestParams);
-    getServiceProviders(requestParams);
+    await getServiceProviders(requestParams, false);
   };
 
   const getCurrentDate = () => {
@@ -115,14 +115,22 @@ const ServiceProviderPage = () => {
   };
 
   // Function to fetch service providers
-  const getServiceProviders = async (params = {}) => {
+  const getServiceProviders = async (params = {}, isInitialLoad = false) => {
+    if (isInitialLoad) {
+      setLoading(true);
+    }
+    
     try {
       const response = await fetchServiceProviders(params);
       setSelectedServiceProviders(response);
     } catch (error) {
       setError('Failed to get service providers');
     } finally {
-      setLoading(false);
+      if (isInitialLoad) {
+        setTimeout(() => {
+          setLoading(false);
+        }, 800);
+      }
     }
   };
 
@@ -144,43 +152,47 @@ const ServiceProviderPage = () => {
       setError('Please select a date and time slot before booking.');
       return;
     }
+
+    // Show loading state
+    setLoading(true);
    
-    const bookings = await fetchUserBookings();
-    if (bookings.length >= 10) {
+    try {
+      const bookings = await fetchUserBookings();
+      if (bookings.length >= 10) {
         alert('You have reached your free booking limit of 10. Please subscribe to book more services.');
+        setLoading(false);
         return;
       }
 
-    const requestParams = location.state || getQueryParams();
-    console.log("requestParams", requestParams)
+      const requestParams = location.state || getQueryParams();
+      const bookingData = {
+        "sub_service_names": requestParams,
+        "provider_id": provider.id,
+        "client_id": user.id,
+        "time_slot": selectedTimeSlot,
+        "booked_date": `${selectedDate}T00:00:00Z`,
+      }
 
-    const bookingData = {
-      "sub_service_names": requestParams,
-      "provider_id": provider.id,
-      "client_id": user.id,
-      "time_slot": selectedTimeSlot,
-      "booked_date": `${selectedDate}T00:00:00Z`,
+      setSelectedProvider(provider);
+      const booking = await postBooking(bookingData);
+      
+      const providerData = {
+        "provider_id": provider.id,
+        "provider_name": provider.name,
+        "booking_date": selectedDate,
+        "booking_slot": selectedTimeSlot,
+        "price": requestParams.price,
+        "booking_id": booking.id,
+        "loading": true // Add loading state to URL params
+      }
+
+      const queryParams = new URLSearchParams(providerData).toString();
+      navigate(`/checkout?${queryParams}`);
+
+    } catch (error) {
+      setError('Failed to process booking. Please try again.');
+      setLoading(false);
     }
-
-
-    setSelectedProvider(provider);
-    const booking = await postBooking(bookingData)
-    console.log("booking", booking)
-    const providerData = {
-      "provider_id": provider.id,
-      "provider_name": provider.name,
-      "booking_date": selectedDate,
-      "booking_slot": selectedTimeSlot,
-      "price": requestParams.price,
-      "booking_id": booking.id
-    }
-    // Convert provider data into query parameters
-    const queryParams = new URLSearchParams(providerData).toString();
-
-    console.log("queryParams", queryParams)
-
-    // Navigate to /service_providers with the form data as query parameters
-    navigate(`/checkout?${queryParams}`);
   };
 
   // Function to handle booking creation and close modal
@@ -211,12 +223,11 @@ const ServiceProviderPage = () => {
   // Fetch services when the page loads
   useEffect(() => {
     const requestParams = location.state || getQueryParams();
-    // Add default time slot to request params if not present
     if (!requestParams.available_time_slots) {
       requestParams.available_time_slots = '9am-12pm';
     }
     getUser();
-    getServiceProviders(requestParams);
+    getServiceProviders(requestParams, true);
 
   }, [location.state, location.search]);
 
@@ -237,7 +248,23 @@ const ServiceProviderPage = () => {
 
   // Render loading state if the data is still being fetched
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="page-loader">
+        <div className="loader-content">
+          <div className="loader-spinner">
+            <img 
+              src="/logo.png"
+              alt="SAHAYAK"
+            />
+          </div>
+          <p>Finding Available Providers</p>
+          <div className="loader-progress"></div>
+          <div className="loader-steps">
+            Matching your requirements...
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

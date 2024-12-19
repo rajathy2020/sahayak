@@ -9,20 +9,22 @@ body {
 
 /* Task Form Container */
 .task-form-container {
-  max-width: 600px;
+  max-width: 800px;
   margin: 40px auto;
+  padding: 20px;
   background: white;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
 }
 
 /* Progress Bar Container */
 .progress-bar {
   display: flex;
+  justify-content: space-between;
   align-items: center;
+  margin-bottom: 40px;
   position: relative;
-  margin-bottom: 30px;
+  padding: 0 40px;
 }
 
 .progress-bar::before {
@@ -78,56 +80,111 @@ body {
 
 
 /* Form Content */
+.form-content {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
 .form-content h2 {
-  color: #4CAF50;
+  color: #35886d;
   text-align: center;
-  font-size: 24px;
-  margin-bottom: 20px;
+  font-size: 1.5rem;
+  margin-bottom: 30px;
 }
 
 .form-section {
   margin-bottom: 20px;
 }
 
+/* Labels */
 .form-section label {
   display: block;
-  font-weight: bold;
-  color: #555;
-  margin-bottom: 8px;
-  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #2d3748;
+  margin-bottom: 6px;
 }
 
-.form-section input,
+/* Inputs and Selects */
 .form-section select,
+.form-section input,
 .form-section textarea {
   width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-sizing: border-box;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #4a5568;
+  background: white;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
 }
 
-textarea {
+.form-section select:focus,
+.form-section input:focus,
+.form-section textarea:focus {
+  outline: none;
+  border-color: #35886d;
+  box-shadow: 0 0 0 2px rgba(53, 136, 109, 0.1);
+}
+
+/* Textarea specific styles */
+.form-section textarea {
+  min-height: 100px;
   resize: vertical;
-  min-height: 80px;
 }
 
-/* Continue Button */
+/* Continue button */
 .continue-button {
   width: 100%;
-  background-color: #4CAF50;
+  padding: 10px 20px;
+  background: #35886d;
   color: white;
-  padding: 15px;
   border: none;
-  border-radius: 8px;
-  font-size: 18px;
-  font-weight: bold;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.2s ease;
+  margin-top: 20px;
 }
 
 .continue-button:hover {
-  background-color: #45a049;
+  background: #2a6d57;
+}
+
+/* Price display */
+.price-display {
+  background: #f7f9fc;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.price-display h3 {
+  color: #2d3748;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .task-form-container {
+    margin: 20px;
+    padding: 15px;
+  }
+
+  .form-content {
+    padding: 20px;
+  }
+
+  .progress-bar {
+    padding: 0 20px;
+  }
+
+  .progress-step p {
+    display: none;
+  }
 }

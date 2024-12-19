@@ -9,11 +9,28 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
+  .logo {
+    display: flex;
+    align-items: center;
+  }
+  
   .logo a {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #fff;
+    display: flex;
+    align-items: center;
     text-decoration: none;
+    gap: 10px;
+  }
+  
+  .header-logo {
+    width: 40px;  /* Adjust size as needed */
+    height: 40px;  /* Adjust size as needed */
+    object-fit: contain;
+  }
+  
+  .header-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #35886d;
   }
   
   .nav-links a {
@@ -31,5 +48,17 @@
   .nav-links .active {
     font-weight: bold;
     color: #ddd;
+  }
+  
+  /* Make sure logo looks good on smaller screens */
+  @media (max-width: 768px) {
+    .header-logo {
+      width: 32px;
+      height: 32px;
+    }
+    
+    .header-title {
+      font-size: 1.5rem;
+    }
   }
   

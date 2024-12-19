@@ -1,859 +1,1522 @@
-/* ProfilePage.css */
 .profile-page {
-    display: flex;
-    max-width: 1200px;
-    margin: 40px auto;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(53, 136, 109, 0.1);
-    min-height: 80vh;
+  padding: 0;
+  background: white;
+  min-height: 100vh;
+  margin-top: -64px;
+  padding-top: 64px;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  width: 100%;
+  margin: 0;
+  min-height: calc(100vh - 64px);
+  position: relative;
+}
+
+.profile-cover {
+  background: white;
+  height: auto;
+  position: relative;
+  padding: 24px 60px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  margin-top: -1px;
+}
+
+.profile-header-content {
+  position: relative;
+}
+
+.profile-avatar-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid #e5e7eb;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  background: white;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-upload {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px 0;
+  text-align: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.profile-avatar:hover .avatar-upload {
+  opacity: 1;
+}
+
+.profile-title {
+  padding-bottom: 0;
+}
+
+.profile-title h2 {
+  margin: 0;
+  color: #333;
+  font-size: 2.2rem;
+  font-weight: 600;
+}
+
+.profile-email {
+  display: none;
+}
+
+.profile-nav {
+  display: flex;
+  padding: 0 60px;
+  gap: 30px;
+  background: white;
+  position: sticky;
+  top: 64px;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.nav-tab {
+  border: none;
+  background: none;
+  padding: 15px 25px;
+  color: #666;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.nav-tab.active {
+  color: #35886d;
+}
+
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #35886d;
+}
+
+.profile-content {
+  padding: 40px 60px;
+  background: #f8faf9;
+  min-height: calc(100vh - 300px);
+  position: relative;
+  z-index: 1;
+}
+
+.form-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.form-field {
+  position: relative;
+}
+
+.form-field label {
+  display: block;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.input-wrapper i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus {
+  border-color: #35886d;
+  box-shadow: 0 0 0 3px rgba(53, 136, 109, 0.1);
+  outline: none;
+}
+
+.form-actions {
+  display: none;
+}
+
+.save-button {
+  background: #35886d;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.save-button:hover {
+  background: #2a6d57;
+  transform: translateY(-1px);
+}
+
+.save-button.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.success-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #35886d;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 12px rgba(53, 136, 109, 0.2);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
   }
-  
-  .profile-sidebar {
-    width: 280px;
-    padding: 40px 25px;
-    background: #f8faf9;
-    border-radius: 20px 0 0 20px;
-    border-right: 1px solid rgba(53, 136, 109, 0.1);
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
-  
-  .profile-sidebar button {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 15px;
-    padding: 15px 20px;
-    background: white;
-    color: #35886d;
-    border: 1px solid #35886d;
-    border-radius: 12px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    text-align: left;
-    position: relative;
-  }
-  
-  .profile-sidebar button:hover {
-    background: #f5f9f8;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(53, 136, 109, 0.1);
-  }
-  
-  .profile-sidebar button.active {
-    background: #35886d;
-    color: white;
-  }
-  
-  /* Add icons to sidebar buttons */
-  .profile-sidebar button::before {
-    margin-right: 10px;
-    font-size: 1.2rem;
-  }
-  
-  .profile-sidebar button[data-section="profile"]::before {
-    content: "👤";
-  }
-  
-  .profile-sidebar button[data-section="bookings"]::before {
-    content: "📅";
-  }
-  
-  .profile-sidebar button[data-section="payment"]::before {
-    content: "💳";
-  }
-  
-  /* Add active indicator */
-  .profile-sidebar button::after {
-    content: '';
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: transparent;
-    transition: all 0.3s ease;
-  }
-  
-  .profile-sidebar button.active::after {
-    background: white;
-  }
-  
-  .profile-content {
-    flex: 1;
-    padding: 40px;
-    background: white;
-    border-radius: 0 20px 20px 0;
-  }
-  
-  /* Section Headers */
-  .profile-content h2 {
-    color: #35886d;
-    font-size: 1.8rem;
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid rgba(53, 136, 109, 0.1);
-  }
-  
-  .profile-info label,
-  .addresses input {
-    display: block;
-    margin-bottom: 10px;
-  }
-  
-  .profile-info button,
-  .addresses button,
-  .payment-info button {
-    margin-top: 10px;
-    padding: 10px;
-  }
-  
-  .button-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-  }
-  
-  .chat-button {
-    padding: 8px 15px;
-    background: #35886d;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .chat-button:hover {
-    background: #2a6d57;
-  }
-  
-  .details-button {
-    padding: 8px 15px;
-    background: #f0f0f0;
-    color: #333;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  
-  .details-button:hover {
-    background: #e0e0e0;
-  }
-  
-  /* Bookings List Styling */
-  .bookings-list {
-    list-style: none;
+}
+
+@media (max-width: 768px) {
+  .profile-page {
     padding: 0;
-    margin: 0;
   }
-  
-  .booking-list-item {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(53, 136, 109, 0.1);
-    border: 1px solid rgba(53, 136, 109, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  
-  .booking-list-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(53, 136, 109, 0.15);
-  }
-  
-  .booking-details {
-    margin-bottom: 15px;
-  }
-  
-  .booking-details p {
-    margin: 8px 0;
-    color: #444;
-    font-size: 0.95rem;
-  }
-  
-  .booking-details strong {
-    color: #35886d;
-    font-weight: 600;
-    min-width: 100px;
-    display: inline-block;
-  }
-  
-  .booking-details ul {
-    list-style: none;
-    padding-left: 20px;
-    margin: 5px 0;
-  }
-  
-  .booking-details ul li {
-    color: #666;
-    padding: 3px 0;
-    position: relative;
-  }
-  
-  .booking-details ul li:before {
-    content: "•";
-    color: #35886d;
-    font-weight: bold;
-    position: absolute;
-    left: -15px;
-  }
-  
-  /* Status badge */
-  .booking-status {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 15px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    margin-bottom: 10px;
-  }
-  
-  .status-reserved {
-    background-color: #fff3e0;
-    color: #f57c00;
-  }
-  
-  .status-confirmed {
-    background-color: #e8f5e9;
-    color: #2e7d32;
-  }
-  
-  .status-expired {
-    background-color: #ffebee;
-    color: #c62828;
-  }
-  
-  /* Button group styling */
-  .button-group {
-    display: flex;
-    gap: 12px;
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid rgba(53, 136, 109, 0.1);
-  }
-  
-  .chat-button, .details-button {
-    flex: 1;
-    padding: 10px 20px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    border-radius: 25px;
-    transition: all 0.3s ease;
+
+  .profile-header-content {
     text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
   }
-  
-  .chat-button {
-    background: #35886d;
-    color: white;
-    border: none;
+
+  .profile-nav {
+    padding: 0 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
-  
-  .chat-button:hover {
-    background: #2a6d57;
-    transform: translateY(-1px);
+
+  .nav-tab {
+    white-space: nowrap;
   }
-  
-  .details-button {
-    background: white;
-    color: #35886d;
-    border: 1px solid #35886d;
-  }
-  
-  .details-button:hover {
-    background: #f5f9f8;
-    transform: translateY(-1px);
-  }
-  
-  /* Add icons to buttons */
-  .chat-button::before {
-    content: "💬";
-  }
-  
-  .details-button::before {
-    content: "✓";
-  }
-  
-  /* Empty state styling */
-  .no-bookings {
-    text-align: center;
-    padding: 40px 20px;
-    color: #666;
-  }
-  
-  .no-bookings p {
-    margin: 10px 0;
-    font-size: 1.1rem;
-  }
-  
-  /* Expired booking styling */
-  .booking-list-item.expired {
-    opacity: 0.7;
-    background: #f5f5f5;
-    pointer-events: none;  /* Disable interactions */
+
+  .profile-header-content {
     position: relative;
-  }
-  
-  .booking-list-item.expired::after {
-    content: '';
-    position: absolute;
-    top: 0;
+    bottom: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.5);
-    border-radius: 12px;
   }
-  
-  .booking-list-item.expired .booking-details {
-    color: #888;
-  }
-  
-  .booking-list-item.expired .booking-details strong {
-    color: #666;
-  }
-  
-  .booking-list-item.expired .booking-status {
-    opacity: 1;  /* Keep the status badge visible */
-    position: relative;
-    z-index: 1;
-  }
-  
-  /* Ensure expired items don't respond to hover */
-  .booking-list-item.expired:hover {
-    transform: none;
-    box-shadow: 0 2px 8px rgba(53, 136, 109, 0.1);
-  }
-  
-  /* Profile Info Section */
-  .profile-info {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 30px;
-    background: white;
-    border-radius: 20px;
-  }
-  
-  .profile-header {
-    display: flex;
+
+  .profile-avatar-wrapper {
+    flex-direction: column;
     align-items: center;
-    gap: 30px;
-    margin-bottom: 40px;
-    padding-bottom: 30px;
-    border-bottom: 1px solid rgba(53, 136, 109, 0.1);
+    text-align: center;
   }
-  
-  .profile-avatar {
-    position: relative;
-    width: 120px;
-    height: 120px;
+
+  .form-section {
+    grid-template-columns: 1fr;
   }
-  
-  .profile-avatar img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #35886d;
-  }
-  
-  .avatar-upload {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    background: #35886d;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .avatar-upload:hover {
-    background: #2a6d57;
-  }
-  
-  .avatar-upload input {
-    display: none;
-  }
-  
-  .avatar-upload::before {
-    content: "📷";
-    color: white;
-    font-size: 18px;
-  }
-  
-  .profile-form {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 25px;
-  }
-  
-  .form-group {
-    position: relative;
-  }
-  
-  .form-group label {
-    display: block;
-    font-size: 0.9rem;
-    color: #666;
-    margin-bottom: 8px;
-    font-weight: 500;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background: #f9fafb;
-  }
-  
-  .form-group input:focus {
-    border-color: #35886d;
-    background: white;
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(53, 136, 109, 0.1);
-  }
-  
-  .form-group.full-width {
-    grid-column: 1 / -1;
-  }
-  
-  .form-group.disabled {
-    opacity: 0.7;
-  }
-  
-  .form-group.disabled input {
-    background: #f3f4f6;
-    cursor: not-allowed;
-  }
-  
+
   .form-actions {
-    grid-column: 1 / -1;
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 20px;
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 15px;
+    margin: 0 -30px -30px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   }
-  
+
   .save-button {
-    background: #35886d;
-    color: white;
-    padding: 12px 30px;
-    border: none;
-    border-radius: 25px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    width: 100%;
   }
-  
-  .save-button:hover {
-    background: #2a6d57;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(53, 136, 109, 0.2);
-  }
-  
-  .save-button::before {
-    content: "💾";
-  }
-  
-  .cancel-button {
-    background: white;
-    color: #666;
-    padding: 12px 30px;
-    border: 2px solid #e5e7eb;
-    border-radius: 25px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .cancel-button:hover {
-    background: #f9fafb;
-    border-color: #d1d5db;
-  }
-  
-  /* Success Message */
-  .success-message {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #35886d;
-    color: white;
-    padding: 15px 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(53, 136, 109, 0.2);
-    animation: slideIn 0.3s ease, slideOut 0.3s ease 3s forwards;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .success-message::before {
-    content: "✓";
-    font-weight: bold;
-  }
-  
-  @keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-  }
-  
-  @keyframes slideOut {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100%); opacity: 0; }
-  }
-  
-  @media (max-width: 768px) {
-    .profile-form {
-      grid-template-columns: 1fr;
-    }
-    
-    .profile-header {
-      flex-direction: column;
-      text-align: center;
-    }
-    
-    .form-actions {
-      flex-direction: column;
-    }
-    
-    .save-button, .cancel-button {
-      width: 100%;
-      justify-content: center;
-    }
-  }
-  
-  /* Payment Methods Section */
-  .payment-methods-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 0;
-    list-style: none;
-  }
-  
-  .payment-method-item {
-    background: #f8faf9;
+
+  .profile-cover {
     padding: 20px;
-    border-radius: 15px;
-    border: 1px solid rgba(53, 136, 109, 0.1);
-    transition: all 0.3s ease;
   }
-  
-  .payment-method-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(53, 136, 109, 0.1);
+
+  .profile-nav {
+    padding: 0 20px;
   }
-  
-  .payment-method-item p {
-    margin: 8px 0;
-    color: #2c3e50;
+
+  .profile-content {
+    padding: 30px 20px;
   }
-  
-  /* Loading and Error States */
-  .loading-state {
-    text-align: center;
-    padding: 40px;
-    color: #666;
+
+  .nav-tab {
+    padding: 15px 15px;
+    font-size: 0.9rem;
   }
-  
-  .loading-state::after {
-    content: "...";
-    animation: dots 1.5s infinite;
+}
+
+/* Add these new styles for bookings and payments */
+
+/* Booking Cards */
+.booking-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.booking-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.booking-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.booking-header {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.booking-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-pending { background: #fff3e0; color: #f57c00; }
+.status-confirmed { background: #e8f5e9; color: #2e7d32; }
+.status-expired { background: #ffebee; color: #c62828; }
+
+.booking-price {
+  font-weight: 600;
+  color: #35886d;
+}
+
+.booking-body {
+  padding: 15px;
+}
+
+.booking-provider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.booking-services ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+}
+
+.booking-services li {
+  padding: 4px 0;
+  color: #666;
+}
+
+.booking-time {
+  margin-top: 15px;
+  display: flex;
+  gap: 15px;
+}
+
+.time-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+}
+
+.booking-actions {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 15px;
+}
+
+.action-button {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.action-button.chat {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.action-button.pay {
+  background: #35886d;
+  color: white;
+  font-weight: 600;
+  padding: 12px 20px;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(53, 136, 109, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-button.pay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: all 0.5s ease;
+}
+
+.action-button.pay:hover {
+  background: #2a6d57;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(53, 136, 109, 0.3);
+}
+
+.action-button.pay:hover::before {
+  left: 100%;
+}
+
+.action-button.pay i {
+  font-size: 1.1rem;
+  margin-right: 8px;
+}
+
+/* Payment Cards */
+.payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.add-payment-button {
+  background: #35886d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.payment-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.payment-card {
+  position: relative;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s ease;
+}
+
+.payment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.default-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.card-brand i {
+  font-size: 2rem;
+  color: #35886d;
+}
+
+.card-details {
+  flex: 1;
+}
+
+.card-number {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.card-expiry {
+  color: #666;
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.card-action {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.card-action.edit:hover {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.card-action.delete:hover {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* Empty States */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: #35886d;
+  margin-bottom: 15px;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px;
+  color: #333;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #666;
+}
+
+/* Add these styles for loading state */
+.booking-card.skeleton {
+  background: white;
+  pointer-events: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.booking-card.skeleton::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 1.5s infinite;
+  transform: translateX(-100%);
+}
+
+.skeleton-header {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.skeleton-badge {
+  width: 80px;
+  height: 24px;
+  background: #f0f0f0;
+  border-radius: 12px;
+}
+
+.skeleton-price {
+  width: 60px;
+  height: 24px;
+  background: #f0f0f0;
+  border-radius: 6px;
+}
+
+.skeleton-provider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 15px;
+}
+
+.skeleton-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f0f0f0;
+}
+
+.skeleton-services {
+  margin: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-time {
+  margin: 15px;
+  display: flex;
+  gap: 20px;
+}
+
+.skeleton-text {
+  background: #f0f0f0;
+  border-radius: 4px;
+  height: 16px;
+}
+
+.skeleton-text.short {
+  width: 80px;
+}
+
+.skeleton-text.medium {
+  width: 140px;
+}
+
+.skeleton-text.long {
+  width: 200px;
+}
+
+.skeleton-actions {
+  padding: 15px;
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.skeleton-button {
+  flex: 1;
+  height: 36px;
+  background: #f0f0f0;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
   }
-  
-  .error-message {
-    background: #fee2e2;
-    color: #ef4444;
+}
+
+/* Add loading state transitions */
+.booking-cards.loading {
+  opacity: 0.9;
+}
+
+.booking-card {
+  transition: all 0.3s ease;
+}
+
+/* Add fade-in animation for loaded content */
+.booking-cards:not(.loading) {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Error state styles */
+.error-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #dc2626;
+}
+
+.error-state i {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.error-state h3 {
+  margin: 0 0 8px;
+  color: #333;
+}
+
+.error-state p {
+  margin: 0 0 20px;
+  color: #666;
+}
+
+.retry-button {
+  background: #35886d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto;
+  transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+  background: #2a6d57;
+  transform: translateY(-1px);
+}
+
+.retry-button i {
+  font-size: 1rem;
+}
+
+/* Add container for better content alignment */
+.profile-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Update welcome message */
+.welcome-message {
+  margin-bottom: 8px;
+  color: #666;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Add these styles for the page loader */
+.page-loader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.98);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.loader-content {
+  text-align: center;
+  padding: 40px;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  max-width: 300px;
+  width: 90%;
+}
+
+.loader-spinner {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-spinner img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  z-index: 2;
+}
+
+/* Animated rings around the logo */
+.loader-spinner::before,
+.loader-spinner::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid transparent;
+  border-top-color: #35886d;
+  border-radius: 50%;
+  animation: rotate 2s linear infinite;
+}
+
+.loader-spinner::after {
+  border-top-color: transparent;
+  border-right-color: #35886d;
+  animation-duration: 1.5s;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-progress {
+  width: 100%;
+  height: 4px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 20px 0;
+  position: relative;
+}
+
+.loader-progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 30%;
+  background: #35886d;
+  animation: progress 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.loader-content p {
+  color: #333;
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.loader-steps {
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes progress {
+  0% {
+    left: -30%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Add this to ensure the content fades in smoothly */
+.profile-container {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Update form styles for better UX */
+.profile-edit-form {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.form-row {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.form-row:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.field-header {
+  margin-bottom: 12px;
+}
+
+.field-header label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.field-description {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.compact-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.compact-input:focus-within {
+  background: white;
+  border-color: #35886d;
+  box-shadow: 0 0 0 3px rgba(53, 136, 109, 0.1);
+}
+
+.compact-input i {
+  color: #666;
+  font-size: 1rem;
+  padding: 0 12px;
+}
+
+.compact-input input,
+.compact-input select {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 12px 8px;
+  font-size: 0.95rem;
+  color: #333;
+  width: 100%;
+}
+
+.compact-input input:focus,
+.compact-input select:focus {
+  outline: none;
+}
+
+.compact-input.disabled {
+  background: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.verified-badge {
+  padding: 4px 12px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 12px;
+}
+
+.location-inputs {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 12px;
+}
+
+/* Mobile responsive updates */
+@media (max-width: 768px) {
+  .form-row {
+    padding: 20px;
+    border-radius: 8px;
+  }
+
+  .location-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    padding: 15px;
+    margin: 20px -20px -30px;
+  }
+}
+
+/* Modern profile edit styles */
+.profile-edit-section {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.profile-edit-card {
+  background: white;
+  border-radius: 0;
+  box-shadow: none;
+  position: relative;
+}
+
+.info-section {
+  padding: 0;
+}
+
+.info-group {
+  padding: 24px 60px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.info-group:hover {
+  background: rgba(53, 136, 109, 0.02);
+}
+
+.info-group:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  width: 140px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #666;
+}
+
+.info-label i {
+  width: 16px;
+  color: #35886d;
+  font-size: 1rem;
+}
+
+.info-label span {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.info-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32px;
+  cursor: pointer;
+  padding: 6px 12px;
+  margin: -6px -12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.info-content.editable:hover {
+  background: rgba(53, 136, 109, 0.02);
+}
+
+.info-value {
+  font-size: 1rem;
+  color: #111;
+}
+
+.edit-icon {
+  color: #999;
+  font-size: 0.9rem;
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.info-content:hover .edit-icon {
+  opacity: 1;
+}
+
+/* Update floating save button */
+.floating-save {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  padding: 20px 60px;
+  border-top: 1px solid #eee;
+  margin: 0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  display: none; /* Hide by default */
+}
+
+.floating-save.visible {
+  display: flex;
+  justify-content: flex-end;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Mobile responsive updates */
+@media (max-width: 768px) {
+  .floating-save {
     padding: 15px 20px;
-    border-radius: 10px;
-    margin: 20px 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
   }
-  
-  .error-message::before {
-    content: "⚠️";
+
+  .save-changes-btn {
+    width: 100%;
   }
-  
-  /* Empty States */
-  .empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #666;
+}
+
+/* Payment Methods Section */
+.payment-methods-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 25px;
+  margin-top: 25px;
+}
+
+.payment-method-card {
+  position: relative;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 25px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.payment-method-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(53, 136, 109, 0.12);
+  border-color: #35886d;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 25px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed #e2e8f0;
+}
+
+.card-brand {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.card-brand i {
+  font-size: 42px;
+  background: linear-gradient(45deg, #35886d, #2a6d57);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 4px rgba(53, 136, 109, 0.1));
+}
+
+.card-brand-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brand-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2d3748;
+  letter-spacing: 0.5px;
+}
+
+.card-type {
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card-primary-info {
+  background: rgba(248, 250, 252, 0.8);
+  border: 1px solid #e2e8f0;
+  border-radius: 15px;
+  padding: 20px;
+}
+
+.card-number {
+  font-size: 1.3rem;
+  color: #2d3748;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin-bottom: 15px;
+  font-family: 'Courier New', monospace;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  color: #64748b;
+}
+
+.card-meta > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.card-meta i {
+  color: #35886d;
+  font-size: 1.1rem;
+}
+
+.card-additional-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.card-additional-info > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  background: #f0fdf4;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  color: #35886d;
+  border: 1px solid rgba(53, 136, 109, 0.1);
+}
+
+.default-badge {
+  background: #f0fdf4;
+  color: #35886d;
+  padding: 6px 15px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(53, 136, 109, 0.15);
+  box-shadow: 0 2px 8px rgba(53, 136, 109, 0.08);
+}
+
+.default-badge::before {
+  content: '✓';
+  font-weight: bold;
+}
+
+.remove-card-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  background: rgba(220, 38, 38, 0.08);
+  border: none;
+  border-radius: 50%;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0;
+}
+
+.payment-method-card:hover .remove-card-btn {
+  opacity: 1;
+}
+
+.remove-card-btn:hover {
+  background: #dc2626;
+  color: white;
+  transform: rotate(90deg);
+}
+
+.remove-card-btn i {
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .payment-methods-list {
+    grid-template-columns: 1fr;
   }
-  
-  .empty-state p {
-    margin: 10px 0;
-    font-size: 1.1rem;
+
+  .payment-method-card {
+    padding: 20px;
   }
-  
-  /* Animations */
-  @keyframes dots {
-    0%, 20% { content: "."; }
-    40% { content: ".."; }
-    60%, 100% { content: "..."; }
+
+  .card-meta {
+    flex-direction: column;
+    gap: 12px;
   }
-  
-  /* Responsive Design */
-  @media (max-width: 1024px) {
-    .profile-page {
-      margin: 20px;
-      flex-direction: column;
-    }
-    
-    .profile-sidebar {
-      width: 100%;
-      border-radius: 20px 20px 0 0;
-      border-right: none;
-      border-bottom: 1px solid rgba(53, 136, 109, 0.1);
-      padding: 20px;
-    }
-    
-    .profile-content {
-      border-radius: 0 0 20px 20px;
-    }
-    
-    .payment-methods-list {
-      grid-template-columns: 1fr;
-    }
+
+  .remove-card-btn {
+    opacity: 1;
   }
-  
-  /* Payment Info Section */
-  .payment-info {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 30px;
+}
+
+/* Confirmation Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.confirm-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  animation: modalSlideIn 0.3s ease;
+}
+
+.confirm-modal h3 {
+  color: #2d3748;
+  margin: 0 0 15px;
+  font-size: 1.3rem;
+}
+
+.confirm-modal p {
+  color: #4a5568;
+  margin-bottom: 20px;
+}
+
+.card-preview {
+  background: #f8fafc;
+  padding: 15px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.card-preview i {
+  font-size: 24px;
+  color: #35886d;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn {
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #4a5568;
+}
+
+.cancel-btn:hover {
+  background: #f8fafc;
+}
+
+.confirm-btn {
+  background: #dc2626;
+  border: none;
+  color: white;
+}
+
+.confirm-btn:hover {
+  background: #b91c1c;
+}
+
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
   }
-  
-  .payment-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
-  
-  .add-payment-button {
-    background: #35886d;
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 25px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .add-payment-button:hover {
-    background: #2a6d57;
-    transform: translateY(-2px);
+}
+
+/* Add pulsing animation for payment button */
+@keyframes pulse {
+  0% {
     box-shadow: 0 4px 12px rgba(53, 136, 109, 0.2);
   }
-  
-  .add-payment-button::before {
-    content: "💳";
+  50% {
+    box-shadow: 0 4px 20px rgba(53, 136, 109, 0.4);
   }
-  
-  .payment-methods-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 0;
-    list-style: none;
+  100% {
+    box-shadow: 0 4px 12px rgba(53, 136, 109, 0.2);
   }
-  
-  .payment-method-item {
-    background: white;
-    padding: 25px;
-    border-radius: 15px;
-    border: 1px solid rgba(53, 136, 109, 0.1);
-    transition: all 0.3s ease;
-    position: relative;
+}
+
+.action-button.pay {
+  animation: pulse 2s infinite;
+}
+
+/* Booking Status Styles */
+.booking-card.reserved .booking-status {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.booking-card.confirmed .booking-status {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+/* Action Button Styles */
+.action-button.confirm {
+  background: #15803d;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-button.confirm:hover {
+  background: #166534;
+}
+
+.action-button.confirm .spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.action-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
+}
   
-  .payment-method-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(53, 136, 109, 0.1);
-  }
-  
-  .card-brand-logo {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 50px;
-    height: 30px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-  }
-  
-  .payment-method-item p {
-    margin: 12px 0;
-    color: #2c3e50;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .payment-method-item p strong {
-    color: #666;
-    min-width: 120px;
-  }
-  
-  .card-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(53, 136, 109, 0.1);
-  }
-  
-  .card-action-button {
-    flex: 1;
-    padding: 8px 15px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-  
-  .edit-card {
-    background: white;
-    color: #35886d;
-    border: 1px solid #35886d;
-  }
-  
-  .edit-card:hover {
-    background: #f5f9f8;
-  }
-  
-  .remove-card {
-    background: white;
-    color: #dc2626;
-    border: 1px solid #dc2626;
-  }
-  
-  .remove-card:hover {
-    background: #fef2f2;
-  }
-  
-  .default-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    background: #e8f5e9;
-    color: #2e7d32;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    margin-bottom: 15px;
-  }
-  
-  /* Empty State */
-  .no-payment-methods {
-    text-align: center;
-    padding: 60px 20px;
-    background: white;
-    border-radius: 15px;
-    border: 2px dashed rgba(53, 136, 109, 0.2);
-  }
-  
-  .no-payment-methods h3 {
-    color: #35886d;
-    margin-bottom: 10px;
-  }
-  
-  .no-payment-methods p {
-    color: #666;
-    margin-bottom: 20px;
-  }
-  
-  /* Skeleton Loading Animation */
-  @keyframes shimmer {
-    0% {
-      background-position: -1000px 0;
-    }
-    100% {
-      background-position: 1000px 0;
-    }
-  }
-  
-  .profile-skeleton {
-    animation: fade-in 0.3s ease-in;
-  }
-  
-  .skeleton {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 1000px 100%;
-    animation: shimmer 2s infinite linear;
-  }
-  
-  .avatar-skeleton {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-  }
-  
-  .text-skeleton {
-    height: 20px;
-    border-radius: 4px;
-    margin-bottom: 15px;
-  }
-  
-  .text-skeleton.title {
-    width: 200px;
-    height: 32px;
-    margin-bottom: 30px;
-  }
-  
-  .text-skeleton.short {
-    width: 150px;
-  }
-  
-  .text-skeleton.medium {
-    width: 250px;
-  }
-  
-  .text-skeleton.long {
-    width: 350px;
-  }
-  
-  .input-skeleton {
-    height: 48px;
-    border-radius: 12px;
-    margin-bottom: 25px;
-  }
-  
-  .button-skeleton {
-    height: 48px;
-    width: 150px;
-    border-radius: 25px;
-    margin-top: 20px;
-  }
   

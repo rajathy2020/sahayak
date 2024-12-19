@@ -1,5 +1,11 @@
 import React from 'react';
 
+export enum City {
+    BERLIN = "BERLIN",
+    MUNICH = "MUNICH",
+    FRANKFURT = "FRANKFURT"
+}
+
 export interface CardDetails {
  "brand": String;
  "checks": Array<string>;
@@ -16,33 +22,32 @@ export interface CardDetails {
   "wallet": string;
 }
 
-export interface User {
-  id: string;
-  name: string;
-  gender?: string;
-  email: string;
-  city?: string;
-  address?: string;
-  user_type?: string;
-  stripe_customer_id?: string;
-  stripe_paymemt_methods?: Array<any>;
-  stripe_account_id?: string;
-  services_offered?: Array<string>;
-  available_time_slots?: Array<string>;
-  available_dates?: { [key: string]: Array<string> };
-  blocked_dates?: Array<string>;
-  services_offered_details?: Array<any>;
-  description?: string;
-  number_of_bookings?: number;
-  whatsapp_number?: string;
-  image_url?: string;
-  auth0_id?: string;
-  created_at?: string;
-  updated_at?: string;
-  deleted_at?: string;
+export enum UserType {
+    SERVICE_PROVIDER = "SERVICE_PROVIDER",
+    CLIENT = "CLIENT"
 }
 
-export const createUser = (data: any = {}): User => ({
+export interface UserInfo {
+    id: string;
+    name: string;
+    gender?: string;
+    email: string;
+    city?: City;
+    address?: string;
+    user_type?: UserType;
+    stripe_customer_id?: string;
+    stripe_paymemt_methods?: any[];
+    stripe_account_id?: string;
+    services_offered?: string[];
+    available_time_slots?: string[];
+    services_offered_details?: any[];
+    description?: string;
+    number_of_bookings?: number;
+    whatsappNumber?: string;
+    image_url?: string;
+}
+
+export const createUser = (data: any = {}): UserInfo => ({
   id: data._id || 'default-id',
   name: data.name || 'Anonymous',
   gender: data.gender,
@@ -55,17 +60,11 @@ export const createUser = (data: any = {}): User => ({
   stripe_account_id: data.stripe_account_id,
   services_offered: data.services_offered,
   available_time_slots: data.available_time_slots,
-  available_dates: data.available_dates,
-  blocked_dates: data.blocked_dates,
   services_offered_details: data.services_offered_details,
   description: data.description,
   number_of_bookings: data.number_of_bookings,
-  whatsapp_number: data.whatsapp_number,
+  whatsappNumber: data.whatsapp_number,
   image_url: data.image_url,
-  auth0_id: data.auth0_id,
-  created_at: data.created_at,
-  updated_at: data.updated_at,
-  deleted_at: data.deleted_at
 });
 
 export interface ParentService {

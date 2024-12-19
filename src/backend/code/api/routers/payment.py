@@ -8,6 +8,7 @@ from services.payment.stripe_payment import (
     create_stripe_client_card_setup_url,
     charge_client_for_booking,
     payout_to_provider,
+    remove_payment_method,
 )
 from shared.models import User, Booking, BookingStatus
 from services.notification.whatsappnotification import WhatsappNotification
@@ -96,4 +97,28 @@ async def payout_provider(request: PayoutRequest, current_user: User = Depends(g
     if not payout:
         raise HTTPException(status_code=500, detail="Failed to payout to the provider.")
     return {"payout_id": payout.id}
+
+@router.delete("/payment/remove_payment_method/{payment_method_id}")
+async def remove_payment_method_endpoint(
+    payment_method_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        # Remove from Stripe
+        result = remove_payment_method(payment_method_id)
+        if not result:
+            raise HTTPException(status_code=400, detail="Failed to remove payment method from Stripe")
+        
+        # Remove from user's payment methods
+        if current_user.stripe_paymemt_methods:
+            current_user.stripe_paymemt_methods = [
+                method for method in current_user.stripe_paymemt_methods 
+                if method.get('payment_method_id') != payment_method_id
+            ]
+            # Save updated user
+            await User.save_document(doc=current_user)
+            
+        return {"message": "Payment method removed successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 

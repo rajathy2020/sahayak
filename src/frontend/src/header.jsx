@@ -11,7 +11,10 @@ const Header = ({ title, links, onAboutClick, onServicesClick }) => {
   return (
     <header className="header">
       <div className="logo">
-        <Link to="/">{title}</Link>
+        <Link to="/">
+          <img src="/logo.png" alt="Sahayak Logo" className="header-logo" />
+          <span className="header-title">{title}</span>
+        </Link>
       </div>
       <div>Bookings: {bookings}</div>
       <nav className="nav-links">

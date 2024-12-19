@@ -20,6 +20,7 @@ class UserUpdateRequest(BaseModel):
     city: Optional[City] = None
     whatsapp_number: Optional[str] = None
     address: Optional[str] = None
+    name: Optional[str] = None
 
 
 @router.get(
@@ -77,5 +78,10 @@ async def update_users(
 
     if user_update_request.address:
         current_user.address = user_update_request.address
+    
+    if user_update_request.name:
+        current_user.name = user_update_request.name
+
+
 
     return await User.save_document(doc = current_user)
