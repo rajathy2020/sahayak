@@ -1,8 +1,9 @@
 import stripe 
+import os
 stripe.api_key = "sk_test_51QA9MVIV6MeGCGLBosEPq1QsMYkeeq8PfWsPcz4c6a1WEpRpwU0XylGwRZGAumSpAPbLMwP2GWgahv8Ns9yE0UhE00JwHlmPlR"
 
-SUCCESS_URL = "http://localhost:3000/me#payment"
-FAILURE_URL = "http://localhost:3000/me"
+SUCCESS_URL = os.getenv("STRIPE_SUCCESS_URL", "http://localhost:3000/me#payment")
+FAILURE_URL = os.getenv("STRIPE_FAILURE_URL", "http://localhost:3000/me")
 
 
 def create_service_provider_stripe_account(user):
