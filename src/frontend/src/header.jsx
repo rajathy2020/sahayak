@@ -2,11 +2,20 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './page_styles/header.css';
 import { useUser } from './userContext';
+import { logout } from './api';
 
 const Header = ({ title, links, onAboutClick, onServicesClick }) => {
   const location = useLocation();
   const user = useUser();
   const bookings = user?.number_of_bookings || 0;
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   return (
     <header className="header">
@@ -54,6 +63,15 @@ const Header = ({ title, links, onAboutClick, onServicesClick }) => {
           );
         })}
       </nav>
+      <div className="header-right">
+        <button 
+          className="logout-btn"
+          onClick={handleLogout}
+        >
+          <i className="fas fa-sign-out-alt"></i>
+          Logout
+        </button>
+      </div>
     </header>
   );
 };

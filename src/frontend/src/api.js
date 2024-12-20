@@ -385,29 +385,14 @@ export const rateProvider = async (ratingData) => {
 
 export const logout = async () => {
   try {
-    // First, call your backend logout endpoint
-    await api.get('/auth0/logout');
-    
-    // Clear any local storage/cookies
     document.cookie = 'Authorization=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     localStorage.removeItem('user');
-
-    // Get Auth0 configuration from environment
-    const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8090';
-    const auth0Domain = process.env.REACT_APP_AUTH0_DOMAIN;
-    const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
     
-    // Construct Auth0 logout URL
-    const returnTo = encodeURIComponent(`${baseURL}/auth0/login`);
-    const logoutUrl = `https://${auth0Domain}/v2/logout?client_id=${clientId}&returnTo=${returnTo}`;
-    
-    // Redirect to Auth0 logout URL
-    window.location.href = logoutUrl;
+    // Add a query parameter to indicate logout
+    window.location.replace('/login?status=logged_out');
   } catch (error) {
     console.error('Error during logout:', error);
-    // If there's an error, still try to redirect to login
-    const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8090';
-    window.location.href = `${baseURL}/auth0/login`;
+    window.location.replace('/login?status=logged_out');
   }
 };
 

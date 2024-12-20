@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import HeroSection from './home_page';
 import ServiceProviderPage from './serviceProvider';
 import TaskForm from './taskForm';
@@ -16,6 +16,7 @@ import Sahayak from './all_services';
 import ServiceProviderOnboardingModal from './components/ServiceProviderOnboardingModal';
 import Toast from './components/Toast';
 import ProviderDashboard from './components/ProviderDashboard';
+import LoginPage from './components/LoginPage';
 
 
 // utils/auth.js
@@ -36,28 +37,39 @@ const checkAuthorizationCookie = async () => {
 
 function ProtectedRoute({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const authenticate = async () => {
+      if (location.pathname === '/login') {
+        setIsAuthenticated(false);
+        return;
+      }
+
       const valid = await checkAuthorizationCookie();
-      console.log("REACT_APP_API_URL", process.env.REACT_APP_API_URL);
-      if (!valid) {
-        const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8090';
-        window.location.href = `${baseURL}/auth0/login`;
+      if (!valid && location.pathname !== '/login') {
+        navigate('/login', { replace: true });
       } else {
         setIsAuthenticated(true);
       }
     };
 
     authenticate();
-  }, []);
+  }, [location, navigate]);
 
-  // Show a loading screen until we know if authenticated
+  if (location.pathname === '/login') {
+    return children;
+  }
+
   if (isAuthenticated === null) {
     return <div>Loading...</div>;
   }
 
-  // If authenticated, render the children (the protected content)
+  if (!isAuthenticated) {
+    return null; // Let the useEffect handle the navigation
+  }
+
   return children;
 }
 
@@ -103,13 +115,9 @@ function AppContent() {
     try {
       setPageLoading(true);
       await logout();
-      //const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8090';
-      //window.location.href = `${baseURL}/auth0/login`;
     } catch (error) {
       console.error('Error during logout:', error);
-      const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8090';
-      window.location.href = `${baseURL}/auth0/login`;
-      //window.location.href = `${baseURL}/auth0/login`;
+      window.location.replace('/login?status=logged_out');
     }
   };
 
@@ -117,40 +125,29 @@ function AppContent() {
     try {
       const response = await fetchUserInfo();
       setUser(response);
-      setPageLoading(false); // Stop initial loading immediately
+      setPageLoading(false);
       
-      // Check if user needs onboarding
       if (!response.city) {
         setShowOnboardingModal(true);
         return;
       }
       
-      // Check for service provider without stripe account
       if (response.user_type === 'SERVICE_PROVIDER' && !response.stripe_account_id) {
-        await getParentServices(); // Fetch services before showing modal
-        console.log("Showing provider modal");
+        await getParentServices();
         setShowProviderModal(true);
         return;
       }
       
-      // Only navigate to dashboard for service provider with stripe account
       if (response.user_type === 'SERVICE_PROVIDER' && response.stripe_account_id) {
         const payment_info = await checkProviderPaymentInfo(response.stripe_account_id);
-        console.log("payment_info", payment_info);
-
         if (payment_info) {
-        navigate('/dashboard');
+          navigate('/dashboard');
         } else {
           setShowProviderModal(true);
         }
       }
     } catch (error) {
       setError('Failed to get user');
-      setToast({
-        message: 'Session expired. Please login again.',
-        type: 'error'
-      });
-      handleLogout();
     } finally {
       setLoading(false);
     }
@@ -406,6 +403,10 @@ function AppContent() {
                 <ProviderDashboard />
               </ProtectedRoute>
             }
+          />
+          <Route
+            path="/login"
+            element={<LoginPage />}
           />
         </Routes>
         {toast && (
