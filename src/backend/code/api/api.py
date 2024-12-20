@@ -20,7 +20,8 @@ from .routers import (
     providers,
     booking,
     payment,
-    ai
+    ai,
+    chat
 
 
     )
@@ -71,7 +72,7 @@ app.include_router(users.router, tags=["Users"])
 app.include_router(booking.router, tags=["Bookings"])
 app.include_router(payment.router, tags=["Payment"])
 app.include_router(ai.router, tags=["AI"])
-
+app.include_router(chat.router, tags=["Chat"])
 
 
 

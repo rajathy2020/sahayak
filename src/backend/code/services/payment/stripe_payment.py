@@ -6,6 +6,10 @@ SUCCESS_URL = os.getenv("STRIPE_SUCCESS_URL", "http://localhost:3000/me#payment"
 FAILURE_URL = os.getenv("STRIPE_FAILURE_URL", "http://localhost:3000/me")
 
 
+SUCCESS_URL_PROVIDER = os.getenv("STRIPE_SUCCESS_URL_PROVIDER", "http://localhost:3000")
+FAILURE_URL_PROVIDER = os.getenv("STRIPE_FAILURE_URL_PROVIDER", "http://localhost:3000")
+
+
 def create_service_provider_stripe_account(user):
     try:
         account = stripe.Account.create(
@@ -30,8 +34,8 @@ def create_stripe_service_provider_setup_link(user):
     try:
         account_link = stripe.AccountLink.create(
         account=user.stripe_account_id,
-        refresh_url=FAILURE_URL,  # Where to send them if onboarding fails
-        return_url=SUCCESS_URL,  # Where to send them after onboarding
+        refresh_url=FAILURE_URL_PROVIDER,  # Where to send them if onboarding fails
+        return_url=SUCCESS_URL_PROVIDER,  # Where to send them after onboarding
         type="account_onboarding",  # This starts the onboarding flow
     )
     
@@ -137,7 +141,7 @@ def charge_client_for_booking(amount, payment_method_id, user, description="Serv
         print(f"Stripe error: {e.error.message}")
         return None
 
-def payout_to_provider(user, amount, currency="eur"):
+def payout_to_provider(provider_stripe_account_id, amount, description, currency="eur"):
     """
     Transfers funds from your platform's main Stripe account to a connected provider's Stripe account,
     then immediately initiates a payout from the connected provider's account to their external bank account.
@@ -152,20 +156,21 @@ def payout_to_provider(user, amount, currency="eur"):
     """
     try:
         # Step 1: Transfer funds from the platform's main account to the provider's connected Stripe account
+        print(provider_stripe_account_id, "provider_stripe_account_id")
         transfer = stripe.Transfer.create(
             amount=amount,  # Amount in cents (e.g., 10000 for €100)
             currency=currency,  # Currency (e.g., "eur")
-            destination=user.stripe_account_id,  # Provider's connected Stripe account ID
-            description="Payment for completed service"
+            destination=provider_stripe_account_id,  # Provider's connected Stripe account ID
+            description=description
         )
-        print(f"Transferred {amount / 100} {currency.upper()} to provider {user.stripe_account_id}")
+        print(f"Transferred {amount / 100} {currency.upper()} to provider {provider_stripe_account_id}")
 
         # Step 2: Payout from the connected provider's account to their bank account
         payout = stripe.Payout.create(
             amount=amount,  # Same amount in cents for payout
             currency=currency,  # Same currency for payout
-            description="Payout to provider's bank account",
-            stripe_account=user.stripe_account_id  # Payout from the provider's account
+            description=description,
+            stripe_account=provider_stripe_account_id # Payout from the provider's account
         )
         print(f"Payout of {amount / 100} {currency.upper()} to provider's bank account was successful!")
         return payout
@@ -208,3 +213,8 @@ def remove_payment_method(payment_method_id):
     except stripe.error.StripeError as e:
         print(f"Failed to remove payment method: {e.error.message}")
         return None
+    
+
+def is_provider_payment_info_complete(provider_stripe_account_id) -> bool:
+    account = stripe.Account.retrieve(provider_stripe_account_id)
+    return account["capabilities"].get("transfers")

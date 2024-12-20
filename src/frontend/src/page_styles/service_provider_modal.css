@@ -1,0 +1,1589 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+.modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: translateY(-20px);
+  transition: all 0.3s ease-in-out;
+}
+
+.modal.show .modal-content {
+  transform: translateY(0);
+}
+
+.provider-onboarding-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.modal-header h2 {
+  color: #2d3748;
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #718096;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.modal-section {
+  margin-bottom: 30px;
+}
+
+.modal-section h3 {
+  color: #4a5568;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.service-item {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 8px;
+}
+
+.service-item.selected {
+  border-color: #35886d;
+  background: #f0fdf4;
+}
+
+.service-item i {
+  font-size: 1.5rem;
+  color: #35886d;
+}
+
+.time-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.time-slot {
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.time-slot.selected {
+  border-color: #35886d;
+  background: #f0fdf4;
+  color: #35886d;
+}
+
+.date-input input,
+textarea,
+input[type="number"] {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.date-input input:focus,
+textarea:focus,
+input[type="number"]:focus {
+  border-color: #35886d;
+  outline: none;
+}
+
+.modal-footer {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.cancel-btn,
+.save-btn {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn {
+  background: white;
+  border: 2px solid #e2e8f0;
+  color: #4a5568;
+}
+
+.save-btn {
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  background: #35886d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.save-btn:hover {
+  background: #2a6d57;
+  transform: translateY(-1px);
+}
+
+.save-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 8px;
+}
+
+.save-btn .spinner {
+  margin-right: 8px;
+}
+
+.save-btn:disabled:hover {
+  transform: none;
+}
+
+/* Progress animation */
+.save-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.save-btn:disabled::after {
+  animation: progress 2s ease-in-out infinite;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Disable hover effects when saving */
+.save-btn:disabled,
+.bank-setup-btn:disabled {
+  pointer-events: none;
+}
+
+/* Update button text styles */
+.save-btn span,
+.bank-setup-btn span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .provider-onboarding-modal {
+    padding: 20px;
+  }
+
+  .services-grid,
+  .time-slots-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+}
+
+.service-category {
+  margin-bottom: 30px;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.category-header h4 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #2d3748;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.category-header h4 i {
+  color: #35886d;
+  font-size: 1.2rem;
+}
+
+.select-all-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.select-all-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #35886d;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 12px;
+}
+
+.service-item {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.service-item:hover {
+  border-color: #35886d;
+  background: #f8fafc;
+}
+
+.service-item.selected {
+  border-color: #35886d;
+  background: #f0fdf4;
+}
+
+.service-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.service-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #35886d;
+}
+
+.service-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.service-name {
+  font-size: 0.95rem;
+  color: #2d3748;
+  font-weight: 500;
+}
+
+.service-price {
+  font-size: 0.9rem;
+  color: #35886d;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.modal-loading {
+  text-align: center;
+  padding: 40px;
+  color: #718096;
+}
+
+.modal-error {
+  text-align: center;
+  padding: 40px;
+  color: #dc2626;
+}
+
+.service-price {
+  font-size: 0.9rem;
+  color: #35886d;
+  font-weight: 600;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px dashed #e2e8f0;
+  width: 100%;
+}
+
+.service-item.selected .service-price {
+  border-top-color: rgba(53, 136, 109, 0.2);
+}
+
+/* Calendar Styles */
+.dates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-toggle {
+  display: flex;
+  gap: 10px;
+}
+
+.toggle-btn {
+  padding: 8px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  color: #4a5568;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn.active {
+  background: #35886d;
+  border-color: #35886d;
+  color: white;
+}
+
+.calendar-wrapper {
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  background: white;
+}
+
+/* Override react-calendar default styles */
+.react-calendar {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+}
+
+.react-calendar__tile {
+  position: relative;
+  overflow: hidden;
+}
+
+.react-calendar__tile:enabled:hover {
+  background: #f0fdf4;
+}
+
+.react-calendar__tile--now {
+  background: #f8fafc;
+}
+
+.react-calendar__tile.available-date {
+  background-color: #f0fdf4 !important;
+  color: #35886d !important;
+  font-weight: 600 !important;
+}
+
+.react-calendar__tile.blocked-date {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+  font-weight: 600 !important;
+  position: relative;
+}
+
+.blocked-date::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(220, 38, 38, 0.1);
+  border: 2px solid #dc2626;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.dates-legend {
+  display: flex;
+  gap: 20px;
+  margin-top: 15px;
+  padding: 15px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #4a5568;
+  font-size: 0.9rem;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.legend-item span:last-child {
+  font-weight: 500;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.legend-color.available {
+  background: #f0fdf4;
+  border: 2px solid #35886d;
+}
+
+.legend-color.blocked {
+  background: #fee2e2;
+  border: 2px solid #dc2626;
+}
+
+@media (max-width: 768px) {
+  .dates-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .calendar-toggle {
+    width: 100%;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    text-align: center;
+  }
+}
+
+/* Calendar range selection styles */
+.calendar-instructions {
+  margin-bottom: 15px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  color: #4a5568;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-instructions i {
+  color: #35886d;
+  font-size: 1.1rem;
+}
+
+/* Style for date range selection */
+.react-calendar__tile--rangeStart,
+.react-calendar__tile--rangeEnd {
+  background: #35886d !important;
+  color: white !important;
+}
+
+.react-calendar__tile--rangeBetween {
+  background: rgba(53, 136, 109, 0.1) !important;
+}
+
+/* When in blocked dates step */
+.step[data-step='blocked'] .react-calendar__tile--rangeStart,
+.step[data-step='blocked'] .react-calendar__tile--rangeEnd {
+  background: #dc2626 !important;
+}
+
+.step[data-step='blocked'] .react-calendar__tile--rangeBetween {
+  background: rgba(220, 38, 38, 0.1) !important;
+}
+
+/* Disabled dates */
+.react-calendar__tile:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f8fafc !important;
+}
+
+.step-indicator {
+  display: flex;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #718096;
+  position: relative;
+}
+
+.step.active {
+  color: #35886d;
+}
+
+.step.completed {
+  color: #35886d;
+}
+
+.step-number {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #f8fafc;
+  border: 2px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.step.active .step-number {
+  background: #35886d;
+  color: white;
+  border-color: #35886d;
+}
+
+.step.completed .step-number {
+  background: #35886d;
+  color: white;
+  border-color: #35886d;
+}
+
+.step-label {
+  font-weight: 500;
+}
+
+.calendar-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.calendar-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.calendar-btn.next {
+  background: #35886d;
+  color: white;
+  margin-left: auto;
+}
+
+.calendar-btn.next:hover {
+  background: #2a6d57;
+}
+
+.calendar-btn.back {
+  background: #f8fafc;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+}
+
+.calendar-btn.back:hover {
+  background: #f1f5f9;
+}
+
+/* Update the calendar instructions */
+.calendar-instructions {
+  background: #f0fdf4;
+  border: 1px solid #35886d;
+}
+
+.calendar-instructions p {
+  margin: 0;
+  color: #35886d;
+}
+
+.calendar-instructions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calendar-note {
+  color: #dc2626 !important;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.calendar-note i {
+  color: #dc2626 !important;
+}
+
+/* Update calendar tile hover effects */
+.react-calendar__tile:not(:disabled):hover {
+  background-color: rgba(53, 136, 109, 0.1) !important;
+}
+
+.react-calendar__tile:enabled:hover.blocked-date {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+}
+
+/* Improve visual feedback for selected dates */
+.react-calendar__tile--now.available-date {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%) !important;
+}
+
+.react-calendar__tile--now.blocked-date {
+  background: #fee2e2 !important;
+  color: #dc2626 !important;
+  border: 2px solid #dc2626 !important;
+}
+
+/* Legend Checkbox Styles */
+.legend-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.legend-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #35886d;
+}
+
+.legend-item {
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+}
+
+.legend-item:hover {
+  background: #f8fafc;
+}
+
+/* Update calendar tile transitions */
+.react-calendar__tile {
+  transition: all 0.3s ease;
+}
+
+.react-calendar__tile.available-date,
+.react-calendar__tile.blocked-date {
+  transition: opacity 0.3s ease, background-color 0.3s ease;
+}
+
+/* Hide filtered dates */
+.react-calendar__tile:not(.available-date):not(.blocked-date) {
+  color: #cbd5e0;
+}
+
+/* Improve checkbox accessibility */
+.legend-checkbox:focus-within {
+  outline: 2px solid #35886d;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Add tooltip on hover */
+.legend-checkbox {
+  position: relative;
+}
+
+.legend-checkbox:hover::after {
+  content: 'Toggle visibility';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2d3748;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  margin-bottom: 4px;
+}
+
+/* Service Selection Styles */
+.section-description {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-description i {
+  color: #35886d;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.select-all-btn {
+  background: none;
+  border: 1px solid #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: #64748b;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.select-all-btn:hover {
+  background: #f8fafc;
+  color: #35886d;
+  border-color: #35886d;
+}
+
+.service-item {
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+}
+
+.service-item:hover {
+  border-color: #35886d;
+  background: #f0fdf4;
+}
+
+.service-item.selected {
+  border-color: #35886d;
+  background: #f0fdf4;
+}
+
+.service-checkbox {
+  padding: 20px 0 20px 20px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.service-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #35886d;
+}
+
+.service-content {
+  flex: 1;
+  padding: 20px 20px 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Update service grid for better layout */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 15px;
+}
+
+/* Count badge for selected services */
+.category-header h4 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.selected-count {
+  background: #f0fdf4;
+  color: #35886d;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Services Section Styles */
+.services-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.select-all-btn {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 6px 12px;
+  border-radius: 6px;
+  color: #64748b;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.select-all-btn:hover {
+  background: #f0fdf4;
+  color: #35886d;
+  border-color: #35886d;
+}
+
+.service-category {
+  margin-bottom: 25px;
+}
+
+.service-category h4 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #2d3748;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+
+.service-category h4 i {
+  color: #35886d;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.service-item {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.service-item:hover {
+  border-color: #35886d;
+  background: #f8fafc;
+}
+
+.service-item.selected {
+  border-color: #35886d;
+  background: #f0fdf4;
+}
+
+.service-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.service-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #35886d;
+}
+
+.service-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.service-name {
+  font-size: 0.9rem;
+  color: #2d3748;
+  font-weight: 500;
+}
+
+.service-price {
+  font-size: 0.85rem;
+  color: #35886d;
+  font-weight: 600;
+}
+
+.bank-setup-btn {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #4f46e5;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bank-setup-btn:hover:not(:disabled) {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+.bank-setup-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.bank-setup-btn .spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.bank-setup-btn i {
+  font-size: 1.1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.time-slots-notice {
+  text-align: center;
+  color: #64748b;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px dashed #e2e8f0;
+}
+
+.time-slot {
+  padding: 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.time-slot:hover {
+  border-color: #35886d;
+  background: #f0fdf4;
+}
+
+.time-slot.selected {
+  border-color: #35886d;
+  background: #f0fdf4;
+  color: #35886d;
+  font-weight: 600;
+}
+
+/* Add error message styling */
+.error-message {
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-message i {
+  font-size: 1.1rem;
+}
+
+.available-date {
+  background-color: #f0fdf4 !important;
+  color: #35886d !important;
+  font-weight: 600;
+}
+
+.blocked-date {
+  background-color: #fef2f2 !important;
+  color: #dc2626 !important;
+  font-weight: 600;
+  position: relative;
+}
+
+.blocked-date::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(220, 38, 38, 0.1);
+  border: 2px solid #dc2626;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.react-calendar__tile {
+  position: relative;
+  padding: 10px;
+  transition: all 0.2s ease;
+}
+
+.react-calendar__tile:enabled:hover {
+  background-color: rgba(53, 136, 109, 0.1) !important;
+}
+
+.react-calendar__tile--now.available-date {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%) !important;
+}
+
+.react-calendar__tile--now.blocked-date {
+  background: #fee2e2 !important;
+  color: #dc2626 !important;
+  border: 2px solid #dc2626 !important;
+}
+
+/* Add hover states */
+.react-calendar__tile.available-date:hover {
+  background-color: #dcfce7 !important;
+}
+
+.react-calendar__tile.blocked-date:hover {
+  background-color: #fecaca !important;
+}
+
+/* Add these styles for the legend checkboxes */
+.legend-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.legend-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.legend-color.available {
+  background-color: #f0fdf4;
+  border: 1px solid #35886d;
+}
+
+.legend-color.blocked {
+  background-color: #fef2f2;
+  border: 2px solid #dc2626;
+}
+
+/* Update the dates legend container */
+.dates-legend {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Update blocked date styles */
+.react-calendar__tile.blocked-date,
+.blocked-date {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+  font-weight: 600 !important;
+  border: 2px solid #dc2626 !important;
+}
+
+.react-calendar__tile.blocked-date:hover,
+.blocked-date:hover {
+  background-color: #fecaca !important;
+  cursor: pointer;
+}
+
+/* Update the calendar tile styles */
+.react-calendar__tile {
+  position: relative;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 2px;
+  transition: all 0.2s ease;
+}
+
+/* Make sure blocked dates take precedence */
+.react-calendar__tile.blocked-date {
+  z-index: 2;
+}
+
+/* Update the legend color for blocked dates */
+.legend-color.blocked {
+  background-color: #fee2e2;
+  border: 2px solid #dc2626;
+}
+
+/* Update calendar tile styles */
+.react-calendar__tile {
+  position: relative;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 2px;
+  transition: all 0.2s ease;
+}
+
+/* Available date styles */
+.react-calendar__tile.available-date {
+  background-color: #f0fdf4 !important;
+  color: #35886d !important;
+  font-weight: 600 !important;
+  border: 2px solid #35886d !important;
+}
+
+/* Blocked date styles */
+.react-calendar__tile.blocked-date {
+  background-color: #fee2e2 !important;
+  color: #dc2626 !important;
+  font-weight: 600 !important;
+  border: 2px solid #dc2626 !important;
+}
+
+/* Hover states */
+.react-calendar__tile.available-date:hover {
+  background-color: #dcfce7 !important;
+}
+
+.react-calendar__tile.blocked-date:hover {
+  background-color: #fecaca !important;
+}
+
+/* Make sure the tiles are clearly visible */
+.react-calendar__tile:enabled:hover {
+  background-color: #f8fafc !important;
+}
+
+/* Update the legend colors to match */
+.legend-color.available {
+  background-color: #f0fdf4;
+  border: 2px solid #35886d;
+}
+
+.legend-color.blocked {
+  background-color: #fee2e2;
+  border: 2px solid #dc2626;
+}
+
+/* Add loading state styles */
+.save-btn {
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.save-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Replace spinner with loading bar */
+.save-btn:disabled::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 100%
+  );
+  animation: loading 1.5s infinite ease;
+}
+
+@keyframes loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Toast notification styles */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 16px 24px;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 300px;
+  animation: slideIn 0.3s ease-out;
+  z-index: 2000;
+}
+
+.toast.success {
+  border-left: 4px solid #35886d;
+}
+
+.toast.error {
+  border-left: 4px solid #dc2626;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toast-content i {
+  font-size: 1.25rem;
+}
+
+.toast.success i {
+  color: #35886d;
+}
+
+.toast.error i {
+  color: #dc2626;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toast.removing {
+  animation: slideOut 0.3s ease-in forwards;
+}
+
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.toast-progress::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: #35886d;
+  animation: toast-progress 5s linear forwards;
+}
+
+.toast.error .toast-progress::after {
+  background: #dc2626;
+}
+
+@keyframes toast-progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.stripe-setup-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #4f46e5;
+  color: white;
+}
+
+.stripe-setup-btn:hover:not(:disabled) {
+  background: #4338ca;
+  transform: translateY(-1px);
+}
+
+.stripe-setup-btn.completed {
+  background: #059669;
+  cursor: default;
+}
+
+.stripe-setup-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.save-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Add tooltip for disabled save button */
+.save-btn:disabled::after {
+  content: 'Complete bank account setup first';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.save-btn:disabled:hover::after {
+  opacity: 1;
+}
+
+.action-btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  color: white;
+}
+
+.action-btn.initial {
+  background: #35886d;
+}
+
+.action-btn.bank {
+  background: #4f46e5;
+}
+
+.action-btn.complete {
+  background: #059669;
+}
+
+.action-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.setup-progress {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.progress-step {
+  color: #6b7280;
+  font-size: 0.875rem;
+  position: relative;
+  padding-left: 20px;
+}
+
+.progress-step::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #e5e7eb;
+}
+
+.progress-step.active {
+  color: #35886d;
+  font-weight: 500;
+}
+
+.progress-step.active::before {
+  background: #35886d;
+}
+
+.save-btn {
+  transition: all 0.3s ease;
+}
+
+.save-btn.saving {
+  background-color: #4f46e5;
+}
+
+.save-btn.creating {
+  background-color: #2563eb;
+}
+
+.save-btn.redirecting {
+  background-color: #7c3aed;
+}
+
+.save-btn.completed {
+  background-color: #059669;
+}
+
+/* Add pulsing animation for active states */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.save-btn.saving,
+.save-btn.creating,
+.save-btn.redirecting {
+  animation: pulse 1.5s infinite;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.save-btn.saving {
+  background-color: #4f46e5;
+}
+
+.save-btn.creating {
+  background-color: #2563eb;
+}
+
+.save-btn.redirecting {
+  background-color: #7c3aed;
+}
+
+/* Make the spinner more visible */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  margin-right: 12px;
+}
+ 

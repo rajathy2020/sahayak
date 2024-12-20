@@ -124,6 +124,9 @@ const CheckoutPage = () => {
     }
   };
 
+
+  
+
   // Handle payment processing
   const handleClientPayment = async () => {
     if (selectedCardIndex === null) {

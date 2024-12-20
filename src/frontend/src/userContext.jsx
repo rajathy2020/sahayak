@@ -1,34 +1,39 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
-import { fetchUserInfo } from './api'; // Adjust the import path as necessary
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { fetchUserInfo } from './api';
 
-const UserContext = createContext(null);
+const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const location = useLocation(); // Hook to get the current route
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const fetchUser = async () => {
-    try {
-      const userInfo = await fetchUserInfo();
-      setUser(userInfo);
-    } catch (error) {
-      console.error('Error fetching user info:', error);
-    }
-  };
-
-  // Fetch user info when the component mounts or when the route changes
   useEffect(() => {
-    fetchUser();
-  }, [location]); // Re-fetch user info on route change
+    const loadUser = async () => {
+      try {
+        const userData = await fetchUserInfo();
+        setUser(userData);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUser();
+  }, []);
 
   return (
-    <UserContext.Provider value={user}>
+    <UserContext.Provider value={{ user, setUser, loading, error }}>
       {children}
     </UserContext.Provider>
   );
 };
 
 export const useUser = () => {
-  return useContext(UserContext);
+  const context = useContext(UserContext);
+  if (context === undefined) {
+    throw new Error('useUser must be used within a UserProvider');
+  }
+  return context;
 };

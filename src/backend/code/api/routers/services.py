@@ -227,3 +227,16 @@ async def get_sub_services(
         price += (request.number_of_rooms -2)*INCREMENT_PRICE_PER_UNIT
     
     return {"price":price}
+
+
+@router.get(
+    "/subservices",
+    response_model=List[SubService],
+    include_in_schema=not bool(os.getenv("SHOW_OPEN_API_ENDPOINTS")),
+)
+async def get_all_subservices(current_user: User = Depends(get_current_user)):
+    """Get all available subservices grouped by parent service"""
+
+    return await SubService.search_document(query={}, sort_by=SubService.created_at, order_by="Asc")
+
+

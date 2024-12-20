@@ -183,6 +183,11 @@ class SubService(MongoBase):
     duration: Optional[float] = None
 
 
+class UserRatings(MongoBase):
+    average: float = 0.0
+    count: int = 0
+    total: int = 0
+
 class User(MongoBase):
     name: str
     gender: Optional[str] = None
@@ -209,6 +214,9 @@ class User(MongoBase):
     whatsapp_number: Optional[str] = None
     image_url: Optional[str] = None
     auth0_id: Optional[str] = None
+    ratings: Optional[UserRatings] = Field(
+        default_factory=lambda: UserRatings(average=0, count=0, total=0)
+    )
 
 
 # Booking Model (A client books a subservice provided by a provider)
@@ -217,6 +225,7 @@ class BookingStatus(str, Enum):
     CONFIRMED = "CONFIRMED"
     EXPIRED = "EXPIRED"
     CANCELLED = "CANCELLED"
+    PAYMENT_MADE = "PAYMENT_MADE"  # New status for provider payment
 
 class Booking(MongoBase):
     client_id: str
@@ -233,6 +242,10 @@ class Booking(MongoBase):
     reserved_at: Optional[datetime] = None
     payment_deadline: Optional[datetime] = None
     payment_intent_id: Optional[str] = None
+    payout_id: Optional[str] = None  # Track Stripe payout ID
+    paid_at: Optional[datetime] = None  # Track when provider was paid
+    rating: Optional[int] = None
+    rating_comment: Optional[str] = None
 
 # Response Models for APIs
 class ParentServiceListResponse(MongoBase):
@@ -244,4 +257,29 @@ class ServiceProvider(User, MongoBase):
     services_offered: Optional[List[str]] = None  # List of SubService IDs that the provider offers
     available_time_slots: Optional[List[TimeSlot] ] = None
     services_offered_details:Optional[List[SubService] ] = None
+    
+
+class MessageType(str, Enum):
+    TEXT = "TEXT"
+    IMAGE = "IMAGE"
+    SYSTEM = "SYSTEM"
+
+class Message(MongoBase):
+    chat_id: Optional[str] = None
+    sender_id: Optional[str] = None
+    content: Optional[str] = None
+    message_type: MessageType = MessageType.TEXT
+    read: bool = False
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class Chat(MongoBase):
+    provider_id: str
+    client_id: str
+    booking_id: Optional[str] = None
+    last_message: Optional[str] = None
+    last_message_time: Optional[datetime] = None
+    unread_count: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    is_active: bool = True
     

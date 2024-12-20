@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { fetchUserInfo, fetchUserBookings } from './api';
+import { fetchUserInfo, fetchUserBookings, transferProviderPayment } from './api';
 import './page_styles/user_profile.css';
 
 const UserProfile = () => {
   const [userInfo, setUserInfo] = useState(null);
   const [bookings, setBookings] = useState([]);
   const [activeTab, setActiveTab] = useState('profile');
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -28,6 +30,32 @@ const UserProfile = () => {
       month: 'long',
       day: 'numeric',
     });
+  };
+
+  const showToast = (message, type) => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, removing: true }));
+      setTimeout(() => setToast(null), 300);
+    }, 5000);
+  };
+
+  const handlePayout = async (booking) => {
+    setPaymentLoading(booking.id);
+    try {
+      await transferProviderPayment({
+        booking_id: booking.id,
+        amount: booking.total_price * 100,
+      });
+      
+      // Refresh bookings after successful payout
+      await fetchUserBookings();
+      showToast('Payment to provider processed successfully', 'success');
+    } catch (error) {
+      showToast(error.message || 'Failed to process payment', 'error');
+    } finally {
+      setPaymentLoading(false);
+    }
   };
 
   const renderProfile = () => (
@@ -59,30 +87,76 @@ const UserProfile = () => {
     </div>
   );
 
-  const renderBookings = () => (
-    <div className="bookings-section">
-      <h3>Your Bookings</h3>
-      {bookings.length === 0 ? (
-        <p>No bookings found</p>
-      ) : (
+  const renderBookingsTab = () => {
+    return (
+      <div className="bookings-tab">
+        <h3>Your Bookings</h3>
         <div className="bookings-list">
           {bookings.map((booking) => (
             <div key={booking.id} className="booking-card">
               <div className="booking-header">
-                <span className="booking-date">{formatDate(booking.booked_date)}</span>
-                <span className="booking-price">€{booking.total_price}</span>
+                <h4>{booking.metadata?.[booking.subservice_ids[0]]?.name || 'Service'}</h4>
+                <span className={`booking-status ${booking.status.toLowerCase()}`}>
+                  {booking.status}ssssssss
+                </span>
               </div>
+              
               <div className="booking-details">
-                <p>Time: {booking.time_slot}</p>
-                <p>Services: {booking.subservice_ids.join(', ')}</p>
-                <p>Status: {booking.status || 'Scheduled'}</p>
+                <p>
+                  <i className="fas fa-calendar"></i>
+                  {new Date(booking.booked_date).toLocaleDateString()}
+                </p>
+                <p>
+                  <i className="fas fa-clock"></i>
+                  {booking.time_slot}
+                </p>
+                <p>
+                  <i className="fas fa-euro-sign"></i>
+                  {booking.total_price}
+                </p>
               </div>
+
+              <div className="booking-provider">
+                <p>Provider: {booking.metadata?.[booking.provider_id]?.name || 'Provider'}</p>
+              </div>
+
+              {booking.status === 'CONFIRMED' && (
+                <div className="booking-actions">
+                  <button 
+                    className="payout-button"
+                    onClick={() => handlePayout(booking)}
+                    disabled={paymentLoading === booking.id}
+                  >
+                    {paymentLoading === booking.id ? (
+                      <div className="button-content">
+                        <span className="button-loader"></span>
+                        <span>Processing...</span>
+                      </div>
+                    ) : (
+                      <div className="button-content">
+                        <i className="fas fa-money-bill-wave"></i>
+                        <span>Pay to Provider</span>
+                      </div>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>
-      )}
-    </div>
-  );
+
+        {toast && (
+          <div className={`toast ${toast.type} ${toast.removing ? 'removing' : ''}`}>
+            <div className="toast-content">
+              <i className={`fas ${toast.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
+              <span>{toast.message}</span>
+            </div>
+            <div className="toast-progress"></div>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const renderPaymentMethods = () => (
     <div className="payment-section">
@@ -130,7 +204,7 @@ const UserProfile = () => {
 
       <div className="tab-content">
         {activeTab === 'profile' && renderProfile()}
-        {activeTab === 'bookings' && renderBookings()}
+        {activeTab === 'bookings' && renderBookingsTab()}
         {activeTab === 'payment' && renderPaymentMethods()}
       </div>
     </div>

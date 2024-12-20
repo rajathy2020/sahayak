@@ -1,10 +1,11 @@
 // ProfilePage.js
 import React, { useState, useEffect } from 'react';
 import './page_styles/profile.css';
-import { fetchUserBookings, initiateChatWithProvider, transferProviderPayment, fetchUserInfo, updateUserInfo, generateClientCardSetUpUrl, removePaymentMethod, receiveClientPayment } from './api';
+import { fetchUserBookings, initiateChatWithProvider, transferProviderPayment, fetchUserInfo, updateUserInfo, generateClientCardSetUpUrl, removePaymentMethod, receiveClientPayment, rateProvider } from './api';
 import ChatBox from './components/ChatBox';
 import { City } from './models.ts';
 import Toast from './components/Toast';
+import RatingModal from './components/RatingModal';
 
 const ProfilePage = () => {
   const [userInfo, setUserInfo] = useState({
@@ -44,6 +45,9 @@ const ProfilePage = () => {
   const [toast, setToast] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingBookings, setProcessingBookings] = useState({});
+  const [paymentLoading, setPaymentLoading] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [bookingToRate, setBookingToRate] = useState(null);
 
   useEffect(() => {
     const initializePage = async () => {
@@ -111,44 +115,80 @@ const ProfilePage = () => {
     try {
       const response = await fetchUserBookings();
       
-      const formattedBookings = response.map((booking) => {
-        const provider = booking.metadata[booking.provider_id];
-        const services = booking.subservice_ids.map((subserviceId) => {
-          return booking.metadata[subserviceId]?.name || 'Unknown Service';
+      if (response && Array.isArray(response)) {
+        const formattedBookings = response.map((booking) => {
+          const provider = booking.metadata?.[booking.provider_id];
+          const services = booking.subservice_ids?.map((subserviceId) => {
+            return booking.metadata?.[subserviceId]?.name || 'Unknown Service';
+          }) || [];
+          
+          return {
+            ...booking,
+            provider_name: provider ? provider.name : 'Unknown Provider',
+            services: services
+          };
         });
-        return {
-          ...booking,
-          provider_name: provider ? provider.name : 'Unknown Provider',
-          services: services
-        };
-      });
-      
-      setBookings(formattedBookings);
+        
+        setBookings(formattedBookings);
+      } else {
+        setBookings([]);
+        console.error('Invalid bookings response:', response);
+      }
     } catch (error) {
       console.error('Error in getUserBookings:', error);
       setError('Failed to load bookings. Please try again.');
+      setBookings([]); // Set empty array on error
     } finally {
       setBookingsLoading(false);
     }
   };
 
   // Function to initiate chat with the provider
-  const handleChat = (providerId, providerName) => {
-    const provider = {
-      id: providerId,
-      name: providerName
-    };
-    setChatProvider(provider);
-  };
-
-  const handleProviderPayment = (booking) => {
+  const handleChat = (provider_id, bookingId, booking) => {
     const params = {
-      provider_id: booking.provider_id,
-      amount: booking.total_price * 100,
+      booking_id: bookingId.toString(),
+      provider_id: provider_id,
+      client_id: userInfo.id,
+      provider_name: booking.provider_name,
+      client_name: userInfo.name,
+      currentUserId: userInfo.id,
+      currentUserType: 'CLIENT'
     };
-    transferProviderPayment(params);
+    console.log(params, "params for the chat");
+    setChatProvider(params);
   };
 
+  const showToast = (message, type) => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, removing: true }));
+      setTimeout(() => setToast(null), 300);
+    }, 5000);
+  };
+
+  const handleProviderPayment = async (booking) => {
+    setPaymentLoading(booking.id);
+    try {
+      const response = await transferProviderPayment({
+        booking_id: booking.id,
+        amount: booking.total_price * 100,
+      });
+      
+      // Show rating modal if payment was successful
+      if (response.should_rate) {
+        setBookingToRate(booking);
+        setShowRatingModal(true);
+      }
+
+      // Refresh bookings
+      await getUserBookings();
+      showToast('Payment to provider processed successfully', 'success');
+    } catch (error) {
+      showToast(error.message || 'Failed to process payment', 'error');
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
 
   const handleAddPayment = () => {
     // Implement payment method addition logic here
@@ -230,15 +270,6 @@ const ProfilePage = () => {
     } finally {
       setIsAddingCard(false);
     }
-  };
-
-  const showToast = (message, type = 'success') => {
-    setSaveSuccess(true);
-    setError(type === 'error' ? message : null);
-    setTimeout(() => {
-      setSaveSuccess(false);
-      setError(null);
-    }, 3000);
   };
 
   const handleRemoveCard = async (paymentMethodId) => {
@@ -439,6 +470,52 @@ const ProfilePage = () => {
       }));
     }
   };
+
+  const handleRatingSubmit = async (ratingData) => {
+    try {
+      await rateProvider(ratingData);
+      showToast('Thank you for your rating!', 'success');
+      await getUserBookings(); // Refresh bookings to update UI
+    } catch (error) {
+      showToast(error.message || 'Failed to submit rating', 'error');
+    }
+  };
+
+  const renderBookingCard = (booking) => (
+    <div className="booking-card">
+      {/* ... existing booking details ... */}
+      
+      {booking.status === 'PAYMENT_MADE' && (
+        <div className="booking-rating">
+          {booking.rating ? (
+            <div className="rating-display">
+              <div className="stars">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <i
+                    key={star}
+                    className={`fas fa-star ${star <= booking.rating ? 'active' : ''}`}
+                  />
+                ))}
+              </div>
+              {booking.rating_comment && (
+                <p className="rating-comment">{booking.rating_comment}</p>
+              )}
+            </div>
+          ) : (
+            <button
+              className="rate-btn"
+              onClick={() => {
+                setBookingToRate(booking);
+                setShowRatingModal(true);
+              }}
+            >
+              Rate this service
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="profile-page">
@@ -818,7 +895,7 @@ const ProfilePage = () => {
                               <div className="booking-actions">
                                 <button 
                                   className="action-button chat"
-                                  onClick={() => handleChat(booking.provider_id, booking.provider_name)}
+                                  onClick={() => handleChat(booking.provider_id, booking.id, booking)}
                                 >
                                   <i className="fas fa-comments"></i>
                                   Chat with Provider
@@ -848,9 +925,19 @@ const ProfilePage = () => {
                                   <button 
                                     className="action-button pay"
                                     onClick={() => handleProviderPayment(booking)}
+                                    disabled={paymentLoading === booking.id}
                                   >
-                                    <i className="fas fa-credit-card"></i>
-                                    Pay Provider
+                                    {paymentLoading === booking.id ? (
+                                      <div className="button-content">
+                                        <span className="button-loader"></span>
+                                        <span>Processing...</span>
+                                      </div>
+                                    ) : (
+                                      <div className="button-content">
+                                        <i className="fas fa-money-bill-wave"></i>
+                                        <span>Pay to Provider</span>
+                                      </div>
+                                    )}
                                   </button>
                                 )}
                               </div>
@@ -883,7 +970,13 @@ const ProfilePage = () => {
 
           {chatProvider && (
             <ChatBox 
-              provider={chatProvider} 
+              booking_id={chatProvider.booking_id}
+              provider_id={chatProvider.provider_id}
+              client_id={chatProvider.client_id}
+              provider_name={chatProvider.provider_name}
+              client_name={chatProvider.client_name}
+              currentUserId={chatProvider.currentUserId}
+              currentUserType={chatProvider.currentUserType}
               onClose={() => setChatProvider(null)}
             />
           )}
@@ -897,10 +990,24 @@ const ProfilePage = () => {
           )}
 
           {toast && (
-            <Toast
-              message={toast.message}
-              type={toast.type}
-              onClose={() => setToast(null)}
+            <div className={`toast ${toast.type} ${toast.removing ? 'removing' : ''}`}>
+              <div className="toast-content">
+                <i className={`fas ${toast.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`}></i>
+                <span>{toast.message}</span>
+              </div>
+              <div className="toast-progress"></div>
+            </div>
+          )}
+
+          {/* Add Rating Modal */}
+          {showRatingModal && bookingToRate && (
+            <RatingModal
+              booking={bookingToRate}
+              onClose={() => {
+                setShowRatingModal(false);
+                setBookingToRate(null);
+              }}
+              onSubmit={handleRatingSubmit}
             />
           )}
         </div>

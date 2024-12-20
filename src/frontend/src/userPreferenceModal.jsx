@@ -18,7 +18,16 @@ const UserPreferencesModal = ({ show, onClose, onSave }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>Welcome! Let us know your preferences</h2>
+        <h2>
+          <i className="fas fa-user-circle"></i>
+          Welcome to SAHAYAK
+        </h2>
+        
+        <div className="modal-description">
+          <i className="fas fa-info-circle"></i>
+          Please tell us a bit about yourself to get started
+        </div>
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>I want to:</label>
@@ -27,13 +36,12 @@ const UserPreferencesModal = ({ show, onClose, onSave }) => {
               onChange={(e) => setUserType(e.target.value)}
               required
             >
-              <option value="" disabled>
-                Select an option
-              </option>
+              <option value="" disabled>Select an option</option>
               <option value="CLIENT">Take Service</option>
               <option value="SERVICE_PROVIDER">Provide Service</option>
             </select>
           </div>
+
           <div className="form-group">
             <label>City:</label>
             <select
@@ -47,6 +55,7 @@ const UserPreferencesModal = ({ show, onClose, onSave }) => {
               <option value="FRANKFURT">Frankfurt</option>
             </select>
           </div>
+
           <div className="form-group">
             <label>Mobile Number:</label>
             <input
@@ -57,10 +66,17 @@ const UserPreferencesModal = ({ show, onClose, onSave }) => {
               required
             />
           </div>
-          <button type="submit">Save</button>
+
+          <div className="modal-footer">
+            <button type="submit">
+              <i className="fas fa-check-circle"></i>
+              Continue
+            </button>
+          </div>
         </form>
+
         <button className="close-btn" onClick={onClose}>
-          Close
+          <i className="fas fa-times"></i>
         </button>
       </div>
     </div>

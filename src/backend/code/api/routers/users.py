@@ -15,12 +15,23 @@ from services.payment import stripe_payment
 router = APIRouter()
 alphabet = string.ascii_letters + string.digits
 
+
+
 class UserUpdateRequest(BaseModel):
     user_type: Optional[Usertype] = None
     city: Optional[City] = None
     whatsapp_number: Optional[str] = None
     address: Optional[str] = None
     name: Optional[str] = None
+    services_offered: Optional[List[str]] = None
+    available_time_slots: Optional[List[TimeSlot]] = None
+    available_dates: Optional[Dict[str, List[TimeSlot]]] = None
+    blocked_dates: Optional[List[datetime]] = Field(
+        default=[],
+        description="List of dates when provider is not available"
+    )
+
+    
 
 
 @router.get(
@@ -82,6 +93,17 @@ async def update_users(
     if user_update_request.name:
         current_user.name = user_update_request.name
 
+    if user_update_request.services_offered:
+        current_user.services_offered = user_update_request.services_offered
+
+    if user_update_request.available_time_slots:
+        current_user.available_time_slots = user_update_request.available_time_slots
+
+    if user_update_request.available_dates:
+        current_user.available_dates = user_update_request.available_dates
+
+    if user_update_request.blocked_dates:
+        current_user.blocked_dates = user_update_request.blocked_dates
 
 
     return await User.save_document(doc = current_user)

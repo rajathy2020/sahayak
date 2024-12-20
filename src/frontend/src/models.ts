@@ -45,6 +45,13 @@ export interface UserInfo {
     number_of_bookings?: number;
     whatsappNumber?: string;
     image_url?: string;
+    blocked_dates?: string[];
+    available_dates?: string[];
+    ratings?: {
+      average: number;
+      count: number;
+      total: number;
+    };
 }
 
 export const createUser = (data: any = {}): UserInfo => ({
@@ -65,6 +72,13 @@ export const createUser = (data: any = {}): UserInfo => ({
   number_of_bookings: data.number_of_bookings,
   whatsappNumber: data.whatsapp_number,
   image_url: data.image_url,
+  blocked_dates: data.blocked_dates,
+  available_dates: data.available_dates,
+  ratings: {
+    average: data.ratings?.average || 0,
+    count: data.ratings?.count || 0,
+    total: data.ratings?.total || 0,
+  },
 });
 
 export interface ParentService {
@@ -117,6 +131,12 @@ export interface Booking {
     time_slot: string;
     total_price: Float32Array;
     metadata: Record<string, unknown>;
+    status: string;
+    reserved_at: string;
+    payment_deadline: string;
+    payment_intent_id: string;
+    payout_id: string;
+    paid_at: string;
   }
 
 export const createBooking = (data: Partial<Booking> = {}): Booking => ({
@@ -131,4 +151,80 @@ export const createBooking = (data: Partial<Booking> = {}): Booking => ({
     time_slot: data.time_slot,
     total_price: data.total_price,
     metadata: data.metadata,
+    status: data.status,
+    payment_intent_id: data.payment_intent_id,
+    payout_id: data.payout_id,
+    paid_at: data.paid_at,
+    payment_deadline: data.payment_deadline,
+    reserved_at: data.reserved_at,
+
   });
+
+
+
+export enum TimeSlot {
+  MORNING = "9am-12pm",
+  MIDDAY = "12pm-3pm",
+  AFTERNOON_EVENING = "3pm-8pm",
+  NIGHT = "8pm-11pm"
+}
+
+export const TIME_SLOTS = Object.values(TimeSlot);
+
+export enum MessageType {
+  TEXT = "TEXT",
+  IMAGE = "IMAGE",
+  SYSTEM = "SYSTEM"
+}
+
+export interface Message {
+  id: string;
+  chat_id: string;
+  sender_id: string;
+  content: string;
+  message_type: MessageType;
+  read: boolean;
+  created_at: string;
+}
+
+export interface Chat {
+  id: string;
+  provider_id: string;
+  client_id: string;
+  booking_id?: string;
+  last_message?: string;
+  last_message_time?: string;
+  unread_count: number;
+  created_at: string;
+  updated_at: string;
+  is_active: boolean;
+  other_participant?: {
+    id: string;
+    name: string;
+    image_url?: string;
+  };
+}
+
+export const createMessage = (data: any = {}): Message => ({
+  id: data._id || data.id,
+  chat_id: data.chat_id,
+  sender_id: data.sender_id,
+  content: data.content,
+  message_type: data.message_type || MessageType.TEXT,
+  read: data.read || false,
+  created_at: data.created_at || new Date().toISOString()
+});
+
+export const createChat = (data: any = {}): Chat => ({
+  id: data._id || data.id,
+  provider_id: data.provider_id,
+  client_id: data.client_id,
+  booking_id: data.booking_id,
+  last_message: data.last_message,
+  last_message_time: data.last_message_time,
+  unread_count: data.unread_count || 0,
+  created_at: data.created_at || new Date().toISOString(),
+  updated_at: data.updated_at || new Date().toISOString(),
+  is_active: data.is_active ?? true,
+  other_participant: data.other_participant
+});

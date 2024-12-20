@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {createUser, createParentService, ProviderSearchRequest, createServiceProvider, createBooking} from './models.ts';
+import {createUser, createParentService, ProviderSearchRequest, createServiceProvider, createBooking, createChat as createChatModel, createMessage} from './models.ts';
 
 // Function to get cookie by name
 const getCookie = (name) => {
@@ -56,22 +56,12 @@ export const fetchUserInfo = async () => {
 
 export const updateUserInfo = async (userData) => {
   try {
-    const response = await fetch('/api/users/update', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    });
+    const response = await api.put(`/users/${userData.id}`, userData);
+    return createUser(response.data);
 
-    if (!response.ok) {
-      throw new Error('Failed to update user information');
-    }
-
-    return await response.json();
   } catch (error) {
-    console.error('Error in updateUserInfo:', error);
-    throw error;
+    console.error('Error updating user info:', error);
+    throw error.response?.data?.detail || error.message || 'Failed to update user info';
   }
 };
 
@@ -166,7 +156,7 @@ export const receiveClientPayment = async (params = {}) => {
 export const fetchUserBookings = async () => {
     try {
         const response = await api.get('/bookings');
-        return response.data;
+        return response.data.map(createBooking);
     } catch (error) {
         console.error('Error fetching bookings:', error);
         throw error;
@@ -180,9 +170,10 @@ export const initiateChatWithProvider = async () => {
 export const transferProviderPayment = async (params = {}) => {
     try {
         const requestPayload = {
+            booking_id: params.booking_id,
             amount: params.amount,
-            provider_id: params.provider_id
         }
+        console.log('requestPayload', requestPayload);
         const response = await api.post('/payment/payout_provider', requestPayload);
         return response.data;
     } catch (error) {
@@ -255,3 +246,177 @@ export const removePaymentMethod = async (paymentMethodId) => {
   }
 };
 
+export const fetchAllSubservices = async () => {
+  try {
+    const response = await api.get('/subservices');
+    console.log('API Response:', response.data); // Debug log
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching subservices:', error);
+    throw error.response?.data?.detail || error.message || 'Failed to fetch subservices';
+  }
+};
+
+export const createServiceProviderAccount = async () => {
+  try {
+    const response = await api.post('/payment/create_service_provider_account');
+    return response.data;
+  } catch (error) {
+    console.error('Error creating service provider account:', error);
+    throw error.response?.data?.detail || error.message || 'Failed to create service provider account';
+  }
+};
+
+export const getServiceProviderOnboardLink = async () => {
+  try {
+    const response = await api.get('/payment/service_provider_onboard');
+    return response.data;
+  } catch (error) {
+    console.error('Error getting onboard link:', error);
+    throw error.response?.data?.detail || error.message || 'Failed to get onboarding link';
+  }
+};
+
+export const getProviderDashboard = async () => {
+  try {
+    const response = await api.get('/provider/dashboard');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching provider dashboard:', error);
+    throw error.response?.data?.detail || error.message || 'Failed to fetch dashboard data';
+  }
+};
+
+// Add this function to handle payouts
+export const payoutToProvider = async (bookingId, amount) => {
+  try {
+    const response = await api.post('/payment/payout_provider', {
+      booking_id: bookingId,
+      amount: amount
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error processing payout:', error);
+    throw error.response?.data?.detail || error.message || 'Failed to process payout';
+  }
+};
+
+// Chat API functions
+export const createChat = async (params = {}) => {
+  try {
+    const requestPayload = {
+      booking_id: params.booking_id,
+      provider_id: params.provider_id,
+      client_id: params.client_id
+    };
+    
+    console.log('Creating chat with payload:', requestPayload);
+    
+    const response = await api.post('/chats', requestPayload);
+    console.log('Create chat response:', response.data);
+    
+    // Handle both array and single object responses
+    const chatData = Array.isArray(response.data) ? response.data[0] : response.data;
+    if (!chatData) {
+      throw new Error('No chat data received from server');
+    }
+    
+    return createChatModel(chatData);
+  } catch (error) {
+    console.error('Error creating chat:', error);
+    throw error.response?.data?.detail || error.message;
+  }
+};
+
+export const getChatMessages = async (chatId) => {
+  try {
+    console.log('Fetching messages for chat ID:', chatId);
+    const response = await api.get(`/chats/${chatId}/messages`);
+    console.log('Messages response:', response.data);
+    
+    // Ensure we always return an array
+    const messages = Array.isArray(response.data) ? response.data : [response.data];
+    return messages.filter(Boolean).map(createMessage);
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    throw error.response?.data?.detail || error.message;
+  }
+};
+
+
+
+
+export const sendMessage = async (chatId, content, messageType = 'TEXT') => {
+  try {
+    const requestPayload = {
+      content: content,
+      message_type: messageType
+    };
+    
+    console.log('Sending message:', requestPayload);
+    
+    const response = await api.post(`/chats/${chatId}/messages`, requestPayload);
+    return createMessage(response.data);
+  } catch (error) {
+    console.error('Error sending message:', error);
+    throw error.response?.data?.detail || error.message;
+  }
+};
+
+export const listChats = async () => {
+  try {
+    const response = await api.get('/chats/list');
+    return response.data.map(createChatModel);
+  } catch (error) {
+    console.error('Error fetching chats:', error);
+    throw error.response?.data?.detail || error.message;
+  }
+};
+
+export const rateProvider = async (ratingData) => {
+  try {
+    const response = await api.post('/provider/rate', ratingData);
+    return response.data;
+  } catch (error) {
+    console.error('Error rating provider:', error);
+    throw error.response?.data?.detail || error.message;
+  }
+};
+
+export const logout = async () => {
+  try {
+    // First, call your backend logout endpoint
+    await api.get('/auth0/logout');
+    
+    // Clear any local storage/cookies
+    document.cookie = 'Authorization=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    localStorage.removeItem('user');
+
+    // Get Auth0 configuration from environment
+    const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8090';
+    const auth0Domain = process.env.REACT_APP_AUTH0_DOMAIN;
+    const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
+    
+    // Construct Auth0 logout URL
+    const returnTo = encodeURIComponent(`${baseURL}/auth0/login`);
+    const logoutUrl = `https://${auth0Domain}/v2/logout?client_id=${clientId}&returnTo=${returnTo}`;
+    
+    // Redirect to Auth0 logout URL
+    window.location.href = logoutUrl;
+  } catch (error) {
+    console.error('Error during logout:', error);
+    // If there's an error, still try to redirect to login
+    const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:8090';
+    window.location.href = `${baseURL}/auth0/login`;
+  }
+};
+
+export const checkProviderPaymentInfo = async () => {
+  try {
+    const response = await api.get('/payment/check_provider_payment_info');
+    return response.data.payment_info;
+  } catch (error) {
+    console.error('Error checking provider payment info:', error);
+    throw error;
+  }
+};
