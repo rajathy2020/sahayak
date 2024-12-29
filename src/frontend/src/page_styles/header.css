@@ -5,64 +5,44 @@
     align-items: center;
     padding: 15px 30px;
     background-color: #35886d;
-    color: black;
+    color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .logo {
-    display: flex;
-    align-items: center;
-  }
-  
-  .logo a {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    gap: 10px;
-  }
-  
-  .header-logo {
-    width: 40px;  /* Adjust size as needed */
-    height: 40px;  /* Adjust size as needed */
+}
+
+.header-logo {
+    width: 40px;
+    height: 40px;
     object-fit: contain;
-  }
-  
-  .header-title {
+}
+
+.header-title {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #35886d;
-  }
-  
-  .nav-links a {
-    margin-left: 20px;
-    color: #fff;
+    color: white;
+    margin-left: 10px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-link {
     text-decoration: none;
-    font-size: 1rem;
+    color: white;
     transition: color 0.3s ease;
-  }
-  
-  .nav-links a:hover {
-    color: #333;
-  }
-  
-  .nav-links .active {
-    font-weight: bold;
+}
+
+.nav-link:hover {
     color: #ddd;
-  }
-  
-  /* Make sure logo looks good on smaller screens */
-  @media (max-width: 768px) {
-    .header-logo {
-      width: 32px;
-      height: 32px;
-    }
-    
-    .header-title {
-      font-size: 1.5rem;
-    }
-  }
-  
-  .logout-btn {
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.logout-btn {
     padding: 8px 16px;
     border: none;
     border-radius: 6px;
@@ -75,13 +55,9 @@
     gap: 8px;
     cursor: pointer;
     transition: all 0.2s;
-  }
-  
-  .logout-btn:hover {
+}
+
+.logout-btn:hover {
     background-color: #b91c1c;
-  }
-  
-  .logout-btn i {
-    font-size: 1rem;
-  }
+}
   

@@ -119,7 +119,7 @@ def charge_client_for_booking(amount, payment_method_id, user, description="Serv
 
         # Step 1: Create a Payment Intent to charge the client
         payment_intent = stripe.PaymentIntent.create(
-            amount=amount,  # Amount in cents (e.g., 5000 for $50)
+            amount=amount*100,  # Amount in cents (e.g., 5000 for $50)
             currency="eur",
             customer=customer_id,  # Stripe customer ID
             payment_method=payment_method_id,  # The client's saved payment method
@@ -156,9 +156,9 @@ def payout_to_provider(provider_stripe_account_id, amount, description, currency
     """
     try:
         # Step 1: Transfer funds from the platform's main account to the provider's connected Stripe account
-        print(provider_stripe_account_id, "provider_stripe_account_id")
+        print(provider_stripe_account_id, "provider_stripe_account_id", amount)
         transfer = stripe.Transfer.create(
-            amount=amount,  # Amount in cents (e.g., 10000 for €100)
+            amount=amount*100,  # Amount in cents (e.g., 10000 for €100)
             currency=currency,  # Currency (e.g., "eur")
             destination=provider_stripe_account_id,  # Provider's connected Stripe account ID
             description=description
@@ -167,7 +167,7 @@ def payout_to_provider(provider_stripe_account_id, amount, description, currency
 
         # Step 2: Payout from the connected provider's account to their bank account
         payout = stripe.Payout.create(
-            amount=amount,  # Same amount in cents for payout
+            amount=amount*100,  # Same amount in cents for payout
             currency=currency,  # Same currency for payout
             description=description,
             stripe_account=provider_stripe_account_id # Payout from the provider's account

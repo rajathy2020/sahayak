@@ -157,6 +157,7 @@ async def rate_provider(
         provider.ratings.total += rating_data.rating
         provider.ratings.count += 1
         provider.ratings.average = provider.ratings.total / provider.ratings.count
+        provider.ratings.comments.append(rating_data.comment)
 
         # Save the updated provider
         await User.save_document(doc=provider)

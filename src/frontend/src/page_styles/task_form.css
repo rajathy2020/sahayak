@@ -93,24 +93,27 @@ body {
   margin-bottom: 30px;
 }
 
+/* Form Section */
 .form-section {
-  margin-bottom: 20px;
+  margin-bottom: 20px; /* Space between sections */
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Stack items vertically */
 }
 
 /* Labels */
 .form-section label {
-  display: block;
+  display: block; /* Ensure labels are block-level */
   font-size: 0.95rem;
   font-weight: 500;
   color: #2d3748;
-  margin-bottom: 6px;
+  margin-bottom: 6px; /* Space below label */
 }
 
 /* Inputs and Selects */
 .form-section select,
 .form-section input,
 .form-section textarea {
-  width: 100%;
+  width: 100%; /* Full width */
   padding: 8px 12px;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
@@ -118,7 +121,7 @@ body {
   color: #4a5568;
   background: white;
   transition: all 0.2s ease;
-  margin-bottom: 16px;
+  margin-bottom: 16px; /* Space below each field */
 }
 
 .form-section select:focus,
@@ -131,8 +134,8 @@ body {
 
 /* Textarea specific styles */
 .form-section textarea {
-  min-height: 100px;
-  resize: vertical;
+  min-height: 100px; /* Minimum height for textarea */
+  resize: vertical; /* Allow vertical resizing */
 }
 
 /* Continue button */
@@ -147,11 +150,11 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-top: 20px;
+  margin-top: 20px; /* Space above button */
 }
 
 .continue-button:hover {
-  background: #2a6d57;
+  background: #2a6d57; /* Darker green on hover */
 }
 
 /* Price display */

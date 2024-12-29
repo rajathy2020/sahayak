@@ -1,8 +1,9 @@
+// Import necessary libraries
 import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { TimeSlot, TIME_SLOTS } from '../models.ts';
-import '../page_styles/service_provider_modal.css';
+import '../page_styles/update_availability_modal.css';
 
 const UpdateAvailabilityModal = ({ show, onClose, onSave, currentAvailability }) => {
   console.log('UpdateAvailabilityModal Props:', {
@@ -22,20 +23,17 @@ const UpdateAvailabilityModal = ({ show, onClose, onSave, currentAvailability })
   const [step, setStep] = useState('available');
   const [dateRange, setDateRange] = useState(null);
   const [error, setError] = useState(null);
-  const [dateFilters, setDateFilters] = useState({
-    showAvailable: true,
-    showBlocked: true
-  });
-
-  // Add new state for loading
   const [isSaving, setIsSaving] = useState(false);
-  
-  // Add toast state (if not using global toast)
   const [toast, setToast] = useState(null);
-
   const [toastTimeout, setToastTimeout] = useState(null);
+  const [editMode, setEditMode] = useState('available');
+  const [selectedStartDate, setSelectedStartDate] = useState(null);
+  const [selectedEndDate, setSelectedEndDate] = useState(null);
 
-  // Clear timeout on unmount
+  const startDate = new Date(2024, 11, 1); // 
+  const endDate = new Date(2025, 11, 30); // 
+
+
   useEffect(() => {
     return () => {
       if (toastTimeout) {
@@ -44,48 +42,33 @@ const UpdateAvailabilityModal = ({ show, onClose, onSave, currentAvailability })
     };
   }, [toastTimeout]);
 
-  // Initialize with current availability data
   useEffect(() => {
     if (currentAvailability) {
-      // Initialize available dates and blocked dates
       const availableDates = currentAvailability.available_dates || {};
-      const blockedDatesArray = Array.isArray(currentAvailability.blocked_dates) 
-        ? currentAvailability.blocked_dates.map(date => 
+      const blockedDatesArray = Array.isArray(currentAvailability.blocked_dates)
+        ? currentAvailability.blocked_dates.map(date =>
             typeof date === 'string' ? date : new Date(date).toISOString().split('T')[0]
           )
         : [];
 
-      console.log('Processing dates:', {
-        availableDates,
-        blockedDatesArray,
-        availableDateKeys: Object.keys(availableDates)
-      });
+      const blockedDates = blockedDatesArray.map(date => date.split('T')[0]);
+     
 
-      // Set form data with initial values
+
       const initialFormData = {
         available_dates: availableDates,
-        blocked_dates: blockedDatesArray,
+        blocked_dates: blockedDates,
         available_time_slots: []
       };
 
-      // Get time slots from the first available date if it exists
       const firstDateSlots = Object.values(availableDates)[0];
       if (firstDateSlots) {
         initialFormData.available_time_slots = firstDateSlots;
       }
 
-      console.log('Setting initial form data:', initialFormData);
       setFormData(initialFormData);
-
-      // Set selected dates from available_dates
       setSelectedDates(Object.keys(availableDates));
-      setBlockedDates(blockedDatesArray);
-
-      // Log the state after setting
-      console.log('Initial state set:', {
-        availableDates: Object.keys(availableDates),
-        blockedDates: blockedDatesArray
-      });
+      setBlockedDates(blockedDates); // Ensure blocked dates are set
     }
   }, [currentAvailability]);
 
@@ -109,86 +92,104 @@ const UpdateAvailabilityModal = ({ show, onClose, onSave, currentAvailability })
   };
 
   const formatDate = (date) => {
-    return date.toISOString().split('T')[0];
+    // Extract year, month, and day from the date
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    // Format the date as YYYY-MM-DD
+    const formattedDate = `${year}-${month}-${day}`;
+  
+    return formattedDate;
   };
 
   const handleDateClick = (value) => {
     if (step === 'available') {
-      if (formData.available_time_slots.length === 0) {
-        setError('Please select time slots first');
-        return;
-      }
-
-      if (Array.isArray(value)) {
-        const [start, end] = value;
-        if (!start || !end) return;
-
-        const dates = [];
-        let current = new Date(start);
-        
-        while (current <= end) {
-          const formattedDate = formatDate(current);
-          if (!formData.blocked_dates.includes(formattedDate)) {
-            dates.push(formattedDate);
-          }
-          current.setDate(current.getDate() + 1);
+        if (formData.available_time_slots.length === 0) {
+            setError('Please select time slots first');
+            return;
         }
 
-        // Update available dates
-        const newAvailableDates = { ...formData.available_dates };
-        dates.forEach(date => {
-          newAvailableDates[date] = formData.available_time_slots;
-        });
+        if (Array.isArray(value)) {
+            const [start, end] = value;
+            if (!start) return;
 
-        setFormData(prev => ({
-          ...prev,
-          available_dates: newAvailableDates
-        }));
-        setSelectedDates(prev => [...new Set([...prev, ...dates])]);
-        setDateRange(value);
-      }
+            const dates = [];
+            let current = new Date(start);
+
+            // Highlight the first selected date
+            const formattedStartDate = formatDate(current);
+            setSelectedDates([formattedStartDate]); // Set the first date as selected
+
+            while (current <= (end || start)) {
+                const formattedDate = formatDate(current);
+                dates.push(formattedDate);
+                current.setDate(current.getDate() + 1);
+            }
+
+            console.log('dates selected', dates);
+
+            // Update selected dates
+            setSelectedDates(dates);
+            setDateRange(value);
+
+            // Update form data available_dates with new dates and time slots
+            setFormData(prev => {
+                const newAvailableDates = { ...prev.available_dates };
+                dates.forEach(date => {
+                    newAvailableDates[date] = prev.available_time_slots; // Keep the old time slots
+                });
+                console.log('newAvailableDates', newAvailableDates);
+                return { ...prev, available_dates: newAvailableDates };
+            });
+        }
     } else if (step === 'blocked') {
-      const formattedDate = formatDate(value);
+        const formattedDate = formatDate(value);
+
+        console.log('formattedDate in the blocked step', formattedDate);
+
+
+        
+        // new blocked dates should add to the previous blocked dates if the date is not the blocked date else keep the previous blocked dates
       
       setFormData(prev => {
-        const newBlockedDates = prev.blocked_dates.includes(formattedDate)
-          ? prev.blocked_dates.filter(d => d !== formattedDate)
-          : [...prev.blocked_dates, formattedDate];
-
-        // Remove from available dates if being blocked
-        const newAvailableDates = { ...prev.available_dates };
-        if (newBlockedDates.includes(formattedDate)) {
-          delete newAvailableDates[formattedDate];
+        let newBlockedDates = [];
+        if (prev.blocked_dates.includes(formattedDate)) {
+          newBlockedDates = prev.blocked_dates.filter(d => d !== formattedDate)
+          // add the new blocked date to the available dates
+          const newAvailableDates = { ...prev.available_dates };
+          Object.keys(newAvailableDates).forEach(date => {
+            newAvailableDates[date] = prev.available_time_slots; // Keep the old time slots
+          });
+          newAvailableDates[formattedDate] = prev.available_time_slots;
+          console.log('newBlockedDates', newBlockedDates)
+          setBlockedDates(newBlockedDates)
+          return { ...prev, blocked_dates: newBlockedDates, available_dates: newAvailableDates }
+        } else {
+          newBlockedDates = [...prev.blocked_dates, formattedDate]
+          console.log('newBlockedDates', newBlockedDates)
+          setBlockedDates(newBlockedDates)
+          return { ...prev, blocked_dates: newBlockedDates }
         }
-
-        return {
-          ...prev,
-          blocked_dates: newBlockedDates,
-          available_dates: newAvailableDates
-        };
       });
 
-      setBlockedDates(prev => 
-        prev.includes(formattedDate)
-          ? prev.filter(d => d !== formattedDate)
-          : [...prev, formattedDate]
-      );
-    }
+      
+
+
   };
+};
 
   const showToast = (message, type) => {
     setToast({ message, type });
-    
+
     if (toastTimeout) {
       clearTimeout(toastTimeout);
     }
 
-    // Set a 5-second timeout for the toast
     const timeout = setTimeout(() => {
       setToast(prev => ({ ...prev, removing: true }));
-      // Add a small delay for the removal animation
       setTimeout(() => setToast(null), 300);
-    }, 5000); // 5 seconds
+    }, 5000);
 
     setToastTimeout(timeout);
   };
@@ -196,16 +197,14 @@ const UpdateAvailabilityModal = ({ show, onClose, onSave, currentAvailability })
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
-    
+    console.log('handleSubmit', formData);
+
     try {
       await onSave(formData);
       showToast('Availability updated successfully!', 'success');
-      
-      // Close modal after the toast shows
       setTimeout(() => {
         onClose();
-      }, 5000); // Wait for toast to finish
-      
+      }, 5000);
     } catch (error) {
       setError('Failed to update availability');
       showToast('Failed to update availability. Please try again.', 'error');
@@ -214,28 +213,45 @@ const UpdateAvailabilityModal = ({ show, onClose, onSave, currentAvailability })
     }
   };
 
-  const handleFilterToggle = (filterType) => {
-    setDateFilters(prev => ({
-      ...prev,
-      [filterType]: !prev[filterType]
-    }));
+  const handleEditAvailableDates = () => {
+    setEditMode('available');
+    setStep('available');
+  };
+
+  const handleEditBlockedDates = () => {
+    setEditMode('blocked');
+    setStep('blocked');
   };
 
   const getTileClassName = ({ date }) => {
     const formattedDate = formatDate(date);
-    const classes = [];
-    
-    const isBlocked = formData.blocked_dates.includes(formattedDate);
-    const isAvailable = Object.keys(formData.available_dates).includes(formattedDate);
-    
-    if (isBlocked && dateFilters.showBlocked) {
-      classes.push('blocked-date');
-    } else if (isAvailable && dateFilters.showAvailable) {
-      classes.push('available-date');
+    let classes = [];
+
+    const availableDates = Object.keys(formData.available_dates);
+
+
+  
+    // Check if the date is blocked
+    if (blockedDates.includes(formattedDate)) {
+      classes.push('blocked-date'); // Red for blocked dates
+    } else if (availableDates.includes(formattedDate)) {
+      classes.push('available-date'); // Green for available dates
     }
+
+    // Highlight the first selected date
+    if (formattedDate === selectedStartDate) {
+      classes.push('selected-start-date'); // Dark green for the starting date
+    } else if (selectedDates.includes(formattedDate)) {
+      classes.push('available-date'); // Ensure selected dates are also marked as available
+    }
+
+    classes = [...new Set(classes)];
+
 
     return classes.join(' ');
   };
+
+
 
   if (!show) return null;
 
@@ -272,108 +288,51 @@ const UpdateAvailabilityModal = ({ show, onClose, onSave, currentAvailability })
           </div>
 
           <div className="modal-section">
-            <h3>Select Available Dates</h3>
-            <div className="calendar-wrapper">
+            <h3>Select Dates</h3>
+            <div className="edit-buttons">
+              <button 
+                type="button" 
+                onClick={handleEditAvailableDates} 
+                className={`edit-button ${editMode === 'available' ? 'selected' : ''}`}
+              >
+                Edit Available Dates
+              </button>
+              <button 
+                type="button" 
+                onClick={handleEditBlockedDates} 
+                className={`edit-button ${editMode === 'blocked' ? 'selected' : ''}`}
+              >
+                Edit Blocked Dates
+              </button>
+            </div>
+            {selectedStartDate && selectedEndDate && (
+              <div className="selected-date-banner">
+                <p>Selected Start Date: <strong>{selectedStartDate}</strong></p>
+                {selectedEndDate && <p>Selected End Date: <strong>{selectedEndDate}</strong></p>}
+              </div>
+            )}
+           
+            <div className={`calendar-wrapper ${editMode}`}>
+              {formData.available_dates && (
               <Calendar
-                minDate={new Date()}
-                maxDate={new Date(Date.now() + 90 * 24 * 60 * 60 * 1000)}
-                selectRange={step === 'available'}
+                selectRange={editMode === 'available'}
                 onChange={handleDateClick}
-                value={step === 'available' ? dateRange : null}
+                value={editMode === 'available' ? dateRange : null}
+                showNeighboringMonth={false}
                 tileClassName={getTileClassName}
-                tileDisabled={({ date }) => {
-                  const formattedDate = formatDate(date);
-                  // Only disable dates that are blocked when in available selection mode
-                  if (step === 'available') {
-                    return formData.blocked_dates.includes(formattedDate);
-                  }
-                  // In blocked mode, only allow selecting from available dates
-                  return !Object.keys(formData.available_dates).includes(formattedDate);
-                }}
+                
               />
+              )}
             </div>
-          </div>
 
-          <div className="calendar-actions">
-            {step === 'blocked' && (
-              <button 
-                type="button" 
-                className="calendar-btn back" 
-                onClick={() => setStep('available')}
-              >
-                <i className="fas fa-arrow-left"></i>
-                Back to Available Dates
-              </button>
-            )}
-            {step === 'available' && selectedDates.length > 0 && (
-              <button 
-                type="button" 
-                className="calendar-btn next" 
-                onClick={() => setStep('blocked')}
-              >
-                Select Blocked Dates
-                <i className="fas fa-arrow-right"></i>
-              </button>
-            )}
           </div>
-
-          <div className="dates-legend">
-            <div className="legend-item">
-              <label className="legend-checkbox">
-                <input
-                  type="checkbox"
-                  checked={dateFilters.showAvailable}
-                  onChange={() => handleFilterToggle('showAvailable')}
-                />
-                <span className="legend-color available"></span>
-                <span>Available Dates ({selectedDates.filter(date => !blockedDates.includes(date)).length})</span>
-              </label>
-            </div>
-            <div className="legend-item">
-              <label className="legend-checkbox">
-                <input
-                  type="checkbox"
-                  checked={dateFilters.showBlocked}
-                  onChange={() => handleFilterToggle('showBlocked')}
-                />
-                <span className="legend-color blocked"></span>
-                <span>Blocked Dates ({blockedDates.length})</span>
-              </label>
-            </div>
-          </div>
-
-          {error && (
-            <div className="error-message">
-              <i className="fas fa-exclamation-circle"></i>
-              {error}
-            </div>
-          )}
 
           <div className="modal-footer">
-            <button 
-              type="button" 
-              className="cancel-btn" 
-              onClick={onClose}
-              disabled={isSaving}
-            >
+            <button type="button" className="cancel-btn" onClick={onClose}>
               Cancel
             </button>
-            <button 
-              type="submit" 
-              className="save-btn"
-              disabled={isSaving}
-            >
-              {isSaving ? (
-                <>
-                  <span className="spinner"></span>
-                  Updating...
-                </>
-              ) : (
-                <>
-                  <i className="fas fa-check-circle"></i>
-                  Update Availability
-                </>
-              )}
+            <button type="submit" className="save-btn">
+              Update Availability4444
             </button>
           </div>
 
@@ -392,4 +351,4 @@ const UpdateAvailabilityModal = ({ show, onClose, onSave, currentAvailability })
   );
 };
 
-export default UpdateAvailabilityModal; 
+export default UpdateAvailabilityModal;

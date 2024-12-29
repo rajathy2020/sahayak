@@ -18,6 +18,8 @@ class AbstractUserManagement():
         query = And(User.email == email)
         user = await User.search_document(query=query)
 
+        print("user", user, email, name, image_url, auth0_id,   )
+
         if not user:
             print("Adding new user", user)
             user = User(email=email, name=name, gender = "male", image_url = image_url, auth0_id = auth0_id )

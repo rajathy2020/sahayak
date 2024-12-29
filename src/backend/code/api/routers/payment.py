@@ -83,7 +83,6 @@ async def charge_client(request: BookingChargeRequest, current_user: User = Depe
         raise HTTPException(status_code=500, detail="Failed to charge the client.")
     #WhatsappNotification.charge_client(current_user)
     booking = await Booking.get_document(doc_id = request.booking_id)
-    booking.total_price = request.amount
     booking.status = BookingStatus.CONFIRMED
     booking.payment_intent_id = payment_intent.id
     await Booking.save_document(doc=booking)
@@ -122,7 +121,7 @@ async def payout_provider(request: PayoutRequest, current_user: User = Depends(g
         # Process the payout via Stripe
         try:
             payout_result = payout_to_provider(
-                amount=int(1000),
+                amount=int(request.amount),
                 provider_stripe_account_id=provider.stripe_account_id,
                 description=f"Payout for booking {booking.id}"
             )

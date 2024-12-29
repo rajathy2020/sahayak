@@ -6,6 +6,8 @@ import './page_styles/header.css'; // Add this for header styling
 
 const CheckoutPage = () => {
   // State management
+  const platform_fee = 2
+  const [total_fees, setTotalFee] = useState(0);
   const [user, setUser] = useState(null);
   const [cards, setCards] = useState([]);
   const [selectedCardIndex, setSelectedCardIndex] = useState(null);
@@ -28,12 +30,16 @@ const CheckoutPage = () => {
     return requestParams;
   };
 
-  const bookingSummary = location.state || getQueryParams();
+  const bookingSummary = location.state || getQueryParams(); // Get booking details from state
+
+  // Use bookingSummary to display relevant information
+  console.log(bookingSummary, "bookingSummary");
 
   // Fetch user info function
   const getUserInfo = async () => {
     try {
       const response = await fetchUserInfo();
+      console.log("userinfo 123", response);
       const payment_methods = response.stripe_paymemt_methods;
       if (payment_methods) {
         const formattedCards = payment_methods.map((method) => ({
@@ -41,8 +47,15 @@ const CheckoutPage = () => {
           cardType: method.brand,
           expiry: `${method.exp_month}/${method.exp_year}`,
           payment_method_id: method.payment_method_id,
-        }));
+          default: method.payment_method_id === response.default_payment_method_id,
+        }
+      
+      )
+    );
+        console.log("formattedCards", formattedCards);
+        setSelectedCardIndex(formattedCards.findIndex(card => card.default));
         setCards(formattedCards);
+        setUser(response);
       }
     } catch (error) {
       setError('Failed to get user info');
@@ -67,6 +80,9 @@ const CheckoutPage = () => {
   // Initial data fetching
   useEffect(() => {
     getUserInfo();
+    const total_fee = parseInt(platform_fee)+parseInt(bookingSummary.price);
+    setTotalFee(total_fee);
+   
   }, []);
 
   // Handle card selection
@@ -139,7 +155,7 @@ const CheckoutPage = () => {
 
     const params = {
       booking_id: bookingSummary.booking_id,
-      amount: bookingSummary.price*100,
+      amount: bookingSummary.price+platform_fee,
       payment_method_id: cards[selectedCardIndex].payment_method_id,
     };
 
@@ -266,7 +282,7 @@ const CheckoutPage = () => {
                   <span>
                     {paymentStatus === 'processing' ? 'Processing...' : 'Pay Now'}
                   </span>
-                  <span className="amount">€{bookingSummary.price}</span>
+                  <span className="amount">€{total_fees}</span>
                 </div>
                 <div className="spinner"></div>
               </button>
@@ -312,29 +328,29 @@ const CheckoutPage = () => {
                 <i className="far fa-clock"></i>
                 Time Slot
               </span>
-              <span className="summary-value">{bookingSummary.booking_slot}</span>
+              <span className="summary-value">{bookingSummary.time_slot}</span>
             </div>
             <div className="summary-item">
               <span className="summary-label">
                 <i className="far fa-map-marker-alt"></i>
                 Location
               </span>
-              <span className="summary-value">Your Address</span>
+              {user && <span className="summary-value">{user.address}</span>}
             </div>
           </div>
 
           <div className="price-breakdown">
-            <div className="price-item">
-              <span>Service Charge</span>
-              <span>€{(bookingSummary.price * 0.9).toFixed(2)}</span>
+          <div className="price-item">
+              <span>Service Fee</span>
+              <span>€{bookingSummary.price}</span>
             </div>
             <div className="price-item">
               <span>Platform Fee</span>
-              <span>€{(bookingSummary.price * 0.1).toFixed(2)}</span>
+              <span>€{platform_fee}</span>
             </div>
             <div className="total-amount">
               <span className="total-label">Total Amount</span>
-              <span className="total-value">€{bookingSummary.price}</span>
+              <span className="total-value">€{total_fees}</span>
             </div>
           </div>
 

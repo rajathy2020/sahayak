@@ -18,9 +18,18 @@ const ServiceProviderCard = ({ provider, handleBookingClick, onChatClick }) => {
       {/* Provider Information */}
       <div className="provider-info">
         <h3 className="provider-name">{provider.name}</h3>
-        <p className="provider-description">
-          {provider.description}
-        </p>
+        <p className="provider-description">{provider.description}</p>
+
+        {/* Ratings Section */}
+        <div className="provider-ratings">
+          <span className="average-rating">Average Rating: {provider.ratings.average.toFixed(1)} ⭐</span>
+          <span className="total-ratings">({provider.ratings.count} ratings)</span>
+          <div className="comments">
+            {provider.ratings.comments.slice(0, 3).map((comment, index) => (
+              <p key={index} className="comment">{comment}</p>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="card-actions">
@@ -34,7 +43,6 @@ const ServiceProviderCard = ({ provider, handleBookingClick, onChatClick }) => {
     </div>
   );
 };
-
 
 const BookingSummaryModal = ({ provider, selectedDate, selectedTimeSlot, onClose, onProceed }) => {
   if (!provider) return null; // Return null if no provider is selected
@@ -171,6 +179,8 @@ const ServiceProviderPage = () => {
         "client_id": user.id,
         "time_slot": selectedTimeSlot,
         "booked_date": `${selectedDate}T00:00:00Z`,
+        "price": requestParams.price,
+        "metadata":requestParams
       }
 
       setSelectedProvider(provider);
@@ -301,7 +311,6 @@ const ServiceProviderPage = () => {
             <option value="8pm-11pm">8pm - 11pm</option>
           </select>
         </div>
-        <h2>More filters</h2>
 
       </div>
 

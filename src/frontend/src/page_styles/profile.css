@@ -314,30 +314,36 @@
 }
 
 .booking-card {
-  background: white;
+  background-color: #ffffff;
   border-radius: 12px;
-  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .booking-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .booking-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .booking-header h4 {
-  font-size: 1.1rem;
-  color: #1f2937;
+  font-size: 1.4rem;
+  color: #333;
   margin: 0;
+}
+
+.booking-header p {
+  font-size: 0.9rem;
+  color: #4b5563;
+  font-weight: bold;
 }
 
 .booking-status {
@@ -358,22 +364,13 @@
 }
 
 .booking-details {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 20px;
-  padding: 16px;
-  background: #f8fafc;
-  border-radius: 8px;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #333;
 }
 
 .booking-details p {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  color: #4b5563;
-  font-size: 0.95rem;
+  margin: 5px 0;
 }
 
 .booking-details i {
@@ -393,10 +390,22 @@
 
 .booking-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid #e5e7eb;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.booking-actions button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.booking-actions button:hover {
+  background-color: #0056b3;
 }
 
 /* Button Styles */
@@ -526,14 +535,14 @@
 }
 
 .default-badge {
+  background-color: #28a745;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
   position: absolute;
   top: 10px;
   right: 10px;
-  background: #e8f5e9;
-  color: #2e7d32;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
 }
 
 .card-brand i {
@@ -1702,6 +1711,46 @@
 
 .rate-btn:hover {
   background: #f0fdf4;
+}
+
+/* Additional styles for comments */
+.comments {
+  margin-top: 5px;
+}
+
+.comment {
+  margin: 2px 0;
+  font-style: italic;
+  color: #6b7280;
+}
+
+/* Default badge styling */
+.default-badge {
+  background-color: #28a745;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.contact-section {
+  padding: 20px;
+  background-color: #f8f9fa; /* Light background for contrast */
+  border-radius: 8px;
+  margin: 20px 0; /* Space around the section */
+}
+
+.contact-section h2 {
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.contact-section p {
+  font-size: 1rem;
+  color: #555;
 }
   
   

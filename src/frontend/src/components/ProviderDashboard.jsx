@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { getProviderDashboard, updateUserInfo, fetchUserInfo, logout } from '../api';
+import { getProviderDashboard, updateUserInfo, fetchUserInfo, fetchAllSubservices, logout, } from '../api';
 import '../page_styles/provider_dashboard.css';
 import UpdateAvailabilityModal from './UpdateAvailabilityModal';
+import SubservicesModal from './SubservicesModal';
 import ChatBox from './ChatBox';
+import Toast from './Toast';
 import { useUser } from '../userContext';
 
 const ProviderDashboard = () => {
@@ -17,9 +19,12 @@ const ProviderDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showAvailabilityModal, setShowAvailabilityModal] = useState(false);
+  const [showSubservicesModal, setShowSubservicesModal] = useState(false);
+  const [subservices, setSubservices] = useState([]);
   const { user, loading: userLoading, setUser } = useUser();
   const [chatClient, setChatClient] = useState(null);
   const [pageLoading, setPageLoading] = useState(false);
+  const [toast, setToast] = useState(null);
 
   console.log('User data in ProviderDashboard:', user);
 
@@ -46,6 +51,15 @@ const ProviderDashboard = () => {
     }
   };
 
+  const fetchAvailableSubservices = async () => {
+    try {
+      const data = await fetchAllSubservices();
+      setSubservices(data);
+    } catch (error) {
+      console.error('Error fetching subservices:', error);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       console.log('User data in ProviderDashboard:', {
@@ -56,10 +70,22 @@ const ProviderDashboard = () => {
         keys: user.available_dates ? Object.keys(user.available_dates) : []
       });
       fetchDashboard();
+      fetchAvailableSubservices();
     }
   }, [user]);
 
+  const handleSubserviceChange = (subserviceId) => {
+    setUser(prev => {
+      const updatedSubservices = prev.services_offered.includes(subserviceId)
+        ? prev.services_offered.filter(id => id !== subserviceId)
+        : [...prev.services_offered, subserviceId];
+
+      return { ...prev, services_offered: updatedSubservices };
+    });
+  };
+
   const handleUpdateAvailability = async (availabilityData) => {
+    console.log('handleUpdateAvailability 555555', availabilityData);
     try {
       await updateUserInfo({
         id: user.id,
@@ -76,6 +102,19 @@ const ProviderDashboard = () => {
     } catch (error) {
       console.error('Failed to update availability:', error);
       throw error;
+    }
+  };
+
+  const handleUpdateSubservices = async (subservicesData) => {
+    try {
+      await updateUserInfo({
+        id: user.id,
+        services_offered: subservicesData
+      });
+      setToast({ message: 'Services updated successfully!', type: 'success' });
+    } catch (error) {
+      console.error('Failed to update subservices:', error);
+      setToast({ message: 'Failed to update services.', type: 'error' });
     }
   };
 
@@ -102,8 +141,13 @@ const ProviderDashboard = () => {
       currentUserType: 'PROVIDER'
     };
 
-    console.log('Chat params in provider dashboard:', params);
+
     setChatClient(params);
+
+
+    console.log('Chat params in provider dashboard:', params);
+
+    
   };
 
   const handleLogout = async () => {
@@ -145,6 +189,13 @@ const ProviderDashboard = () => {
                 >
                   <i className="fas fa-calendar-plus"></i>
                   Update Availability
+                </button>
+                <button 
+                  className="action-btn"
+                  onClick={() => setShowSubservicesModal(true)}
+                >
+                  <i className="fas fa-cogs"></i>
+                  Update Services
                 </button>
               </div>
               <button 
@@ -277,6 +328,26 @@ const ProviderDashboard = () => {
             </div>
           </div>
 
+          {showSubservicesModal && (
+            <SubservicesModal
+              show={showSubservicesModal}
+              onClose={() => setShowSubservicesModal(false)}
+              subservices={subservices}
+              selectedSubservices={user.services_offered}
+              onSubserviceChange={handleSubserviceChange}
+              onSave={handleUpdateSubservices}
+            />
+          )}
+
+          {showAvailabilityModal && (
+            <UpdateAvailabilityModal
+              show={showAvailabilityModal}
+              onClose={() => setShowAvailabilityModal(false)}
+              onSave={handleUpdateAvailability}
+              currentAvailability={user}
+            />
+          )}
+
           {chatClient && (
             <ChatBox 
               booking_id={chatClient.booking_id}
@@ -290,12 +361,11 @@ const ProviderDashboard = () => {
             />
           )}
 
-          {showAvailabilityModal && (
-            <UpdateAvailabilityModal
-              show={showAvailabilityModal}
-              onClose={() => setShowAvailabilityModal(false)}
-              onSave={handleUpdateAvailability}
-              currentAvailability={user}
+          {toast && (
+            <Toast 
+              message={toast.message} 
+              type={toast.type} 
+              onClose={() => setToast(null)} 
             />
           )}
         </>

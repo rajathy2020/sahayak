@@ -11,6 +11,7 @@ from beanie import Document
 from pydantic import Field
 from beanie.odm.fields import ExpressionField
 from .base import *
+from pydantic import BaseModel
 
 
 
@@ -183,10 +184,11 @@ class SubService(MongoBase):
     duration: Optional[float] = None
 
 
-class UserRatings(MongoBase):
+class UserRatings(BaseModel):
     average: float = 0.0
     count: int = 0
     total: int = 0
+    comments: Optional[List[str]] = []
 
 class User(MongoBase):
     name: str
@@ -197,6 +199,7 @@ class User(MongoBase):
     user_type: Optional[Usertype] = None
     stripe_customer_id: Optional[str] = None
     stripe_paymemt_methods: Optional[List] = []
+    default_payment_method_id: Optional[str] = None
     stripe_account_id: Optional[str] = None
     services_offered: Optional[List[str]] = None
     available_time_slots: Optional[List[TimeSlot]] = None

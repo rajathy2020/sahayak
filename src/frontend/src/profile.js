@@ -6,6 +6,7 @@ import ChatBox from './components/ChatBox';
 import { City } from './models.ts';
 import Toast from './components/Toast';
 import RatingModal from './components/RatingModal';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
   const [userInfo, setUserInfo] = useState({
@@ -48,6 +49,7 @@ const ProfilePage = () => {
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [bookingToRate, setBookingToRate] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const initializePage = async () => {
@@ -99,7 +101,7 @@ const ProfilePage = () => {
     setError(null);
     try {
       const response = await fetchUserInfo();
-      console.log("response", response)
+      console.log("userInfo", response)
       setUserInfo(response);
     } catch (error) {
       setError('Failed to load user information. Please try again.');
@@ -122,12 +124,20 @@ const ProfilePage = () => {
             return booking.metadata?.[subserviceId]?.name || 'Unknown Service';
           }) || [];
           
+          // Extract booking request metadata
+          const bookingRequest = booking.metadata?.booking_request || {};
+          
           return {
             ...booking,
             provider_name: provider ? provider.name : 'Unknown Provider',
-            services: services
+            services: services,
+            number_of_people: bookingRequest.number_of_people || null, // Extract number of people
+            number_of_rooms: bookingRequest.number_of_rooms || null, // Extract number of rooms
+            description: bookingRequest.description || 'No description available', // Extract description
           };
         });
+
+        console.log('formattedBookings', formattedBookings);
         
         setBookings(formattedBookings);
       } else {
@@ -171,7 +181,7 @@ const ProfilePage = () => {
     try {
       const response = await transferProviderPayment({
         booking_id: booking.id,
-        amount: booking.total_price * 100,
+        amount: booking.total_price,
       });
       
       // Show rating modal if payment was successful
@@ -198,6 +208,7 @@ const ProfilePage = () => {
   // Handlers for saving profile information
   const handleSaveProfile = async () => {
     setSaveLoading(true);
+    console.log("userInfo", userInfo);
     setError(null);
     try {
       const updateData = {
@@ -215,7 +226,7 @@ const ProfilePage = () => {
       setUserInfo(prev => ({
         ...prev,
         ...updatedUser,
-        whatsappNumber: updatedUser.whatsapp_number // Handle snake_case to camelCase conversion
+        whatsappNumber: updatedUser.whatsappNumber // Handle snake_case to camelCase conversion
       }));
 
       setSaveSuccess(true);
@@ -294,6 +305,28 @@ const ProfilePage = () => {
     }
   };
 
+  const handleSetDefaultPaymentMethod = async (paymentMethodId) => {
+    try {
+      const updateData = {
+        id: userInfo.id,
+        default_payment_method_id: paymentMethodId // Set the selected payment method as default
+      };
+
+      await updateUserInfo(updateData);
+      setToast({
+        message: 'Default payment method updated successfully',
+        type: 'success'
+      });
+      // Optionally refresh user info to reflect changes
+      await getUserInfo();
+    } catch (error) {
+      setToast({
+        message: 'Failed to update default payment method. Please try again.',
+        type: 'error'
+      });
+    }
+  };
+
   const renderPaymentSection = () => {
     return (
       <div className="profile-section">
@@ -320,7 +353,7 @@ const ProfilePage = () => {
         {userInfo.stripe_paymemt_methods?.length > 0 ? (
           <div className="payment-methods-list">
             {userInfo.stripe_paymemt_methods.map((method, index) => (
-              <div key={index} className="payment-method-card">
+              <div key={method.payment_method_id} className="payment-method-card">
                 <div className="remove-btn-container">
                   <button 
                     className="remove-card-btn"
@@ -343,7 +376,7 @@ const ProfilePage = () => {
                         </span>
                       </div>
                     </div>
-                    {index === 0 && <span className="default-badge">Default</span>}
+                    {userInfo.default_payment_method_id === method.payment_method_id && <span className="default-badge">Default</span>}
                   </div>
 
                   <div className="card-details">
@@ -379,13 +412,20 @@ const ProfilePage = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Button to set as default payment method */}
+                <button 
+                  className="set-default-btn"
+                  onClick={() => handleSetDefaultPaymentMethod(method.payment_method_id)}
+                >
+                  Set as Default
+                </button>
               </div>
             ))}
           </div>
         ) : (
           <div className="empty-state">
             <i className="fas fa-credit-card"></i>
-            <p>No payment methods added yet</p>
             <p className="subtitle">Add a payment method to book services</p>
           </div>
         )}
@@ -423,51 +463,27 @@ const ProfilePage = () => {
   };
 
   const handleConfirmBooking = async (booking) => {
-    // Set loading state for specific booking
-    setProcessingBookings(prev => ({
-      ...prev,
-      [booking._id]: true
-    }));
-
+    setProcessingBookings(prev => ({ ...prev, [booking._id]: true }));
     try {
-      const params = {
-        booking_id: booking._id,
-        amount: booking.total_price * 100,
-        payment_method_id: userInfo.stripe_paymemt_methods[0].payment_method_id,
-        description: "Service Booking"
-      };
-
-      const response = await receiveClientPayment(params);
-      if (response && response.payment_intent_id) {
-        setToast({
-          message: 'Booking confirmed successfully! Payment processed.',
-          type: 'success'
-        });
-        // Update only this booking in the list
-        setBookings(prevBookings => 
-          prevBookings.map(b => 
-            b._id === booking._id 
-              ? { ...b, status: 'CONFIRMED' }
-              : b
-          )
-        );
-      } else {
-        setToast({
-          message: 'Failed to confirm booking. Please try again.',
-          type: 'error'
-        });
-      }
-    } catch (error) {
-      setToast({
-        message: 'Failed to process payment. Please try again.',
-        type: 'error'
+      // Assuming you have a function to confirm the booking
+      
+      // Redirect to checkout page with booking details
+      navigate('/checkout', {
+        state: {
+          booking_id: booking.id,
+          provider_name: booking.provider_name,
+          price: booking.total_price,
+          booking_date: booking.booked_date,
+          booking_slot: booking.time_slot,
+        }
       });
+      
+      showToast('Booking confirmed! Redirecting to checkout...', 'success');
+    } catch (error) {
+      console.error('Error confirming booking:', error);
+      showToast('Failed to confirm booking. Please try again.', 'error');
     } finally {
-      // Clear loading state for this specific booking
-      setProcessingBookings(prev => ({
-        ...prev,
-        [booking._id]: false
-      }));
+      setProcessingBookings(prev => ({ ...prev, [booking._id]: false }));
     }
   };
 
@@ -857,89 +873,41 @@ const ProfilePage = () => {
                       ) : bookings.length > 0 ? (
                         <div className="booking-cards">
                           {bookings.map((booking) => (
-                            <div key={booking._id} className={`booking-card ${booking.status.toLowerCase()}`}>
+                            <div key={booking.id} className="booking-card">
                               <div className="booking-header">
-                                <span className={`booking-status status-${(booking.status || 'pending').toLowerCase()}`}>
-                                  {booking.status || 'Pending'}
-                                </span>
-                                <span className="booking-price">€{booking.total_price}</span>
+                                <h4>{booking.provider_name}</h4>
+                                <p className={`booking-status ${booking.status.toLowerCase()}`}>{booking.status}</p>
+                                <p><strong>Price:</strong> {booking.total_price}</p>
                               </div>
-                              
-                              <div className="booking-body">
-                                <div className="booking-provider">
-                                  <i className="fas fa-user-circle"></i>
-                                  <span>{booking.provider_name}</span>
-                                </div>
+                              <div className="booking-details">
+                                <p><strong>Date:</strong> {new Date(booking.booked_date).toLocaleDateString()}</p>
+                                <p><strong>Time Slot:</strong> {booking.time_slot}</p>
+                                 <p><strong>Start Time:</strong> {booking.start_time}</p>
+                                 <p><strong>End Time:</strong> {booking.end_time}</p>
                                 
-                                <div className="booking-services">
-                                  <h4>Services:</h4>
-                                  <ul>
-                                    {booking.services.map((service, index) => (
-                                      <li key={index}>{service}</li>
-                                    ))}
-                                  </ul>
-                                </div>
-                                
-                                <div className="booking-time">
-                                  <div className="time-item">
-                                    <i className="far fa-calendar"></i>
-                                    <span>{new Date(booking.booked_date).toLocaleDateString()}</span>
-                                  </div>
-                                  <div className="time-item">
-                                    <i className="far fa-clock"></i>
-                                    <span>{booking.time_slot}</span>
-                                  </div>
-                                </div>
+                                {/* Conditional rendering based on service type */}
+                                {booking.service_type === 'vegetarian_meal' ? (
+                                  <>
+                                    <p><strong>Number of People:</strong> {booking.number_of_people}</p>
+                                    <p><strong>Description:</strong> {booking.description}</p>
+                                  </>
+                                ) : (
+                                  <>
+                                    <p><strong>Number of Rooms:</strong> {booking.number_of_rooms}</p>
+                                    <p><strong>Description:</strong> {booking.description}</p>
+                                  </>
+                                )}
                               </div>
-
                               <div className="booking-actions">
-                                <button 
-                                  className="action-button chat"
-                                  onClick={() => handleChat(booking.provider_id, booking.id, booking)}
-                                >
-                                  <i className="fas fa-comments"></i>
-                                  Chat with Provider
-                                </button>
+                                <button className="chat-button" onClick={() => handleChat(booking.provider_id, booking.id, booking)}>Chat</button>
+                               {booking.status === 'RESERVED' && (
+                                <button className="confirm-button" onClick={() => handleConfirmBooking(booking)}>Confirm</button>
+                               )}
+                               {booking.status === 'CONFIRMED' && (
+                                <button className="confirm-button" onClick={() => handleProviderPayment(booking)}>Pay to Provider</button>
+                               )}
 
-                                {booking.status === 'RESERVED' && (
-                                  <button 
-                                    className="action-button confirm"
-                                    onClick={() => handleConfirmBooking(booking)}
-                                    disabled={processingBookings[booking._id]}
-                                  >
-                                    {processingBookings[booking._id] ? (
-                                      <>
-                                        <span className="spinner"></span>
-                                        Processing...
-                                      </>
-                                    ) : (
-                                      <>
-                                        <i className="fas fa-check-circle"></i>
-                                        Confirm Appointment
-                                      </>
-                                    )}
-                                  </button>
-                                )}
-
-                                {booking.status === 'CONFIRMED' && (
-                                  <button 
-                                    className="action-button pay"
-                                    onClick={() => handleProviderPayment(booking)}
-                                    disabled={paymentLoading === booking.id}
-                                  >
-                                    {paymentLoading === booking.id ? (
-                                      <div className="button-content">
-                                        <span className="button-loader"></span>
-                                        <span>Processing...</span>
-                                      </div>
-                                    ) : (
-                                      <div className="button-content">
-                                        <i className="fas fa-money-bill-wave"></i>
-                                        <span>Pay to Provider</span>
-                                      </div>
-                                    )}
-                                  </button>
-                                )}
+                               
                               </div>
                             </div>
                           ))}

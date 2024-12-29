@@ -32,105 +32,29 @@
   margin-bottom: 24px;
 }
 
-.rating-stars-container {
+.rating-boxes-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  justify-content: space-between;
   margin-bottom: 30px;
-  padding: 24px;
-  background: #f8fafc;
-  border-radius: 16px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.stars-wrapper {
+.rating-box {
+  width: 50px;
+  height: 50px;
+  background: #e5e7eb; /* Light gray */
+  border-radius: 8px;
   display: flex;
-  gap: 16px;
-  background: white;
-  padding: 16px 24px;
-  border-radius: 30px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.star-btn {
-  background: none;
-  border: none;
-  font-size: 3rem;
-  color: #e5e7eb;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 8px;
-  line-height: 1;
-  position: relative;
-}
-
-.star-btn i {
-  position: relative;
-  background: linear-gradient(to right, #fbbf24 0%, #fbbf24 0%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  transition: all 0.3s ease;
-}
-
-.star-btn::before {
-  content: '\f005'; /* Font Awesome star */
-  font-family: 'Font Awesome 5 Free';
-  position: absolute;
-  left: 8px;
-  color: #e5e7eb;
-  font-weight: 900;
-}
-
-.star-btn.active::before,
-.star-btn:hover::before {
-  color: #fbbf24;
-  text-shadow: 0 0 10px rgba(251, 191, 36, 0.4);
-}
-
-/* Create the filling effect */
-.star-btn:nth-child(1).active ~ .star-btn::before,
-.star-btn:nth-child(2).active ~ .star-btn::before,
-.star-btn:nth-child(3).active ~ .star-btn::before,
-.star-btn:nth-child(4).active ~ .star-btn::before,
-.star-btn:nth-child(5).active ~ .star-btn::before {
-  color: #e5e7eb;
-}
-
-.stars-wrapper:hover .star-btn::before {
-  color: #fbbf24;
-}
-
-.stars-wrapper .star-btn:hover ~ .star-btn::before {
-  color: #e5e7eb;
-}
-
-/* Add animation for star selection */
-@keyframes starPop {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.3);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-.star-btn.active {
-  animation: starPop 0.3s ease-out;
-}
-
-.rating-text {
-  font-size: 1.1rem;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
   color: #1f2937;
-  font-weight: 600;
-  min-height: 24px;
-  padding: 8px 16px;
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.rating-box.active {
+  background: #28a745; /* Green */
+  color: white; /* White text for contrast */
 }
 
 .rating-modal textarea {
@@ -181,16 +105,6 @@
   background: #2a6d57;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(42, 109, 87, 0.2);
-}
-
-.submit-btn.disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
-}
-
-.submit-btn:disabled {
-  background: #9ca3af;
-  cursor: not-allowed;
 }
 
 .close-btn {

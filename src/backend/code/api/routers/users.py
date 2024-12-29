@@ -30,7 +30,7 @@ class UserUpdateRequest(BaseModel):
         default=[],
         description="List of dates when provider is not available"
     )
-
+    default_payment_method_id: Optional[str] = None
     
 
 
@@ -62,7 +62,10 @@ async def read_user_details(
     current_user.stripe_paymemt_methods = payment_details
     user_bookings  = await Booking.search_document({"client_id": str(current_user.id),  "deleted_at": None})
     current_user.number_of_bookings = len(user_bookings)
-    
+    # sort blocked dates
+    current_user.blocked_dates = sorted(current_user.blocked_dates, key=lambda x: x.date())
+    if len(current_user.stripe_paymemt_methods) == 1:
+        current_user.default_payment_method_id = current_user.stripe_paymemt_methods[0].get("payment_method_id")
     return current_user
 
 
@@ -76,6 +79,9 @@ async def update_users(
     request: Request, current_user: User = Depends(get_current_user)
 ):
     """Get the system user"""
+
+
+    print(user_update_request, "user_update_request")
 
 
     if user_update_request.user_type:
@@ -104,6 +110,9 @@ async def update_users(
 
     if user_update_request.blocked_dates:
         current_user.blocked_dates = user_update_request.blocked_dates
+
+    if user_update_request.default_payment_method_id:
+        current_user.default_payment_method_id = user_update_request.default_payment_method_id
 
 
     return await User.save_document(doc = current_user)

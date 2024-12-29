@@ -116,7 +116,8 @@ export const postBooking = async (params = {}) => {
         client_id: params.client_id,
         time_slot: params.time_slot,
         booked_date: params.booked_date,
-
+        price: params.price,
+        metadata: params.metadata
     }
     const response = await api.post('/bookings', requestPayload); 
     return createBooking(response.data);

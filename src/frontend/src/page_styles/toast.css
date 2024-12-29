@@ -2,7 +2,7 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  padding: 16px;
+  padding: 16px 24px;
   border-radius: 8px;
   background: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -16,7 +16,7 @@
 }
 
 .toast.success {
-  border-left: 4px solid #35886d;
+  border-left: 4px solid #28a745;
 }
 
 .toast.error {
@@ -34,7 +34,7 @@
 }
 
 .toast.success i {
-  color: #35886d;
+  color: #28a745;
 }
 
 .toast.error i {

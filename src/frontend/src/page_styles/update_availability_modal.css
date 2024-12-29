@@ -1,0 +1,279 @@
+/* src/frontend/src/page_styles/update_availability_modal.css */
+
+/* Modal Container */
+.provider-onboarding-modal {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 900px; /* Increased max-width for a bigger modal */
+    padding: 30px; /* Increased padding for a more spacious feel */
+}
+
+/* Edit Buttons */
+.edit-buttons .edit-button {
+    background-color: #d4edda; /* Light green color for initial state */
+    color: #155724; /* Darker text color for contrast */
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px; /* Smaller padding for smaller buttons */
+    cursor: pointer;
+    font-size: 14px; /* Smaller font size */
+    transition: background-color 0.3s, transform 0.2s; /* Smooth transition for hover effects */
+    flex: 1; /* Make buttons take equal space */
+    margin-right: 10px; /* Space between buttons */
+}
+
+/* Remove margin from the last button */
+.edit-buttons .edit-button:last-child {
+    margin-right: 0; /* No margin on the last button */
+}
+
+/* Hover effect */
+.edit-buttons .edit-button:hover {
+    background-color: green; /* Slightly darker shade for hover */
+}
+
+/* Active effect */
+.edit-buttons .edit-button:active {
+    background-color: #155724; /* Darker green for active state */
+    color: white; /* Change text color to white for contrast */
+    transform: translateY(0); /* Reset lift effect */
+}
+
+/* Selected button style */
+.edit-buttons .edit-button.selected {
+    background-color: #155724; /* Dark green for selected state */
+    color: white;
+}
+
+/* Calendar Wrapper */
+.calendar-wrapper {
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    background: white;
+}
+ 
+/* Selected Date Range Styles */
+.react-calendar__tile--active {
+    background: #28a745; /* Green color for active selection */
+    color: white; /* White text for contrast */
+}
+
+/* Darker background for selected date range */
+.react-calendar__tile--active:disabled {
+    background: #1e7e34; /* Darker green for disabled active selection */
+}
+
+/* Blocked Dates */
+.react-calendar__tile--disabled {
+    background: #f0f0f0; /* Light gray for blocked dates */
+    color: #ccc; /* Gray text for blocked dates */
+}
+
+/* Hover effect for tiles */
+.react-calendar__tile:hover {
+    background: #c3e6cb; /* Darker gray for hover effect */
+}
+
+/* Selected Date Styles */
+.react-calendar__tile--selected {
+    color: white; /* White text for contrast */
+    border-radius: 4px;
+}
+
+/* Starting Date Styles */
+.react-calendar__tile.starting-date {
+    background: #007bff; /* Blue for starting date */
+    color: white;
+    border-radius: 4px;
+}
+
+/* Selected Date Banner */
+.selected-date-banner {
+    background: #f0f8ff; /* Light blue */
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px 0;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Adjust the styles for the calendar tiles */
+.react-calendar__tile {
+    transition: background-color 0.3s ease; /* Smooth transition for background color */
+}
+
+/* Modal Footer */
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.cancel-btn,
+.save-btn {
+    padding: 8px 16px; /* Adjusted padding for smaller buttons */
+    border-radius: 8px;
+    font-size: 0.9rem; /* Smaller font size */
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cancel-btn {
+    background: white;
+    border: 2px solid #e2e8f0;
+    color: #4a5568;
+}
+
+.save-btn {
+    background: #28a745; /* Green color for save button */
+    color: white;
+    border: none;
+}
+
+.save-btn:hover {
+    background: #218838; /* Darker green on hover */
+}
+
+/* Error Messages */
+.error-message {
+    color: #dc2626; /* Red color for error messages */
+    background: #fee2e2; /* Light red background */
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.error-message i {
+    font-size: 1.1rem;
+}
+
+/* Toast Notification Styles */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 300px;
+    animation: slideIn 0.3s ease-out;
+    z-index: 2000;
+}
+
+.toast.success {
+    border-left: 4px solid #28a745; /* Green border for success */
+}
+
+.toast.error {
+    border-left: 4px solid #dc2626; /* Red border for error */
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toast-content i {
+    font-size: 1.25rem;
+}
+
+.toast.success i {
+    color: #28a745; /* Green icon for success */
+}
+
+.toast.error i {
+    color: #dc2626; /* Red icon for error */
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.toast.removing {
+    animation: slideOut 0.3s ease-in forwards;
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.toast-progress::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background: #28a745; /* Green progress bar */
+    animation: toast-progress 5s linear forwards;
+}
+
+.toast.error .toast-progress::after {
+    background: #dc2626; /* Red progress bar for error */
+}
+
+@keyframes toast-progress {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}
+
+
+.available-date {
+    background-color: #e8f5e9; /* Green */
+    color: #000;
+  }
+  
+  .blocked-date {
+    background-color: #fce4ec; /* Red */
+    color: #fff;
+    opacity: 0.7;
+  }
+  
+  .selected-start-date {
+    background-color: #81c784; /* Darker Green */
+    color: #fff;
+    border: 2px solid #4caf50;
+  }
+  
+
+/* Available Dates */
+.calendar-wrapper .blocked-date {
+    background-color: red !important; /* Example: force red background */
+    color: white !important; /* Example: force white text */
+  }
+  
+  /* If necessary, increase specificity */
+  .calendar-wrapper .blocked-date.blocked-date {
+    background-color: red !important;
+    color: white !important;
+  }

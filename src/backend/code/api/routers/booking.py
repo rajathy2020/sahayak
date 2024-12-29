@@ -48,6 +48,8 @@ class BookingRequest(BaseModel):
     provider_id: str
     client_id: str
     time_slot: TimeSlot
+    price: float
+    metadata: dict
     customizations: Optional[List[Union[CookingCustomization, CleaningCustomization]]] = None
  
 
@@ -116,7 +118,7 @@ async def book_service(
         raise HTTPException(status_code=404, detail="Provider not found")
     
     # Fetch all bookings for the provider within the requested time slot
-    provider_bookings = await Booking.search_document({"provider_id": booking_request.provider_id, "deleted_at": None, "status": { "$in": [BookingStatus.CONFIRMED, BookingStatus.RESERVED]}})
+    provider_bookings = await Booking.search_document({"provider_id": booking_request.provider_id, "booked_date": booking_request.booked_date, "deleted_at": None, "status": { "$in": [BookingStatus.CONFIRMED, BookingStatus.RESERVED]}})
 
     # Get booked time slots within the selected time slot
     provider_booked_time_slots = [
@@ -218,11 +220,12 @@ async def book_service(
         start_time=booking_start_time,
         end_time=booking_end_time,
         frequency=ServiceFrequency.ONE_TIME,
-        total_price=total_price,
+        total_price=booking_request.price,
         booked_date=booking_request.booked_date,
         status=BookingStatus.RESERVED,
         reserved_at=now,
-        payment_deadline=payment_deadline
+        payment_deadline=payment_deadline,
+        metadata={"booking_request": booking_request.metadata}
     )
 
     # Save the booking to the database
@@ -273,9 +276,11 @@ async def get_user_bookings(current_user: User = Depends(get_current_user)):
         "client_id": str(current_user.id),
         "deleted_at": None
     })
+
+    print(client_bookings, "client_bookings")
     
     for booking in client_bookings:
-        booking_metadata = {}       
+        booking_metadata = booking.metadata       
         provider_id = booking.provider_id
         provider = await User.get_document(doc_id=provider_id)
         booking_metadata[provider_id] = provider

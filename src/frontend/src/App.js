@@ -17,6 +17,7 @@ import ServiceProviderOnboardingModal from './components/ServiceProviderOnboardi
 import Toast from './components/Toast';
 import ProviderDashboard from './components/ProviderDashboard';
 import LoginPage from './components/LoginPage';
+import ContactSection from './components/ContactSection';
 
 
 // utils/auth.js
@@ -282,6 +283,7 @@ function AppContent() {
                     onServicesClick={handleServicesClick}
                   />
                   <HeroSection />
+                  <ContactSection />
                   {/* Show modals if needed */}
                   {showOnboardingModal && !showProviderModal && (
                     <UserPreferencesModal

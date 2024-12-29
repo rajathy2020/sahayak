@@ -3,7 +3,6 @@ import '../page_styles/rating_modal.css';
 
 const RatingModal = ({ booking, onClose, onSubmit }) => {
   const [rating, setRating] = useState(0);
-  const [hoveredRating, setHoveredRating] = useState(0);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -30,36 +29,17 @@ const RatingModal = ({ booking, onClose, onSubmit }) => {
     }
   };
 
-  const renderStars = () => {
-    return [1, 2, 3, 4, 5].map((star) => (
-      <button
-        key={star}
-        type="button"
-        className={`star-btn ${star <= (hoveredRating || rating) ? 'active' : ''}`}
-        onMouseEnter={() => setHoveredRating(star)}
-        onMouseLeave={() => setHoveredRating(0)}
-        onClick={() => {
-          setRating(star);
-          if (window.navigator.vibrate) {
-            window.navigator.vibrate(50);
-          }
-        }}
-        aria-label={`Rate ${star} stars`}
+  const renderBoxes = () => {
+    return [1, 2, 3, 4, 5].map((box) => (
+      <div
+        key={box}
+        className={`rating-box ${box <= rating ? 'active' : ''}`}
+        onClick={() => setRating(box)}
+        aria-label={`Rate ${box} stars`}
       >
-        <i className="fas fa-star"></i>
-      </button>
+        {box}
+      </div>
     ));
-  };
-
-  const getRatingText = () => {
-    const texts = {
-      1: 'Poor',
-      2: 'Fair',
-      3: 'Good',
-      4: 'Very Good',
-      5: 'Excellent'
-    };
-    return hoveredRating || rating ? texts[hoveredRating || rating] : 'Select Rating';
   };
 
   return (
@@ -72,20 +52,8 @@ const RatingModal = ({ booking, onClose, onSubmit }) => {
         <h2>Rate Your Experience</h2>
         <p>How was your service with {booking.provider_name}?</p>
 
-        <div className="rating-stars-container">
-          <div className="stars-wrapper">
-            {renderStars()}
-          </div>
-          <span className="rating-text">
-            {rating === 0 ? (
-              <span className="rating-required">
-                <i className="fas fa-exclamation-circle"></i>
-                Rating required
-              </span>
-            ) : (
-              getRatingText()
-            )}
-          </span>
+        <div className="rating-boxes-container">
+          {renderBoxes()}
         </div>
 
         <textarea

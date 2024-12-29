@@ -41,18 +41,21 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width:100%;
-    background-color: #fff;
+    width: 100%;
+    background-color: #ffffff; /* White background */
     border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     padding: 15px;
-    cursor: pointer;
+    cursor: pointer; /* Indicate that the card is clickable */
+    position: relative; /* For positioning elements inside */
+    overflow: hidden; /* Prevent overflow of child elements */
+    margin-bottom: 20px; /* Space between cards */
   }
   
   .service-provider-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   }
   
   /* Provider Image styling */
@@ -62,11 +65,16 @@
     border-radius: 50%; /* Circular image */
     object-fit: cover;
     margin-right: 20px;
+    transition: transform 0.3s ease; /* Smooth scaling effect */
+  }
+  
+  .provider-image:hover {
+    transform: scale(1.05); /* Slightly enlarge the image on hover */
   }
   
   /* Provider Info styling */
   .provider-info {
-    flex-grow:1;
+    flex-grow: 1;
     text-align: left; /* Align text to the left */
     margin-right: 30px;
   }
@@ -75,6 +83,7 @@
     font-size: 1.4rem;
     margin: 0 0 10px 0;
     color: #333;
+    font-weight: bold; /* Make the provider name bold */
   }
   
   .provider-description {
@@ -292,5 +301,115 @@
   100% {
     left: 100%;
   }
+}
+
+.provider-ratings {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.average-rating {
+  font-weight: bold;
+}
+
+.total-ratings {
+  margin-left: 5px;
+  font-style: italic;
+}
+
+.comments {
+  margin-top: 5px;
+}
+
+.comment {
+  margin: 2px 0;
+  font-style: italic;
+  color: #6b7280;
+}
+
+/* Button styling */
+.card-actions {
+    display: flex;
+    gap: 10px; /* Space between buttons */
+}
+
+.chat-button {
+    background-color: #007bff; /* Blue background */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.chat-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+.set-default-btn {
+  background-color: #007bff; /* Blue background */
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px; /* Space above the button */
+}
+
+.set-default-btn:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Ratings Section styling */
+.provider-ratings {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+.average-rating {
+    font-weight: bold;
+}
+
+.total-ratings {
+    margin-left: 5px;
+    font-style: italic;
+}
+
+/* New styles for booking details */
+.booking-details {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.booking-details p {
+    margin: 5px 0; /* Space between details */
+}
+
+/* Default badge styling */
+.default-badge {
+    background-color: #28a745; /* Green background */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    position: absolute; /* Position it on the card */
+    top: 10px;
+    right: 10px;
+}
+
+/* Additional styles for comments */
+.comments {
+    margin-top: 5px;
+}
+
+.comment {
+    margin: 2px 0;
+    font-style: italic;
+    color: #6b7280;
 }
 

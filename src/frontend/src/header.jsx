@@ -52,6 +52,19 @@ const Header = ({ title, links, onAboutClick, onServicesClick }) => {
               </a>
             );
           }
+
+          if (link.label === 'Contact') {
+            return (
+              <a href="#contact" className="nav-link">Contact</a>
+            );
+          }
+
+          if (link.label === 'Me') {
+            return (
+              <a href="/me" className="nav-link">Me</a>
+            );
+          }
+
           return (
             <Link
               key={index}

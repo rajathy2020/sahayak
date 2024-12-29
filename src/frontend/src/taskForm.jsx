@@ -17,7 +17,7 @@ const TaskForm = () => {
     number_of_persons: '2', // Default to 2
     description: '',
     number_of_rooms: '2',
-    price:0
+    price: 0
   });
 
   const location = useLocation();
@@ -115,6 +115,8 @@ const TaskForm = () => {
                 <option value="deep_clean">Deep clean</option>
                 <option value="regular_clean">Regular Clean</option>
               </select>
+            </div>
+            <div className="form-section">
               <label>Number of rooms to clean:</label>
               <input
                 type="number"

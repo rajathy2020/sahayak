@@ -47,6 +47,7 @@ export interface UserInfo {
     image_url?: string;
     blocked_dates?: string[];
     available_dates?: string[];
+    default_payment_method_id?: string;
     ratings?: {
       average: number;
       count: number;
@@ -74,6 +75,7 @@ export const createUser = (data: any = {}): UserInfo => ({
   image_url: data.image_url,
   blocked_dates: data.blocked_dates,
   available_dates: data.available_dates,
+  default_payment_method_id: data.default_payment_method_id,
   ratings: {
     average: data.ratings?.average || 0,
     count: data.ratings?.count || 0,
@@ -108,6 +110,11 @@ export interface ServiceProvider {
     services_offered?: Array<string>; // List of SubService IDs that the provider offers
     available_time_slots?: Array<string>; // Array of available time slots
     description?:string;
+    ratings: {
+      average: number;
+      count: number;
+      comments: string[];
+    };
   }
 
 export const createServiceProvider = (data: any = {}): ServiceProvider => ({
@@ -117,6 +124,7 @@ export const createServiceProvider = (data: any = {}): ServiceProvider => ({
     services_offered: data.services_offered || [], 
     available_time_slots: data.available_time_slots || [],
     description: data.description || "", 
+    ratings: data.ratings || { average: 0, count: 0, comments: [] },
   });
 
 export interface Booking {
@@ -137,6 +145,7 @@ export interface Booking {
     payment_intent_id: string;
     payout_id: string;
     paid_at: string;
+
   }
 
 export const createBooking = (data: Partial<Booking> = {}): Booking => ({
@@ -157,6 +166,7 @@ export const createBooking = (data: Partial<Booking> = {}): Booking => ({
     paid_at: data.paid_at,
     payment_deadline: data.payment_deadline,
     reserved_at: data.reserved_at,
+    metadata: data.metadata,
 
   });
 
