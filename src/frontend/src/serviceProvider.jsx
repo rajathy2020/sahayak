@@ -10,7 +10,7 @@ const ServiceProviderCard = ({ provider, handleBookingClick, onChatClick }) => {
     <div className="service-provider-card">
       {/* Provider Image */}
       <img
-        src={provider.image || 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg'}
+        src={provider.image_url || 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg'}
         alt={provider.name}
         className="provider-image"
       />
@@ -78,6 +78,9 @@ const ServiceProviderPage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [chatProvider, setChatProvider] = useState(null);
+  const taskFormData = location.state?.taskFormData; // Retrieve the data from state
+
+  console.log("taskFormData", taskFormData);
 
   const handleFilters = async (filterType, value) => {
     console.log("filterType", filterType, value)
@@ -87,7 +90,9 @@ const ServiceProviderPage = () => {
       setSelectedDate(value);
     }
 
-    const requestParams = location.state || getQueryParams();
+    const requestParams = taskFormData || getQueryParams();
+
+    console.log("requestParams55555sssss", requestParams, taskFormData);
 
     
     // Update the filter parameters
@@ -149,6 +154,8 @@ const ServiceProviderPage = () => {
       setUser(response);
     } catch (error) {
       setError('Failed to get user');
+      navigate('/login');
+      
     } finally {
       setLoading(false);
     }
@@ -172,7 +179,7 @@ const ServiceProviderPage = () => {
         return;
       }
 
-      const requestParams = location.state || getQueryParams();
+      const requestParams = location.state.taskFormData || getQueryParams();
       const bookingData = {
         "sub_service_names": requestParams,
         "provider_id": provider.id,
@@ -197,7 +204,10 @@ const ServiceProviderPage = () => {
       }
 
       const queryParams = new URLSearchParams(providerData).toString();
-      navigate(`/checkout?${queryParams}`);
+      // i want to pass same i did for taskFormData 
+      //  navigate('/service_providers', { state: { taskFormData: updatedFormData } });
+      navigate('/checkout', { state: { providerData: providerData } });
+     
 
     } catch (error) {
       setError('Failed to process booking. Please try again.');
@@ -232,13 +242,18 @@ const ServiceProviderPage = () => {
 
   // Fetch services when the page loads
   useEffect(() => {
-    const requestParams = location.state || getQueryParams();
+    const requestParams = location.state.taskFormData || getQueryParams();
+
+    console.log("requestParams55555sssss", requestParams);
+    
+    
+    // Retrieve data from sessionStorage
+    
     if (!requestParams.available_time_slots) {
-      requestParams.available_time_slots = '9am-12pm';
+        requestParams.available_time_slots = '9am-12pm';
     }
     getUser();
     getServiceProviders(requestParams, true);
-
   }, [location.state, location.search]);
 
   // Function to render the notification

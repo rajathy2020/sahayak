@@ -12,7 +12,6 @@
 /* Services Grid */
 .services-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
     gap: 2.5rem;
     width: 100%;
     max-width: 1400px;
@@ -145,7 +144,7 @@
 /* Responsive Design */
 @media (max-width: 1200px) {
     .services-grid {
-        grid-template-columns: repeat(2, 1fr);
+
         gap: 2rem;
     }
 }

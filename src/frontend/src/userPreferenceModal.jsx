@@ -5,12 +5,13 @@ const UserPreferencesModal = ({ show, onClose, onSave }) => {
   const [userType, setUserType] = useState('');
   const [city, setCity] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
+  const [address, setAddress] = useState('');
 
   console.log("show", show)
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave({ userType, city, mobileNumber });
+    onSave({ userType, city, mobileNumber, address });
     onClose();
   };
   if (!show) return null;
@@ -63,6 +64,17 @@ const UserPreferencesModal = ({ show, onClose, onSave }) => {
               value={mobileNumber}
               onChange={(e) => setMobileNumber(e.target.value)}
               placeholder="Enter your mobile number"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Your Address:</label>
+            <input
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Enter your address"
               required
             />
           </div>

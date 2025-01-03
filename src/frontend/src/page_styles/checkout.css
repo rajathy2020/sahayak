@@ -593,3 +593,15 @@
 .toast.removing .toast-progress::after {
   animation: none;
 }
+
+
+
+.address-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid green;
+}

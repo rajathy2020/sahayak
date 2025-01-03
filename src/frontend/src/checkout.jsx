@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { fetchUserInfo, generateClientCardSetUpUrl, receiveClientPayment } from './api';
+import { fetchUserInfo, generateClientCardSetUpUrl, receiveClientPayment, updateUserInfo} from './api';
 import './page_styles/checkout.css';
 import './page_styles/header.css'; // Add this for header styling
+import Toast from './components/Toast'; // Import the Toast component
 
 const CheckoutPage = () => {
   // State management
@@ -30,10 +31,21 @@ const CheckoutPage = () => {
     return requestParams;
   };
 
-  const bookingSummary = location.state || getQueryParams(); // Get booking details from state
+  const bookingSummary = location.state.providerData || getQueryParams(); // Get booking details from state
 
   // Use bookingSummary to display relevant information
   console.log(bookingSummary, "bookingSummary");
+
+  const handleAddressChange = async (address) => {
+    setUser({ ...user, address: address });
+    try {
+      await updateUserInfo({ id: user.id, address: address });
+      showToast('Address updated successfully!', 'success'); // Show success toast
+    } catch (error) {
+      console.error('Failed to update address:', error);
+      showToast('Failed to update address. Please try again.', 'error'); // Show error toast
+    }
+  };
 
   // Fetch user info function
   const getUserInfo = async () => {
@@ -55,6 +67,7 @@ const CheckoutPage = () => {
         console.log("formattedCards", formattedCards);
         setSelectedCardIndex(formattedCards.findIndex(card => card.default));
         setCards(formattedCards);
+        console.log("user", response);
         setUser(response);
       }
     } catch (error) {
@@ -91,36 +104,10 @@ const CheckoutPage = () => {
   };
 
   const showToast = (message, type = 'success') => {
-    // Remove existing toast with animation
-    if (toast) {
-      const oldToast = document.querySelector('.toast');
-      if (oldToast) {
-        oldToast.classList.add('removing');
-        setTimeout(() => setToast(null), 300);
-      }
-    }
-
-    // Show new toast after a brief delay
+    setToast({ message, type });
     setTimeout(() => {
-      setToast({ message, type });
-      
-      // Auto dismiss and navigate after 10 seconds
-      const timer = setTimeout(() => {
-        const toastElement = document.querySelector('.toast');
-        if (toastElement) {
-          toastElement.classList.add('removing');
-          setTimeout(() => {
-            setToast(null);
-            if (type === 'success') {
-              navigate('/me');
-            }
-          }, 300);
-        }
-      }, 10000);
-
-      // Store timer in toast data
-      setToast(prev => ({ ...prev, timerId: timer }));
-    }, toast ? 350 : 0);
+      setToast(null); // Automatically dismiss after a few seconds
+    }, 3000);
   };
 
   // Handle manual close
@@ -220,18 +207,11 @@ const CheckoutPage = () => {
     <div className="checkout-page">
       {/* Toast Notifications */}
       {toast && (
-        <div className="toast-container">
-          <div className={`toast ${toast.type}`}>
-            <i className={`toast-icon fas ${
-              toast.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'
-            }`}></i>
-            <span className="toast-message">{toast.message}</span>
-            <button className="toast-close" onClick={handleCloseToast}>
-              <i className="fas fa-times"></i>
-            </button>
-            <div className="toast-progress"></div>
-          </div>
-        </div>
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
 
       <header className="checkout-header">
@@ -298,6 +278,7 @@ const CheckoutPage = () => {
         </div>
 
         {/* Order Summary Section */}
+        
         <div className="order-summary">
           <h2>Booking Summary</h2>
           
@@ -308,9 +289,6 @@ const CheckoutPage = () => {
               </div>
               <div className="booking-info">
                 <h3>{bookingSummary.provider_name}</h3>
-                <div className="booking-meta">
-                  Professional Service Provider
-                </div>
               </div>
             </div>
           </div>
@@ -328,14 +306,31 @@ const CheckoutPage = () => {
                 <i className="far fa-clock"></i>
                 Time Slot
               </span>
-              <span className="summary-value">{bookingSummary.time_slot}</span>
+              <span className="summary-value">{bookingSummary.booking_slot}</span>
             </div>
             <div className="summary-item">
               <span className="summary-label">
                 <i className="far fa-map-marker-alt"></i>
                 Location
               </span>
-              {user && <span className="summary-value">{user.address}</span>}
+              {/* make this editable here and save it in the backend to updateUsre infor call */}
+              {/* please also sve to backend to update user info */}
+              {/* please add an edit icon next to the input addres */}
+              {user && (
+  <span className="summary-value">
+    <input
+      className="address-input"
+      type="text"
+      value={user.address}
+      onChange={(e) => handleAddressChange(e.target.value)}
+    />
+    <span className="edit-icon">✏️</span>
+    
+  </span>
+)}
+
+
+              
             </div>
           </div>
 

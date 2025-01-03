@@ -115,6 +115,7 @@ export interface ServiceProvider {
       count: number;
       comments: string[];
     };
+    image_url?: string;
   }
 
 export const createServiceProvider = (data: any = {}): ServiceProvider => ({
@@ -125,6 +126,7 @@ export const createServiceProvider = (data: any = {}): ServiceProvider => ({
     available_time_slots: data.available_time_slots || [],
     description: data.description || "", 
     ratings: data.ratings || { average: 0, count: 0, comments: [] },
+    image_url: data.image_url || "",
   });
 
 export interface Booking {

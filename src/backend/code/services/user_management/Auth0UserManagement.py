@@ -47,6 +47,7 @@ class Auth0UserManagement(AbstractUserManagement):
             "redirect_uri": AUTH0_CALLBACK_URL,
             "audience": AUTH0_API_AUDIENCE,
             "scope": "openid profile email",
+            "prompt": "login",  # Force login page to appear
         }
         url = requests.Request("GET", auth0_url, params=params).prepare().url
         return RedirectResponse(url)
@@ -78,9 +79,12 @@ class Auth0UserManagement(AbstractUserManagement):
             return access_token
            
     def logout(self) -> str:
-        response = RedirectResponse(f"https://{AUTH0_DOMAIN}/oidc/logout?post_logout_redirect_uri=" + urllib.parse.quote(os.getenv('AUTH_FE_REDIRECT1', "http://localhost:8090/docs"), safe=''))
+        redirect_url = f"https://{AUTH0_DOMAIN}/oidc/logout?post_logout_redirect_uri=" +  "http://localhost:3000/login?status=logged_out"
+        print("redirect_url", redirect_url)
+        response = RedirectResponse(redirect_url)
         response.delete_cookie(COOKIE_AUTHORIZATION_NAME, domain=COOKIE_DOMAIN)
-        return response
+
+        print(" logount response", dir(response))
         
     async def  get_current_user(self, request: Request, token):
         auth0_id = self._validate_token(token)

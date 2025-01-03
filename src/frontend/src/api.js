@@ -49,6 +49,10 @@ export const fetchUserInfo = async () => {
         return createUser(response.data);
     } catch (error) {
         console.error('error fetching user info:', error);
+        if (error.response.status === 401) {
+          await logout();
+          window.location.replace('/login');
+        }
         throw error;
     }
 
@@ -70,7 +74,7 @@ export const fetchParentServices = async () => {
         const response = await api.get('/parent_services');
         return response.data.map(createParentService);
     } catch (error) {
-        console.error('Error fetching services:', error);
+        console.error('Error fetching services:', error.response.status);
         throw error;
     }
 };
@@ -387,8 +391,8 @@ export const rateProvider = async (ratingData) => {
 export const logout = async () => {
   try {
     document.cookie = 'Authorization=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-    localStorage.removeItem('user');
-    
+    // i want to call this @router.get("/auth0/logout")
+    const response = await api.get('/auth0/logout');
     // Add a query parameter to indicate logout
     window.location.replace('/login?status=logged_out');
   } catch (error) {

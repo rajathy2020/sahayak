@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTaskForm } from './TaskFormContext';
 import './page_styles/task_form.css';
 import { fetchCalculatedPrice } from './api';
 
@@ -14,7 +15,7 @@ const TaskForm = () => {
     number_of_kids: '',
     age_of_kids: '',
     meal_type: '',
-    number_of_persons: '2', // Default to 2
+    number_of_persons: '2',
     description: '',
     number_of_rooms: '2',
     price: 0
@@ -46,9 +47,9 @@ const TaskForm = () => {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const updatedFormData = { ...formData, price: price };
-    console.log(updatedFormData, "%%%%%%%%%%%%%")
-    const queryParams = new URLSearchParams(updatedFormData).toString();
-    navigate(`/service_providers?${queryParams}`);
+    
+    // Pass data using state
+    navigate('/service_providers', { state: { taskFormData: updatedFormData } });
   };
 
   const calculatePrice = async (names, persons=2, rooms = 2) => {
@@ -205,8 +206,8 @@ const TaskForm = () => {
                 onChange={handleChange}
                 min="2"
                 required
-                disabled={!formData.meal_type} // Disable until meal_type is selected
-                onWheel={(e) => e.preventDefault()} // Prevent scroll input
+                disabled={!formData.meal_type}
+                onWheel={(e) => e.preventDefault()}
               />
             </div>
           </>

@@ -149,6 +149,7 @@ function AppContent() {
       }
     } catch (error) {
       setError('Failed to get user');
+      navigate('/login');
     } finally {
       setLoading(false);
     }
@@ -178,7 +179,8 @@ function AppContent() {
         id: user.id,
         city: preferences.city,
         mobile_number: preferences.mobileNumber,
-        user_type: preferences.userType
+        user_type: preferences.userType,
+        address: preferences.address
       };
       const userInfo = await updateUserInfo(params);
       setUser(userInfo);
